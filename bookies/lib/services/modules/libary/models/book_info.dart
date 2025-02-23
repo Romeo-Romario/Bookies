@@ -1,4 +1,4 @@
-import 'package:bookies/services/db/data.dart';
+import 'package:bookies/services/shared/db/data.dart';
 
 enum ImageSourceType { asset, local }
 
