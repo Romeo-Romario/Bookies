@@ -1,4 +1,5 @@
 import 'package:bookies/services/modules/libary/models/book_info.dart';
+import 'package:bookies/services/shared/custom_enums/image_source_type.dart';
 import 'package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart';
 import 'package:flutter/material.dart';
 

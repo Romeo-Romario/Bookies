@@ -1,8 +1,7 @@
 import 'package:bookies/services/modules/libary/models/book_info.dart';
-import 'package:bookies/services/modules/libary/widgets/display_books_in_liabry.dart';
-import 'package:bookies/services/shared/db/data.dart';
+import 'package:bookies/services/modules/libary/widgets/libary_books_view/display_books_in_liabry.dart';
+import 'package:bookies/services/shared/custom_enums/image_source_type.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LibaryPage extends StatefulWidget {
   const LibaryPage({super.key});
@@ -70,15 +69,9 @@ class _LibaryPageState extends State<LibaryPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final db = Database();
-
-          for (var el in await db.select(db.genresInfoTable).get()) {
-            print(el);
-          }
-          for (var el in await db.select(db.booksFolderInfoTable).get()) {
-            print(el);
-          }
+          await Navigator.pushNamed(context, "/adding");
         },
+        heroTag: UniqueKey(),
         foregroundColor: Colors.deepPurpleAccent,
         child: Center(
           child: Image.asset(

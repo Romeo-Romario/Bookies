@@ -1,15 +1,5 @@
+import 'package:bookies/services/shared/custom_enums/image_source_type.dart';
 import 'package:bookies/services/shared/db/data.dart';
-
-enum ImageSourceType { asset, local }
-
-ImageSourceType fromBooleanToImageSourceType(bool value) {
-  switch (value) {
-    case true:
-      return ImageSourceType.local;
-    case false:
-      return ImageSourceType.asset;
-  }
-}
 
 class BookInfo {
   final int bookId;

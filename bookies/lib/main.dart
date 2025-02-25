@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:bookies/pages/book_adding_page.dart';
 
 void main() {
-  BuiltInEntitiesInitializer();
+  WidgetsFlutterBinding.ensureInitialized();
+  builtInEntitiesInitializer();
   runApp(MaterialApp(
-    initialRoute: '/home',
+    // initialRoute: '/home',
     routes: {
       '/': (context) => LibaryPage(),
       '/adding': (contex) => BookAddingPage(),

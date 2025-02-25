@@ -1,5 +1,5 @@
 import 'package:bookies/services/modules/libary/models/book_info.dart';
-import 'package:bookies/services/modules/libary/widgets/circular_progress_bar.dart';
+import 'package:bookies/services/modules/libary/widgets/libary_books_view/circular_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 

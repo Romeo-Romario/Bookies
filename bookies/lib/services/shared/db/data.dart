@@ -9,6 +9,7 @@ part 'data.g.dart';
 class BooksFolderInfoTable extends Table {
   IntColumn get books_folder_id => integer().autoIncrement()();
   TextColumn get books_folder_name => text()();
+  //TODO: change from nullable to suitable default value
   TextColumn get font_style => text().nullable()();
   TextColumn get font_color => text().nullable()();
 }

@@ -2,7 +2,7 @@ import 'package:bookies/services/shared/db/data.dart';
 import 'package:drift/drift.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void BuiltInEntitiesInitializer() async {
+void builtInEntitiesInitializer() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
   if ((prefs.getBool('start') ?? true)) {
