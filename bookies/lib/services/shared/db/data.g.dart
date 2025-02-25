@@ -29,14 +29,14 @@ class $BooksFolderInfoTableTable extends BooksFolderInfoTable
       const VerificationMeta('font_style');
   @override
   late final GeneratedColumn<String> font_style = GeneratedColumn<String>(
-      'font_style', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      'font_style', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _font_colorMeta =
       const VerificationMeta('font_color');
   @override
   late final GeneratedColumn<String> font_color = GeneratedColumn<String>(
-      'font_color', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      'font_color', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
       [books_folder_id, books_folder_name, font_style, font_color];
@@ -70,16 +70,12 @@ class $BooksFolderInfoTableTable extends BooksFolderInfoTable
           _font_styleMeta,
           font_style.isAcceptableOrUnknown(
               data['font_style']!, _font_styleMeta));
-    } else if (isInserting) {
-      context.missing(_font_styleMeta);
     }
     if (data.containsKey('font_color')) {
       context.handle(
           _font_colorMeta,
           font_color.isAcceptableOrUnknown(
               data['font_color']!, _font_colorMeta));
-    } else if (isInserting) {
-      context.missing(_font_colorMeta);
     }
     return context;
   }
@@ -96,9 +92,9 @@ class $BooksFolderInfoTableTable extends BooksFolderInfoTable
       books_folder_name: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}books_folder_name'])!,
       font_style: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}font_style'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}font_style']),
       font_color: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}font_color'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}font_color']),
     );
   }
 
@@ -112,20 +108,24 @@ class BooksFolderInfoTableData extends DataClass
     implements Insertable<BooksFolderInfoTableData> {
   final int books_folder_id;
   final String books_folder_name;
-  final String font_style;
-  final String font_color;
+  final String? font_style;
+  final String? font_color;
   const BooksFolderInfoTableData(
       {required this.books_folder_id,
       required this.books_folder_name,
-      required this.font_style,
-      required this.font_color});
+      this.font_style,
+      this.font_color});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['books_folder_id'] = Variable<int>(books_folder_id);
     map['books_folder_name'] = Variable<String>(books_folder_name);
-    map['font_style'] = Variable<String>(font_style);
-    map['font_color'] = Variable<String>(font_color);
+    if (!nullToAbsent || font_style != null) {
+      map['font_style'] = Variable<String>(font_style);
+    }
+    if (!nullToAbsent || font_color != null) {
+      map['font_color'] = Variable<String>(font_color);
+    }
     return map;
   }
 
@@ -133,8 +133,12 @@ class BooksFolderInfoTableData extends DataClass
     return BooksFolderInfoTableCompanion(
       books_folder_id: Value(books_folder_id),
       books_folder_name: Value(books_folder_name),
-      font_style: Value(font_style),
-      font_color: Value(font_color),
+      font_style: font_style == null && nullToAbsent
+          ? const Value.absent()
+          : Value(font_style),
+      font_color: font_color == null && nullToAbsent
+          ? const Value.absent()
+          : Value(font_color),
     );
   }
 
@@ -144,8 +148,8 @@ class BooksFolderInfoTableData extends DataClass
     return BooksFolderInfoTableData(
       books_folder_id: serializer.fromJson<int>(json['books_folder_id']),
       books_folder_name: serializer.fromJson<String>(json['books_folder_name']),
-      font_style: serializer.fromJson<String>(json['font_style']),
-      font_color: serializer.fromJson<String>(json['font_color']),
+      font_style: serializer.fromJson<String?>(json['font_style']),
+      font_color: serializer.fromJson<String?>(json['font_color']),
     );
   }
   @override
@@ -154,21 +158,21 @@ class BooksFolderInfoTableData extends DataClass
     return <String, dynamic>{
       'books_folder_id': serializer.toJson<int>(books_folder_id),
       'books_folder_name': serializer.toJson<String>(books_folder_name),
-      'font_style': serializer.toJson<String>(font_style),
-      'font_color': serializer.toJson<String>(font_color),
+      'font_style': serializer.toJson<String?>(font_style),
+      'font_color': serializer.toJson<String?>(font_color),
     };
   }
 
   BooksFolderInfoTableData copyWith(
           {int? books_folder_id,
           String? books_folder_name,
-          String? font_style,
-          String? font_color}) =>
+          Value<String?> font_style = const Value.absent(),
+          Value<String?> font_color = const Value.absent()}) =>
       BooksFolderInfoTableData(
         books_folder_id: books_folder_id ?? this.books_folder_id,
         books_folder_name: books_folder_name ?? this.books_folder_name,
-        font_style: font_style ?? this.font_style,
-        font_color: font_color ?? this.font_color,
+        font_style: font_style.present ? font_style.value : this.font_style,
+        font_color: font_color.present ? font_color.value : this.font_color,
       );
   BooksFolderInfoTableData copyWithCompanion(
       BooksFolderInfoTableCompanion data) {
@@ -214,8 +218,8 @@ class BooksFolderInfoTableCompanion
     extends UpdateCompanion<BooksFolderInfoTableData> {
   final Value<int> books_folder_id;
   final Value<String> books_folder_name;
-  final Value<String> font_style;
-  final Value<String> font_color;
+  final Value<String?> font_style;
+  final Value<String?> font_color;
   const BooksFolderInfoTableCompanion({
     this.books_folder_id = const Value.absent(),
     this.books_folder_name = const Value.absent(),
@@ -225,11 +229,9 @@ class BooksFolderInfoTableCompanion
   BooksFolderInfoTableCompanion.insert({
     this.books_folder_id = const Value.absent(),
     required String books_folder_name,
-    required String font_style,
-    required String font_color,
-  })  : books_folder_name = Value(books_folder_name),
-        font_style = Value(font_style),
-        font_color = Value(font_color);
+    this.font_style = const Value.absent(),
+    this.font_color = const Value.absent(),
+  }) : books_folder_name = Value(books_folder_name);
   static Insertable<BooksFolderInfoTableData> custom({
     Expression<int>? books_folder_id,
     Expression<String>? books_folder_name,
@@ -247,8 +249,8 @@ class BooksFolderInfoTableCompanion
   BooksFolderInfoTableCompanion copyWith(
       {Value<int>? books_folder_id,
       Value<String>? books_folder_name,
-      Value<String>? font_style,
-      Value<String>? font_color}) {
+      Value<String?>? font_style,
+      Value<String?>? font_color}) {
     return BooksFolderInfoTableCompanion(
       books_folder_id: books_folder_id ?? this.books_folder_id,
       books_folder_name: books_folder_name ?? this.books_folder_name,
@@ -500,8 +502,18 @@ class $GenresInfoTableTable extends GenresInfoTable
   late final GeneratedColumn<String> genre_name = GeneratedColumn<String>(
       'genre_name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _built_inMeta =
+      const VerificationMeta('built_in');
   @override
-  List<GeneratedColumn> get $columns => [genre_id, genre_name];
+  late final GeneratedColumn<bool> built_in = GeneratedColumn<bool>(
+      'built_in', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("built_in" IN (0, 1))'),
+      defaultValue: Constant(false));
+  @override
+  List<GeneratedColumn> get $columns => [genre_id, genre_name, built_in];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -525,6 +537,10 @@ class $GenresInfoTableTable extends GenresInfoTable
     } else if (isInserting) {
       context.missing(_genre_nameMeta);
     }
+    if (data.containsKey('built_in')) {
+      context.handle(_built_inMeta,
+          built_in.isAcceptableOrUnknown(data['built_in']!, _built_inMeta));
+    }
     return context;
   }
 
@@ -538,6 +554,8 @@ class $GenresInfoTableTable extends GenresInfoTable
           .read(DriftSqlType.int, data['${effectivePrefix}genre_id'])!,
       genre_name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}genre_name'])!,
+      built_in: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}built_in'])!,
     );
   }
 
@@ -551,12 +569,17 @@ class GenresInfoTableData extends DataClass
     implements Insertable<GenresInfoTableData> {
   final int genre_id;
   final String genre_name;
-  const GenresInfoTableData({required this.genre_id, required this.genre_name});
+  final bool built_in;
+  const GenresInfoTableData(
+      {required this.genre_id,
+      required this.genre_name,
+      required this.built_in});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['genre_id'] = Variable<int>(genre_id);
     map['genre_name'] = Variable<String>(genre_name);
+    map['built_in'] = Variable<bool>(built_in);
     return map;
   }
 
@@ -564,6 +587,7 @@ class GenresInfoTableData extends DataClass
     return GenresInfoTableCompanion(
       genre_id: Value(genre_id),
       genre_name: Value(genre_name),
+      built_in: Value(built_in),
     );
   }
 
@@ -573,6 +597,7 @@ class GenresInfoTableData extends DataClass
     return GenresInfoTableData(
       genre_id: serializer.fromJson<int>(json['genre_id']),
       genre_name: serializer.fromJson<String>(json['genre_name']),
+      built_in: serializer.fromJson<bool>(json['built_in']),
     );
   }
   @override
@@ -581,19 +606,23 @@ class GenresInfoTableData extends DataClass
     return <String, dynamic>{
       'genre_id': serializer.toJson<int>(genre_id),
       'genre_name': serializer.toJson<String>(genre_name),
+      'built_in': serializer.toJson<bool>(built_in),
     };
   }
 
-  GenresInfoTableData copyWith({int? genre_id, String? genre_name}) =>
+  GenresInfoTableData copyWith(
+          {int? genre_id, String? genre_name, bool? built_in}) =>
       GenresInfoTableData(
         genre_id: genre_id ?? this.genre_id,
         genre_name: genre_name ?? this.genre_name,
+        built_in: built_in ?? this.built_in,
       );
   GenresInfoTableData copyWithCompanion(GenresInfoTableCompanion data) {
     return GenresInfoTableData(
       genre_id: data.genre_id.present ? data.genre_id.value : this.genre_id,
       genre_name:
           data.genre_name.present ? data.genre_name.value : this.genre_name,
+      built_in: data.built_in.present ? data.built_in.value : this.built_in,
     );
   }
 
@@ -601,47 +630,57 @@ class GenresInfoTableData extends DataClass
   String toString() {
     return (StringBuffer('GenresInfoTableData(')
           ..write('genre_id: $genre_id, ')
-          ..write('genre_name: $genre_name')
+          ..write('genre_name: $genre_name, ')
+          ..write('built_in: $built_in')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(genre_id, genre_name);
+  int get hashCode => Object.hash(genre_id, genre_name, built_in);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is GenresInfoTableData &&
           other.genre_id == this.genre_id &&
-          other.genre_name == this.genre_name);
+          other.genre_name == this.genre_name &&
+          other.built_in == this.built_in);
 }
 
 class GenresInfoTableCompanion extends UpdateCompanion<GenresInfoTableData> {
   final Value<int> genre_id;
   final Value<String> genre_name;
+  final Value<bool> built_in;
   const GenresInfoTableCompanion({
     this.genre_id = const Value.absent(),
     this.genre_name = const Value.absent(),
+    this.built_in = const Value.absent(),
   });
   GenresInfoTableCompanion.insert({
     this.genre_id = const Value.absent(),
     required String genre_name,
+    this.built_in = const Value.absent(),
   }) : genre_name = Value(genre_name);
   static Insertable<GenresInfoTableData> custom({
     Expression<int>? genre_id,
     Expression<String>? genre_name,
+    Expression<bool>? built_in,
   }) {
     return RawValuesInsertable({
       if (genre_id != null) 'genre_id': genre_id,
       if (genre_name != null) 'genre_name': genre_name,
+      if (built_in != null) 'built_in': built_in,
     });
   }
 
   GenresInfoTableCompanion copyWith(
-      {Value<int>? genre_id, Value<String>? genre_name}) {
+      {Value<int>? genre_id,
+      Value<String>? genre_name,
+      Value<bool>? built_in}) {
     return GenresInfoTableCompanion(
       genre_id: genre_id ?? this.genre_id,
       genre_name: genre_name ?? this.genre_name,
+      built_in: built_in ?? this.built_in,
     );
   }
 
@@ -654,6 +693,9 @@ class GenresInfoTableCompanion extends UpdateCompanion<GenresInfoTableData> {
     if (genre_name.present) {
       map['genre_name'] = Variable<String>(genre_name.value);
     }
+    if (built_in.present) {
+      map['built_in'] = Variable<bool>(built_in.value);
+    }
     return map;
   }
 
@@ -661,7 +703,8 @@ class GenresInfoTableCompanion extends UpdateCompanion<GenresInfoTableData> {
   String toString() {
     return (StringBuffer('GenresInfoTableCompanion(')
           ..write('genre_id: $genre_id, ')
-          ..write('genre_name: $genre_name')
+          ..write('genre_name: $genre_name, ')
+          ..write('built_in: $built_in')
           ..write(')'))
         .toString();
   }
@@ -2140,15 +2183,15 @@ typedef $$BooksFolderInfoTableTableCreateCompanionBuilder
     = BooksFolderInfoTableCompanion Function({
   Value<int> books_folder_id,
   required String books_folder_name,
-  required String font_style,
-  required String font_color,
+  Value<String?> font_style,
+  Value<String?> font_color,
 });
 typedef $$BooksFolderInfoTableTableUpdateCompanionBuilder
     = BooksFolderInfoTableCompanion Function({
   Value<int> books_folder_id,
   Value<String> books_folder_name,
-  Value<String> font_style,
-  Value<String> font_color,
+  Value<String?> font_style,
+  Value<String?> font_color,
 });
 
 final class $$BooksFolderInfoTableTableReferences extends BaseReferences<
@@ -2314,8 +2357,8 @@ class $$BooksFolderInfoTableTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> books_folder_id = const Value.absent(),
             Value<String> books_folder_name = const Value.absent(),
-            Value<String> font_style = const Value.absent(),
-            Value<String> font_color = const Value.absent(),
+            Value<String?> font_style = const Value.absent(),
+            Value<String?> font_color = const Value.absent(),
           }) =>
               BooksFolderInfoTableCompanion(
             books_folder_id: books_folder_id,
@@ -2326,8 +2369,8 @@ class $$BooksFolderInfoTableTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> books_folder_id = const Value.absent(),
             required String books_folder_name,
-            required String font_style,
-            required String font_color,
+            Value<String?> font_style = const Value.absent(),
+            Value<String?> font_color = const Value.absent(),
           }) =>
               BooksFolderInfoTableCompanion.insert(
             books_folder_id: books_folder_id,
@@ -2599,11 +2642,13 @@ typedef $$GenresInfoTableTableCreateCompanionBuilder = GenresInfoTableCompanion
     Function({
   Value<int> genre_id,
   required String genre_name,
+  Value<bool> built_in,
 });
 typedef $$GenresInfoTableTableUpdateCompanionBuilder = GenresInfoTableCompanion
     Function({
   Value<int> genre_id,
   Value<String> genre_name,
+  Value<bool> built_in,
 });
 
 final class $$GenresInfoTableTableReferences extends BaseReferences<_$Database,
@@ -2643,6 +2688,9 @@ class $$GenresInfoTableTableFilterComposer
   ColumnFilters<String> get genre_name => $composableBuilder(
       column: $table.genre_name, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<bool> get built_in => $composableBuilder(
+      column: $table.built_in, builder: (column) => ColumnFilters(column));
+
   Expression<bool> bookInfoTableRefs(
       Expression<bool> Function($$BookInfoTableTableFilterComposer f) f) {
     final $$BookInfoTableTableFilterComposer composer = $composerBuilder(
@@ -2679,6 +2727,9 @@ class $$GenresInfoTableTableOrderingComposer
 
   ColumnOrderings<String> get genre_name => $composableBuilder(
       column: $table.genre_name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get built_in => $composableBuilder(
+      column: $table.built_in, builder: (column) => ColumnOrderings(column));
 }
 
 class $$GenresInfoTableTableAnnotationComposer
@@ -2695,6 +2746,9 @@ class $$GenresInfoTableTableAnnotationComposer
 
   GeneratedColumn<String> get genre_name => $composableBuilder(
       column: $table.genre_name, builder: (column) => column);
+
+  GeneratedColumn<bool> get built_in =>
+      $composableBuilder(column: $table.built_in, builder: (column) => column);
 
   Expression<T> bookInfoTableRefs<T extends Object>(
       Expression<T> Function($$BookInfoTableTableAnnotationComposer a) f) {
@@ -2743,18 +2797,22 @@ class $$GenresInfoTableTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> genre_id = const Value.absent(),
             Value<String> genre_name = const Value.absent(),
+            Value<bool> built_in = const Value.absent(),
           }) =>
               GenresInfoTableCompanion(
             genre_id: genre_id,
             genre_name: genre_name,
+            built_in: built_in,
           ),
           createCompanionCallback: ({
             Value<int> genre_id = const Value.absent(),
             required String genre_name,
+            Value<bool> built_in = const Value.absent(),
           }) =>
               GenresInfoTableCompanion.insert(
             genre_id: genre_id,
             genre_name: genre_name,
+            built_in: built_in,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (

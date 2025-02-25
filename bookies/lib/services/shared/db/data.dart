@@ -9,8 +9,8 @@ part 'data.g.dart';
 class BooksFolderInfoTable extends Table {
   IntColumn get books_folder_id => integer().autoIncrement()();
   TextColumn get books_folder_name => text()();
-  TextColumn get font_style => text()();
-  TextColumn get font_color => text()();
+  TextColumn get font_style => text().nullable()();
+  TextColumn get font_color => text().nullable()();
 }
 
 class AuthorsInfoTable extends Table {
@@ -21,6 +21,7 @@ class AuthorsInfoTable extends Table {
 class GenresInfoTable extends Table {
   IntColumn get genre_id => integer().autoIncrement()();
   TextColumn get genre_name => text()();
+  BoolColumn get built_in => boolean().withDefault(Constant(false))();
 }
 
 class BookInfoTable extends Table {

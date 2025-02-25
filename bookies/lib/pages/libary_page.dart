@@ -1,6 +1,8 @@
 import 'package:bookies/services/modules/libary/models/book_info.dart';
 import 'package:bookies/services/modules/libary/widgets/display_books_in_liabry.dart';
+import 'package:bookies/services/shared/db/data.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LibaryPage extends StatefulWidget {
   const LibaryPage({super.key});
@@ -49,13 +51,34 @@ class _LibaryPageState extends State<LibaryPage> {
         centerTitle: true,
         backgroundColor: Colors.blue,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: books.map((el) => BookLibaryView(element: el)).toList(),
-        ),
+      body: SafeArea(
+        child: GridView.builder(
+            primary: false,
+            padding: const EdgeInsets.all(16),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // Number of columns
+              mainAxisSpacing: 10.0, // Vertical spacing between grid items
+              crossAxisSpacing: 10.0, // Horizontal spacing between grid items
+              childAspectRatio: 3 / 4,
+            ),
+            itemCount: books.length,
+            itemBuilder: (context, index) {
+              final element = books[index];
+              // return cards.map((el) => BookInfoView(element: el)).toList(),}
+              return BookLibaryView(element: element);
+            }),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          final db = Database();
+
+          for (var el in await db.select(db.genresInfoTable).get()) {
+            print(el);
+          }
+          for (var el in await db.select(db.booksFolderInfoTable).get()) {
+            print(el);
+          }
+        },
         foregroundColor: Colors.deepPurpleAccent,
         child: Center(
           child: Image.asset(
