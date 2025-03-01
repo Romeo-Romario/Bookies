@@ -153,10 +153,9 @@ cropImage(XFile? image) async {
       ),
     ],
   );
-  XFile? croppedImage = XFile(croppedFile!.path);
-  if (croppedFile != null) {
-    return croppedImage;
-  } else {
+  if (croppedFile == null) {
     return null;
   }
+
+  return XFile(croppedFile.path);
 }
