@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:bookies/services/modules/adding_page_view/models/image_saver.dart';
+import 'package:bookies/services/modules/adding_page_view/widgets/assets_image_dialog_view/assets_image_dialog.dart';
 import 'package:bookies/services/shared/custom_enums/image_source_type.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImagePickerView extends StatefulWidget {
@@ -86,10 +90,15 @@ class _ImagePickerViewState extends State<ImagePickerView> {
   }
 
   Future<Image?> _selectImageFromAssets() async {
-    return Image.asset(
-      "assets/default_images/8.png",
-      width: 30,
-    );
+    final assetImage = await AssetsImageDialog.showAsDialog(context: context);
+    try {
+      if (assetImage == null) {
+        return null;
+      }
+      return Image.asset(assetImage);
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<Image?> _selectImageFromGallery() async {
@@ -99,9 +108,55 @@ class _ImagePickerViewState extends State<ImagePickerView> {
       return null;
     }
 
-    final imageName = await _imageSaver.saveImage(pickedFile);
-    widget.onImagepathChanged(await _imageSaver.getPathToImage(imageName));
-    final imageFile = await _imageSaver.getSavedImage(imageName);
-    return Image.file(imageFile, width: 200, height: 200, fit: BoxFit.cover);
+    if (Platform.isWindows) {
+      final imageName = await _imageSaver.saveImage(pickedFile);
+      widget.onImagepathChanged(await _imageSaver.getPathToImage(imageName));
+      final imageFile = await _imageSaver.getSavedImage(imageName);
+      return Image.file(imageFile, width: 200, height: 200, fit: BoxFit.cover);
+    } else {
+      XFile? croppedImage = await cropImage(pickedFile);
+      if (croppedImage == null) {
+        return null;
+      }
+      final imageName = await _imageSaver.saveImage(croppedImage);
+      widget.onImagepathChanged(await _imageSaver.getPathToImage(imageName));
+      final imageFile = await _imageSaver.getSavedImage(imageName);
+      return Image.file(imageFile, width: 200, height: 200, fit: BoxFit.cover);
+    }
+  }
+}
+
+cropImage(XFile? image) async {
+  CroppedFile? croppedFile = await ImageCropper().cropImage(
+    sourcePath: image!.path,
+    uiSettings: [
+      AndroidUiSettings(
+        toolbarTitle: 'Crop Image',
+        toolbarColor: Color(0xFF311B92),
+        toolbarWidgetColor: Colors.white,
+        activeControlsWidgetColor: Color(0xFF311B92),
+        backgroundColor: Colors.black,
+        statusBarColor: Color(0xFF311B92),
+        cropFrameColor: Color(0xFF311B92),
+        cropGridColor: Colors.white,
+        initAspectRatio: CropAspectRatioPreset.original,
+        lockAspectRatio: false,
+      ),
+      IOSUiSettings(
+        title: 'Crop Image',
+        doneButtonTitle: 'Done',
+        cancelButtonTitle: 'Cancel',
+        aspectRatioLockEnabled: false,
+        resetButtonHidden: false,
+        rotateButtonsHidden: false,
+        aspectRatioPickerButtonHidden: false,
+      ),
+    ],
+  );
+  XFile? croppedImage = XFile(croppedFile!.path);
+  if (croppedFile != null) {
+    return croppedImage;
+  } else {
+    return null;
   }
 }
