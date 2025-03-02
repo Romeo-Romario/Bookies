@@ -1,3 +1,4 @@
+import 'package:bookies/services/modules/adding_page_view/models/image_saver.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/image_picker.dart';
 import 'package:bookies/services/shared/custom_enums/image_source_type.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,8 @@ class _BookAddingPageState extends State<BookAddingPage> {
   String? imagePath;
   ImageSourceType imageSourceType = ImageSourceType.asset;
 
+  //TODO: Remove ImageSaver
+  ImageSaver _imageSaver = ImageSaver();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,7 +104,9 @@ class _BookAddingPageState extends State<BookAddingPage> {
                 width: 250,
                 height: 45,
                 child: FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      //TODO: Save the image that will be used by book
+                    },
                     heroTag: UniqueKey(),
                     child: Text("Add to libary")),
               )

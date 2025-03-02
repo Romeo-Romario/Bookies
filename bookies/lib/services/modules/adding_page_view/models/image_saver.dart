@@ -37,4 +37,16 @@ class ImageSaver {
       }
     }
   }
+
+  Future<void> printAllusersImagesNames() async {
+    final dir = Directory(await getDirectory()); // Get the directory
+    final List<FileSystemEntity> files = dir.listSync(); // Get all files
+
+    for (var file in files) {
+      if (file is File &&
+          file.path.contains('${Platform.pathSeparator}user_image_')) {
+        print(file.path);
+      }
+    }
+  }
 }

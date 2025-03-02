@@ -26,7 +26,6 @@ class _ImagePickerViewState extends State<ImagePickerView> {
 
   Image? selectedImage;
   ImageSourceType selectedType = ImageSourceType.asset;
-  final ImageSaver _imageSaver = ImageSaver();
   @override
   Widget build(BuildContext context) {
     final sourceTypes = ImageSourceType.values.toList();
@@ -109,19 +108,17 @@ class _ImagePickerViewState extends State<ImagePickerView> {
     }
 
     if (Platform.isWindows) {
-      final imageName = await _imageSaver.saveImage(pickedFile);
-      widget.onImagepathChanged(await _imageSaver.getPathToImage(imageName));
-      final imageFile = await _imageSaver.getSavedImage(imageName);
-      return Image.file(imageFile, width: 200, height: 200, fit: BoxFit.cover);
+      widget.onImagepathChanged(pickedFile.path);
+      return Image.file(File(pickedFile.path),
+          width: 200, height: 200, fit: BoxFit.cover);
     } else {
       XFile? croppedImage = await cropImage(pickedFile);
       if (croppedImage == null) {
         return null;
       }
-      final imageName = await _imageSaver.saveImage(croppedImage);
-      widget.onImagepathChanged(await _imageSaver.getPathToImage(imageName));
-      final imageFile = await _imageSaver.getSavedImage(imageName);
-      return Image.file(imageFile, width: 200, height: 200, fit: BoxFit.cover);
+      widget.onImagepathChanged(croppedImage.path);
+      return Image.file(File(croppedImage.path),
+          width: 200, height: 200, fit: BoxFit.cover);
     }
   }
 }
