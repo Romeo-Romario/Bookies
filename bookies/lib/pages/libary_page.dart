@@ -55,15 +55,14 @@ class _LibaryPageState extends State<LibaryPage> {
             primary: false,
             padding: const EdgeInsets.all(16),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, // Number of columns
-              mainAxisSpacing: 10.0, // Vertical spacing between grid items
-              crossAxisSpacing: 10.0, // Horizontal spacing between grid items
+              crossAxisCount: 2,
+              mainAxisSpacing: 10.0,
+              crossAxisSpacing: 10.0,
               childAspectRatio: 3 / 4,
             ),
             itemCount: books.length,
             itemBuilder: (context, index) {
               final element = books[index];
-              // return cards.map((el) => BookInfoView(element: el)).toList(),}
               return BookLibaryView(element: element);
             }),
       ),

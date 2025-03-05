@@ -1,3 +1,6 @@
+import 'package:bookies/services/modules/adding_page_view/models/authors_recomendation.dart';
+import 'package:bookies/services/modules/adding_page_view/widgets/author_input/author_recomendation_list_tile.dart';
+import 'package:bookies/services/shared/db/data.dart';
 import 'package:flutter/material.dart';
 
 class AuthorPickerDialog extends StatefulWidget {
@@ -5,7 +8,7 @@ class AuthorPickerDialog extends StatefulWidget {
 
   @override
   State<AuthorPickerDialog> createState() => _AuthorPickerDialogState();
-  static Future<String?> showAsDialog(
+  static Future<AuthorsInfoTableData?> showAsDialog(
       {required BuildContext context, String? author}) {
     return showDialog(
         context: context,
@@ -17,13 +20,29 @@ class AuthorPickerDialog extends StatefulWidget {
 
 class _AuthorPickerDialogState extends State<AuthorPickerDialog> {
   String? author;
+  final AuthorsRecomendation authorsRecomendation = AuthorsRecomendation();
+  final _controller = TextEditingController();
+  // List<AuthorsInfoTableData>? authors;
+
+  late Future<List<AuthorsInfoTableData>> authorsFuture;
+
+  @override
+  void initState() {
+    _loadAuthors();
+    super.initState();
+  }
+
+  void _loadAuthors() {
+    authorsFuture = authorsRecomendation.getAuthors(_controller.text);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: SizedBox(
-          width: 400,
+          width: 450,
           height: 350,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -31,11 +50,10 @@ class _AuthorPickerDialogState extends State<AuthorPickerDialog> {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.purple,
                 ),
                 width: double.infinity,
                 height: 240,
-                //TODO: add list of authors
+                child: AuthorRecomendationList(futureAuthors: authorsFuture),
               ),
               Container(
                 decoration: BoxDecoration(
@@ -45,14 +63,20 @@ class _AuthorPickerDialogState extends State<AuthorPickerDialog> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: Row(
+                    spacing: 10,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Expanded(child: TextFormField()),
-                      SizedBox(
-                        width: 10,
-                      ),
+                      Expanded(
+                          child: TextFormField(
+                        controller: _controller,
+                        onChanged: (value) {
+                          setState(() {
+                            _loadAuthors();
+                          });
+                        },
+                      )),
                       FloatingActionButton(
-                        onPressed: () {},
+                        onPressed: () async {},
                         shape: CircleBorder(),
                         mini: true,
                         child: Icon(Icons.add),
