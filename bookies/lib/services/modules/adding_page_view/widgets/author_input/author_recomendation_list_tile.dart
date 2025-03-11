@@ -1,3 +1,4 @@
+import 'package:bookies/services/modules/adding_page_view/widgets/author_picker_dialog.dart';
 import 'package:bookies/services/shared/db/data.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +35,12 @@ class AuthorRecomendationList extends StatelessWidget {
               child: ListTile(
                 title: Text(data[index].author_fullname),
                 onTap: () {
-                  Navigator.pop(context, data[index]);
+                  Navigator.pop(
+                      context,
+                      PickedAuthor(
+                        id: data[index].author_id,
+                        author: data[index].author_fullname,
+                      ));
                 },
               ),
             );
@@ -44,16 +50,3 @@ class AuthorRecomendationList extends StatelessWidget {
     );
   }
 }
-
-// (widget.authors != null)
-//         ? ListView.builder(
-//             itemCount: widget.authors!.length,
-//             itemBuilder: (context, index) {
-//               return Card(
-//                 child: ListTile(
-//                   title: Text(widget.authors![index].author_fullname),
-//                 ),
-//               );
-//             },
-//           )
-//         : const Center(child: Text('No items'));

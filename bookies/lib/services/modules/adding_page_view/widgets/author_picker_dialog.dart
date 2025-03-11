@@ -8,8 +8,7 @@ class AuthorPickerDialog extends StatefulWidget {
 
   @override
   State<AuthorPickerDialog> createState() => _AuthorPickerDialogState();
-  static Future<AuthorsInfoTableData?> showAsDialog(
-      {required BuildContext context, String? author}) {
+  static Future<PickedAuthor?> showAsDialog({required BuildContext context}) {
     return showDialog(
         context: context,
         builder: (context) {
@@ -19,7 +18,6 @@ class AuthorPickerDialog extends StatefulWidget {
 }
 
 class _AuthorPickerDialogState extends State<AuthorPickerDialog> {
-  String? author;
   final AuthorsRecomendation authorsRecomendation = AuthorsRecomendation();
   final _controller = TextEditingController();
   // List<AuthorsInfoTableData>? authors;
@@ -76,7 +74,14 @@ class _AuthorPickerDialogState extends State<AuthorPickerDialog> {
                         },
                       )),
                       FloatingActionButton(
-                        onPressed: () async {},
+                        onPressed: () async {
+                          Navigator.pop(
+                            context,
+                            PickedAuthor(
+                              author: _controller.text,
+                            ),
+                          );
+                        },
                         shape: CircleBorder(),
                         mini: true,
                         child: Icon(Icons.add),
@@ -91,4 +96,12 @@ class _AuthorPickerDialogState extends State<AuthorPickerDialog> {
       ),
     );
   }
+}
+
+class PickedAuthor {
+  final int? id;
+  final String author;
+  bool get existedInDatabase => id != null;
+
+  PickedAuthor({this.id, required this.author});
 }

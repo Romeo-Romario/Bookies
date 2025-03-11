@@ -1,5 +1,6 @@
 import 'package:bookies/services/modules/adding_page_view/models/image_saver.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/author_picker_dialog.dart';
+import 'package:bookies/services/modules/adding_page_view/widgets/genre_picker_dialog.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/image_picker.dart';
 import 'package:bookies/services/shared/custom_enums/image_source_type.dart';
 import 'package:bookies/services/shared/db/data.dart';
@@ -16,7 +17,8 @@ class _BookAddingPageState extends State<BookAddingPage> {
   final bookNameController = TextEditingController();
   ImageSourceType imageSourceType = ImageSourceType.asset;
   String? imagePath;
-  AuthorsInfoTableData? author;
+  PickedAuthor? author;
+  PickedGenre? genre;
   //TODO: use ImageSaver
   ImageSaver _imageSaver = ImageSaver();
   @override
@@ -50,7 +52,7 @@ class _BookAddingPageState extends State<BookAddingPage> {
               ),
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 25),
+                  padding: EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7),
                   ),
@@ -61,16 +63,26 @@ class _BookAddingPageState extends State<BookAddingPage> {
                       await AuthorPickerDialog.showAsDialog(context: context);
                   setState(() {});
                 },
-                label: Text(author?.author_fullname ?? "Select Author"),
+                label: Text(author?.author ?? "Select Author"),
                 icon: Icon(Icons.account_circle_outlined),
               ),
               SizedBox(
                 width: 200,
                 height: 50,
-                child: FloatingActionButton(
-                  onPressed: () {},
-                  heroTag: UniqueKey(),
-                  child: Text("Pick Genre"),
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    side: BorderSide(color: Colors.deepPurple, width: 1),
+                  ),
+                  onPressed: () async {
+                    genre =
+                        await GenrePickerDialog.showAsDialog(context: context);
+                    setState(() {});
+                  },
+                  label: Text(genre?.genreName ?? "Select Genre"),
+                  icon: Icon(Icons.auto_fix_high_outlined),
                 ),
               ),
               Row(
@@ -92,7 +104,7 @@ class _BookAddingPageState extends State<BookAddingPage> {
                 width: 250,
                 height: 45,
                 child: FloatingActionButton(
-                    onPressed: () {
+                    onPressed: () async {
                       //TODO: Save the image that will be used by book
                     },
                     heroTag: UniqueKey(),

@@ -13,8 +13,8 @@ void builtInEntitiesInitializer() async {
       'Thriller',
       "Romance",
       'Novel',
-      'Detective',
       "Science Fiction",
+      'Detective',
       "Horror",
     ];
     // Insert built in genres into database table
