@@ -40,14 +40,18 @@ class _ImagePickerViewState extends State<ImagePickerView> {
             height: 200,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
-              color: Colors.blueGrey,
+              color: Colors.grey[300],
+              border: Border.all(
+                color: Colors.deepPurple,
+                width: selectedImage != null ? 0 : 3,
+              ),
               borderRadius:
                   BorderRadius.circular(20.0), // Adjust the radius as needed
             ),
             child: selectedImage ??
                 Icon(
                   Icons.add_a_photo_outlined,
-                  color: Colors.white,
+                  color: Colors.deepPurple[600],
                   size: 40,
                 ),
           ),

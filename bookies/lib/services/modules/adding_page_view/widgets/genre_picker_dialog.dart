@@ -83,7 +83,7 @@ class _GenrePickerDialogState extends State<GenrePickerDialog> {
                             alignment: WrapAlignment.start,
                             runAlignment: WrapAlignment.start,
                             spacing: 8.0,
-                            runSpacing: 8.0,
+                            runSpacing: 3.0,
                             children: List.generate(
                               data.length,
                               (index) {
