@@ -1,4 +1,5 @@
 import 'package:bookies/services/modules/adding_page_view/models/image_saver.dart';
+import 'package:bookies/services/modules/adding_page_view/models/save_book_action.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/author_picker_dialog.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/genre_picker_dialog.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/image_picker.dart';
@@ -6,6 +7,7 @@ import 'package:bookies/services/modules/adding_page_view/widgets/input_pages_di
 import 'package:bookies/services/modules/adding_page_view/widgets/labeled_container.dart';
 import 'package:bookies/services/shared/custom_enums/image_source_type.dart';
 import 'package:bookies/services/shared/db/data.dart';
+import 'package:bookies/services/shared/models/db_manager.dart';
 import 'package:flutter/material.dart';
 
 class BookAddingPage extends StatefulWidget {
@@ -16,19 +18,18 @@ class BookAddingPage extends StatefulWidget {
 }
 
 class _BookAddingPageState extends State<BookAddingPage> {
+  final DbManager dbManager = DbManager();
   final bookNameController = TextEditingController();
   ImageSourceType imageSourceType = ImageSourceType.asset;
   int? numberOfPages;
   int? numberOfReadPages;
-  String? imagePath;
+  String imagePath = "";
   PickedAuthor? author;
   PickedGenre? genre;
-  //TODO: use ImageSaver
-  ImageSaver _imageSaver = ImageSaver();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      // resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.blueGrey[200],
         title: Text("Add book"),
@@ -39,6 +40,12 @@ class _BookAddingPageState extends State<BookAddingPage> {
             bottom: Radius.circular(20), // Round the bottom corners
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: onAddBook,
+        heroTag: UniqueKey(),
+        icon: Icon(Icons.add),
+        label: Text("Add to libary"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -179,20 +186,41 @@ class _BookAddingPageState extends State<BookAddingPage> {
                   ),
                 ],
               ),
-              Container(
-                width: 250,
-                height: 45,
-                child: FloatingActionButton(
-                    onPressed: () async {
-                      //TODO: Save the image that will be used by book
-                    },
-                    heroTag: UniqueKey(),
-                    child: Text("Add to libary")),
-              )
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future onAddBook() async {
+    //TODO: Save the image that will be used by book
+    //TODO: Author (check whether there are no Collusions)
+    //TODO: Genre (check whether there are no Collusions)
+
+    if (checkProperties()) {
+      final finalImagePath = saveImage(imagePath!);
+      final authorId = saveAuthor(author!);
+      //TODO Save Genre
+    }
+  }
+
+  bool checkProperties() {
+    if (bookNameController.text.isEmpty ||
+        numberOfPages == null ||
+        numberOfReadPages == null ||
+        imagePath.isEmpty ||
+        author == null ||
+        genre == null) {
+      alert(context);
+      return false;
+    }
+    if (numberOfPages! <= 0 ||
+        numberOfReadPages! < 0 ||
+        numberOfPages! < numberOfReadPages!) {
+      alert(context);
+      return false;
+    }
+    return true;
   }
 }

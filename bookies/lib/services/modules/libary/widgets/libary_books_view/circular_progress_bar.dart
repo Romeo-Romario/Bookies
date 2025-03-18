@@ -34,8 +34,6 @@ class CustomCircularProgressBar extends StatelessWidget {
           foregroundStrokeWidth: 10,
           backgroundStrokeWidth: 10,
           animation: true,
-          seekSize: 6,
-          seekColor: const Color(0xffeeeeee),
         ),
 
         // Book Image (Inside the Circle)
