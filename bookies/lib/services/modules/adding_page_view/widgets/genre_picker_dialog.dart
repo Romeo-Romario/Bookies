@@ -1,5 +1,7 @@
-import 'package:bookies/services/shared/db/data.dart';
+import 'package:bookies/data/entities/genre_entity.dart';
+import 'package:bookies/data/repository/genre_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class GenrePickerDialog extends StatefulWidget {
   const GenrePickerDialog({super.key});
@@ -17,15 +19,16 @@ class GenrePickerDialog extends StatefulWidget {
 }
 
 class _GenrePickerDialogState extends State<GenrePickerDialog> {
-  final db = Database();
-  late final Future<List<GenresInfoTableData>> futureGenres;
+  final GenreRepository repository = GetIt.I.get();
+
+  late final Future<List<GenreEntity>> futureGenres;
   final _controller = TextEditingController();
   String selected = "Select";
 
   @override
   void initState() {
     super.initState();
-    futureGenres = db.select(db.genresInfoTable).get();
+    futureGenres = repository.getAll();
   }
 
   @override
@@ -90,13 +93,14 @@ class _GenrePickerDialogState extends State<GenrePickerDialog> {
                                 return ActionChip(
                                   onPressed: () {
                                     Navigator.pop(
-                                        context,
-                                        PickedGenre(
-                                          genreName: data[index].genre_name,
-                                          id: data[index].genre_id,
-                                        ));
+                                      context,
+                                      PickedGenre(
+                                        genreName: data[index].name,
+                                        id: data[index].id,
+                                      ),
+                                    );
                                   },
-                                  label: Text(data[index].genre_name),
+                                  label: Text(data[index].name),
                                 );
                               },
                             ),

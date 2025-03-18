@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'data.dart';
+part of 'drift_app_database.dart';
 
 // ignore_for_file: type=lint
 class $BooksFolderInfoTableTable extends BooksFolderInfoTable
@@ -2149,9 +2149,9 @@ class BookmarkInfoCompanion extends UpdateCompanion<BookmarkInfoData> {
   }
 }
 
-abstract class _$Database extends GeneratedDatabase {
-  _$Database(QueryExecutor e) : super(e);
-  $DatabaseManager get managers => $DatabaseManager(this);
+abstract class _$DriftAppDatabase extends GeneratedDatabase {
+  _$DriftAppDatabase(QueryExecutor e) : super(e);
+  $DriftAppDatabaseManager get managers => $DriftAppDatabaseManager(this);
   late final $BooksFolderInfoTableTable booksFolderInfoTable =
       $BooksFolderInfoTableTable(this);
   late final $AuthorsInfoTableTable authorsInfoTable =
@@ -2195,12 +2195,12 @@ typedef $$BooksFolderInfoTableTableUpdateCompanionBuilder
 });
 
 final class $$BooksFolderInfoTableTableReferences extends BaseReferences<
-    _$Database, $BooksFolderInfoTableTable, BooksFolderInfoTableData> {
+    _$DriftAppDatabase, $BooksFolderInfoTableTable, BooksFolderInfoTableData> {
   $$BooksFolderInfoTableTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
   static MultiTypedResultKey<$BookInfoTableTable, List<BookInfoTableData>>
-      _bookInfoTableRefsTable(_$Database db) =>
+      _bookInfoTableRefsTable(_$DriftAppDatabase db) =>
           MultiTypedResultKey.fromTable(db.bookInfoTable,
               aliasName: $_aliasNameGenerator(
                   db.booksFolderInfoTable.books_folder_id,
@@ -2218,7 +2218,7 @@ final class $$BooksFolderInfoTableTableReferences extends BaseReferences<
 }
 
 class $$BooksFolderInfoTableTableFilterComposer
-    extends Composer<_$Database, $BooksFolderInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $BooksFolderInfoTableTable> {
   $$BooksFolderInfoTableTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2263,7 +2263,7 @@ class $$BooksFolderInfoTableTableFilterComposer
 }
 
 class $$BooksFolderInfoTableTableOrderingComposer
-    extends Composer<_$Database, $BooksFolderInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $BooksFolderInfoTableTable> {
   $$BooksFolderInfoTableTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2287,7 +2287,7 @@ class $$BooksFolderInfoTableTableOrderingComposer
 }
 
 class $$BooksFolderInfoTableTableAnnotationComposer
-    extends Composer<_$Database, $BooksFolderInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $BooksFolderInfoTableTable> {
   $$BooksFolderInfoTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2330,7 +2330,7 @@ class $$BooksFolderInfoTableTableAnnotationComposer
 }
 
 class $$BooksFolderInfoTableTableTableManager extends RootTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $BooksFolderInfoTableTable,
     BooksFolderInfoTableData,
     $$BooksFolderInfoTableTableFilterComposer,
@@ -2342,7 +2342,7 @@ class $$BooksFolderInfoTableTableTableManager extends RootTableManager<
     BooksFolderInfoTableData,
     PrefetchHooks Function({bool bookInfoTableRefs})> {
   $$BooksFolderInfoTableTableTableManager(
-      _$Database db, $BooksFolderInfoTableTable table)
+      _$DriftAppDatabase db, $BooksFolderInfoTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -2416,7 +2416,7 @@ class $$BooksFolderInfoTableTableTableManager extends RootTableManager<
 
 typedef $$BooksFolderInfoTableTableProcessedTableManager
     = ProcessedTableManager<
-        _$Database,
+        _$DriftAppDatabase,
         $BooksFolderInfoTableTable,
         BooksFolderInfoTableData,
         $$BooksFolderInfoTableTableFilterComposer,
@@ -2438,13 +2438,13 @@ typedef $$AuthorsInfoTableTableUpdateCompanionBuilder
   Value<String> author_fullname,
 });
 
-final class $$AuthorsInfoTableTableReferences extends BaseReferences<_$Database,
-    $AuthorsInfoTableTable, AuthorsInfoTableData> {
+final class $$AuthorsInfoTableTableReferences extends BaseReferences<
+    _$DriftAppDatabase, $AuthorsInfoTableTable, AuthorsInfoTableData> {
   $$AuthorsInfoTableTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
   static MultiTypedResultKey<$BookInfoTableTable, List<BookInfoTableData>>
-      _bookInfoTableRefsTable(_$Database db) =>
+      _bookInfoTableRefsTable(_$DriftAppDatabase db) =>
           MultiTypedResultKey.fromTable(db.bookInfoTable,
               aliasName: $_aliasNameGenerator(
                   db.authorsInfoTable.author_id, db.bookInfoTable.author_id));
@@ -2461,7 +2461,7 @@ final class $$AuthorsInfoTableTableReferences extends BaseReferences<_$Database,
 }
 
 class $$AuthorsInfoTableTableFilterComposer
-    extends Composer<_$Database, $AuthorsInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $AuthorsInfoTableTable> {
   $$AuthorsInfoTableTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2499,7 +2499,7 @@ class $$AuthorsInfoTableTableFilterComposer
 }
 
 class $$AuthorsInfoTableTableOrderingComposer
-    extends Composer<_$Database, $AuthorsInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $AuthorsInfoTableTable> {
   $$AuthorsInfoTableTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2516,7 +2516,7 @@ class $$AuthorsInfoTableTableOrderingComposer
 }
 
 class $$AuthorsInfoTableTableAnnotationComposer
-    extends Composer<_$Database, $AuthorsInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $AuthorsInfoTableTable> {
   $$AuthorsInfoTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2553,7 +2553,7 @@ class $$AuthorsInfoTableTableAnnotationComposer
 }
 
 class $$AuthorsInfoTableTableTableManager extends RootTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $AuthorsInfoTableTable,
     AuthorsInfoTableData,
     $$AuthorsInfoTableTableFilterComposer,
@@ -2565,7 +2565,7 @@ class $$AuthorsInfoTableTableTableManager extends RootTableManager<
     AuthorsInfoTableData,
     PrefetchHooks Function({bool bookInfoTableRefs})> {
   $$AuthorsInfoTableTableTableManager(
-      _$Database db, $AuthorsInfoTableTable table)
+      _$DriftAppDatabase db, $AuthorsInfoTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -2627,7 +2627,7 @@ class $$AuthorsInfoTableTableTableManager extends RootTableManager<
 }
 
 typedef $$AuthorsInfoTableTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $AuthorsInfoTableTable,
     AuthorsInfoTableData,
     $$AuthorsInfoTableTableFilterComposer,
@@ -2651,13 +2651,13 @@ typedef $$GenresInfoTableTableUpdateCompanionBuilder = GenresInfoTableCompanion
   Value<bool> built_in,
 });
 
-final class $$GenresInfoTableTableReferences extends BaseReferences<_$Database,
-    $GenresInfoTableTable, GenresInfoTableData> {
+final class $$GenresInfoTableTableReferences extends BaseReferences<
+    _$DriftAppDatabase, $GenresInfoTableTable, GenresInfoTableData> {
   $$GenresInfoTableTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
   static MultiTypedResultKey<$BookInfoTableTable, List<BookInfoTableData>>
-      _bookInfoTableRefsTable(_$Database db) =>
+      _bookInfoTableRefsTable(_$DriftAppDatabase db) =>
           MultiTypedResultKey.fromTable(db.bookInfoTable,
               aliasName: $_aliasNameGenerator(
                   db.genresInfoTable.genre_id, db.bookInfoTable.genre_id));
@@ -2674,7 +2674,7 @@ final class $$GenresInfoTableTableReferences extends BaseReferences<_$Database,
 }
 
 class $$GenresInfoTableTableFilterComposer
-    extends Composer<_$Database, $GenresInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $GenresInfoTableTable> {
   $$GenresInfoTableTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2714,7 +2714,7 @@ class $$GenresInfoTableTableFilterComposer
 }
 
 class $$GenresInfoTableTableOrderingComposer
-    extends Composer<_$Database, $GenresInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $GenresInfoTableTable> {
   $$GenresInfoTableTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2733,7 +2733,7 @@ class $$GenresInfoTableTableOrderingComposer
 }
 
 class $$GenresInfoTableTableAnnotationComposer
-    extends Composer<_$Database, $GenresInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $GenresInfoTableTable> {
   $$GenresInfoTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2773,7 +2773,7 @@ class $$GenresInfoTableTableAnnotationComposer
 }
 
 class $$GenresInfoTableTableTableManager extends RootTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $GenresInfoTableTable,
     GenresInfoTableData,
     $$GenresInfoTableTableFilterComposer,
@@ -2784,7 +2784,8 @@ class $$GenresInfoTableTableTableManager extends RootTableManager<
     (GenresInfoTableData, $$GenresInfoTableTableReferences),
     GenresInfoTableData,
     PrefetchHooks Function({bool bookInfoTableRefs})> {
-  $$GenresInfoTableTableTableManager(_$Database db, $GenresInfoTableTable table)
+  $$GenresInfoTableTableTableManager(
+      _$DriftAppDatabase db, $GenresInfoTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -2850,7 +2851,7 @@ class $$GenresInfoTableTableTableManager extends RootTableManager<
 }
 
 typedef $$GenresInfoTableTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $GenresInfoTableTable,
     GenresInfoTableData,
     $$GenresInfoTableTableFilterComposer,
@@ -2890,12 +2891,13 @@ typedef $$BookInfoTableTableUpdateCompanionBuilder = BookInfoTableCompanion
   Value<int> genre_id,
 });
 
-final class $$BookInfoTableTableReferences
-    extends BaseReferences<_$Database, $BookInfoTableTable, BookInfoTableData> {
+final class $$BookInfoTableTableReferences extends BaseReferences<
+    _$DriftAppDatabase, $BookInfoTableTable, BookInfoTableData> {
   $$BookInfoTableTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
-  static $BooksFolderInfoTableTable _books_folder_idTable(_$Database db) =>
+  static $BooksFolderInfoTableTable _books_folder_idTable(
+          _$DriftAppDatabase db) =>
       db.booksFolderInfoTable.createAlias($_aliasNameGenerator(
           db.bookInfoTable.books_folder_id,
           db.booksFolderInfoTable.books_folder_id));
@@ -2912,7 +2914,7 @@ final class $$BookInfoTableTableReferences
         manager.$state.copyWith(prefetchedData: [item]));
   }
 
-  static $AuthorsInfoTableTable _author_idTable(_$Database db) =>
+  static $AuthorsInfoTableTable _author_idTable(_$DriftAppDatabase db) =>
       db.authorsInfoTable.createAlias($_aliasNameGenerator(
           db.bookInfoTable.author_id, db.authorsInfoTable.author_id));
 
@@ -2928,7 +2930,7 @@ final class $$BookInfoTableTableReferences
         manager.$state.copyWith(prefetchedData: [item]));
   }
 
-  static $GenresInfoTableTable _genre_idTable(_$Database db) =>
+  static $GenresInfoTableTable _genre_idTable(_$DriftAppDatabase db) =>
       db.genresInfoTable.createAlias($_aliasNameGenerator(
           db.bookInfoTable.genre_id, db.genresInfoTable.genre_id));
 
@@ -2946,7 +2948,7 @@ final class $$BookInfoTableTableReferences
 
   static MultiTypedResultKey<$ReadingUpdateInfoTable,
       List<ReadingUpdateInfoData>> _readingUpdateInfoRefsTable(
-          _$Database db) =>
+          _$DriftAppDatabase db) =>
       MultiTypedResultKey.fromTable(db.readingUpdateInfo,
           aliasName: $_aliasNameGenerator(
               db.bookInfoTable.book_id, db.readingUpdateInfo.book_id));
@@ -2965,7 +2967,7 @@ final class $$BookInfoTableTableReferences
 
   static MultiTypedResultKey<$BookmarksFolderInfoTable,
       List<BookmarksFolderInfoData>> _bookmarksFolderInfoRefsTable(
-          _$Database db) =>
+          _$DriftAppDatabase db) =>
       MultiTypedResultKey.fromTable(db.bookmarksFolderInfo,
           aliasName: $_aliasNameGenerator(
               db.bookInfoTable.book_id, db.bookmarksFolderInfo.book_id));
@@ -2984,7 +2986,7 @@ final class $$BookInfoTableTableReferences
 }
 
 class $$BookInfoTableTableFilterComposer
-    extends Composer<_$Database, $BookInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $BookInfoTableTable> {
   $$BookInfoTableTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -3122,7 +3124,7 @@ class $$BookInfoTableTableFilterComposer
 }
 
 class $$BookInfoTableTableOrderingComposer
-    extends Composer<_$Database, $BookInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $BookInfoTableTable> {
   $$BookInfoTableTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -3219,7 +3221,7 @@ class $$BookInfoTableTableOrderingComposer
 }
 
 class $$BookInfoTableTableAnnotationComposer
-    extends Composer<_$Database, $BookInfoTableTable> {
+    extends Composer<_$DriftAppDatabase, $BookInfoTableTable> {
   $$BookInfoTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -3359,7 +3361,7 @@ class $$BookInfoTableTableAnnotationComposer
 }
 
 class $$BookInfoTableTableTableManager extends RootTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $BookInfoTableTable,
     BookInfoTableData,
     $$BookInfoTableTableFilterComposer,
@@ -3375,7 +3377,8 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
         bool genre_id,
         bool readingUpdateInfoRefs,
         bool bookmarksFolderInfoRefs})> {
-  $$BookInfoTableTableTableManager(_$Database db, $BookInfoTableTable table)
+  $$BookInfoTableTableTableManager(
+      _$DriftAppDatabase db, $BookInfoTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -3540,7 +3543,7 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
 }
 
 typedef $$BookInfoTableTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $BookInfoTableTable,
     BookInfoTableData,
     $$BookInfoTableTableFilterComposer,
@@ -3572,11 +3575,11 @@ typedef $$ReadingUpdateInfoTableUpdateCompanionBuilder
 });
 
 final class $$ReadingUpdateInfoTableReferences extends BaseReferences<
-    _$Database, $ReadingUpdateInfoTable, ReadingUpdateInfoData> {
+    _$DriftAppDatabase, $ReadingUpdateInfoTable, ReadingUpdateInfoData> {
   $$ReadingUpdateInfoTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
-  static $BookInfoTableTable _book_idTable(_$Database db) =>
+  static $BookInfoTableTable _book_idTable(_$DriftAppDatabase db) =>
       db.bookInfoTable.createAlias($_aliasNameGenerator(
           db.readingUpdateInfo.book_id, db.bookInfoTable.book_id));
 
@@ -3593,7 +3596,7 @@ final class $$ReadingUpdateInfoTableReferences extends BaseReferences<
 }
 
 class $$ReadingUpdateInfoTableFilterComposer
-    extends Composer<_$Database, $ReadingUpdateInfoTable> {
+    extends Composer<_$DriftAppDatabase, $ReadingUpdateInfoTable> {
   $$ReadingUpdateInfoTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -3632,7 +3635,7 @@ class $$ReadingUpdateInfoTableFilterComposer
 }
 
 class $$ReadingUpdateInfoTableOrderingComposer
-    extends Composer<_$Database, $ReadingUpdateInfoTable> {
+    extends Composer<_$DriftAppDatabase, $ReadingUpdateInfoTable> {
   $$ReadingUpdateInfoTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -3671,7 +3674,7 @@ class $$ReadingUpdateInfoTableOrderingComposer
 }
 
 class $$ReadingUpdateInfoTableAnnotationComposer
-    extends Composer<_$Database, $ReadingUpdateInfoTable> {
+    extends Composer<_$DriftAppDatabase, $ReadingUpdateInfoTable> {
   $$ReadingUpdateInfoTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -3710,7 +3713,7 @@ class $$ReadingUpdateInfoTableAnnotationComposer
 }
 
 class $$ReadingUpdateInfoTableTableManager extends RootTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $ReadingUpdateInfoTable,
     ReadingUpdateInfoData,
     $$ReadingUpdateInfoTableFilterComposer,
@@ -3722,7 +3725,7 @@ class $$ReadingUpdateInfoTableTableManager extends RootTableManager<
     ReadingUpdateInfoData,
     PrefetchHooks Function({bool book_id})> {
   $$ReadingUpdateInfoTableTableManager(
-      _$Database db, $ReadingUpdateInfoTable table)
+      _$DriftAppDatabase db, $ReadingUpdateInfoTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -3803,7 +3806,7 @@ class $$ReadingUpdateInfoTableTableManager extends RootTableManager<
 }
 
 typedef $$ReadingUpdateInfoTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $ReadingUpdateInfoTable,
     ReadingUpdateInfoData,
     $$ReadingUpdateInfoTableFilterComposer,
@@ -3830,11 +3833,11 @@ typedef $$BookmarksFolderInfoTableUpdateCompanionBuilder
 });
 
 final class $$BookmarksFolderInfoTableReferences extends BaseReferences<
-    _$Database, $BookmarksFolderInfoTable, BookmarksFolderInfoData> {
+    _$DriftAppDatabase, $BookmarksFolderInfoTable, BookmarksFolderInfoData> {
   $$BookmarksFolderInfoTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
-  static $BookInfoTableTable _book_idTable(_$Database db) =>
+  static $BookInfoTableTable _book_idTable(_$DriftAppDatabase db) =>
       db.bookInfoTable.createAlias($_aliasNameGenerator(
           db.bookmarksFolderInfo.book_id, db.bookInfoTable.book_id));
 
@@ -3850,7 +3853,7 @@ final class $$BookmarksFolderInfoTableReferences extends BaseReferences<
   }
 
   static MultiTypedResultKey<$BookmarkInfoTable, List<BookmarkInfoData>>
-      _bookmarkInfoRefsTable(_$Database db) =>
+      _bookmarkInfoRefsTable(_$DriftAppDatabase db) =>
           MultiTypedResultKey.fromTable(db.bookmarkInfo,
               aliasName: $_aliasNameGenerator(
                   db.bookmarksFolderInfo.bookmarks_folder_id,
@@ -3868,7 +3871,7 @@ final class $$BookmarksFolderInfoTableReferences extends BaseReferences<
 }
 
 class $$BookmarksFolderInfoTableFilterComposer
-    extends Composer<_$Database, $BookmarksFolderInfoTable> {
+    extends Composer<_$DriftAppDatabase, $BookmarksFolderInfoTable> {
   $$BookmarksFolderInfoTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -3931,7 +3934,7 @@ class $$BookmarksFolderInfoTableFilterComposer
 }
 
 class $$BookmarksFolderInfoTableOrderingComposer
-    extends Composer<_$Database, $BookmarksFolderInfoTable> {
+    extends Composer<_$DriftAppDatabase, $BookmarksFolderInfoTable> {
   $$BookmarksFolderInfoTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -3973,7 +3976,7 @@ class $$BookmarksFolderInfoTableOrderingComposer
 }
 
 class $$BookmarksFolderInfoTableAnnotationComposer
-    extends Composer<_$Database, $BookmarksFolderInfoTable> {
+    extends Composer<_$DriftAppDatabase, $BookmarksFolderInfoTable> {
   $$BookmarksFolderInfoTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -4033,7 +4036,7 @@ class $$BookmarksFolderInfoTableAnnotationComposer
 }
 
 class $$BookmarksFolderInfoTableTableManager extends RootTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $BookmarksFolderInfoTable,
     BookmarksFolderInfoData,
     $$BookmarksFolderInfoTableFilterComposer,
@@ -4045,7 +4048,7 @@ class $$BookmarksFolderInfoTableTableManager extends RootTableManager<
     BookmarksFolderInfoData,
     PrefetchHooks Function({bool book_id, bool bookmarkInfoRefs})> {
   $$BookmarksFolderInfoTableTableManager(
-      _$Database db, $BookmarksFolderInfoTable table)
+      _$DriftAppDatabase db, $BookmarksFolderInfoTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -4143,7 +4146,7 @@ class $$BookmarksFolderInfoTableTableManager extends RootTableManager<
 }
 
 typedef $$BookmarksFolderInfoTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $BookmarksFolderInfoTable,
     BookmarksFolderInfoData,
     $$BookmarksFolderInfoTableFilterComposer,
@@ -4169,11 +4172,12 @@ typedef $$BookmarkInfoTableUpdateCompanionBuilder = BookmarkInfoCompanion
   Value<String> bookmark_text,
 });
 
-final class $$BookmarkInfoTableReferences
-    extends BaseReferences<_$Database, $BookmarkInfoTable, BookmarkInfoData> {
+final class $$BookmarkInfoTableReferences extends BaseReferences<
+    _$DriftAppDatabase, $BookmarkInfoTable, BookmarkInfoData> {
   $$BookmarkInfoTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $BookmarksFolderInfoTable _bookmarks_folder_idTable(_$Database db) =>
+  static $BookmarksFolderInfoTable _bookmarks_folder_idTable(
+          _$DriftAppDatabase db) =>
       db.bookmarksFolderInfo.createAlias($_aliasNameGenerator(
           db.bookmarkInfo.bookmarks_folder_id,
           db.bookmarksFolderInfo.bookmarks_folder_id));
@@ -4192,7 +4196,7 @@ final class $$BookmarkInfoTableReferences
 }
 
 class $$BookmarkInfoTableFilterComposer
-    extends Composer<_$Database, $BookmarkInfoTable> {
+    extends Composer<_$DriftAppDatabase, $BookmarkInfoTable> {
   $$BookmarkInfoTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -4232,7 +4236,7 @@ class $$BookmarkInfoTableFilterComposer
 }
 
 class $$BookmarkInfoTableOrderingComposer
-    extends Composer<_$Database, $BookmarkInfoTable> {
+    extends Composer<_$DriftAppDatabase, $BookmarkInfoTable> {
   $$BookmarkInfoTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -4274,7 +4278,7 @@ class $$BookmarkInfoTableOrderingComposer
 }
 
 class $$BookmarkInfoTableAnnotationComposer
-    extends Composer<_$Database, $BookmarkInfoTable> {
+    extends Composer<_$DriftAppDatabase, $BookmarkInfoTable> {
   $$BookmarkInfoTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -4314,7 +4318,7 @@ class $$BookmarkInfoTableAnnotationComposer
 }
 
 class $$BookmarkInfoTableTableManager extends RootTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $BookmarkInfoTable,
     BookmarkInfoData,
     $$BookmarkInfoTableFilterComposer,
@@ -4325,7 +4329,8 @@ class $$BookmarkInfoTableTableManager extends RootTableManager<
     (BookmarkInfoData, $$BookmarkInfoTableReferences),
     BookmarkInfoData,
     PrefetchHooks Function({bool bookmarks_folder_id})> {
-  $$BookmarkInfoTableTableManager(_$Database db, $BookmarkInfoTable table)
+  $$BookmarkInfoTableTableManager(
+      _$DriftAppDatabase db, $BookmarkInfoTable table)
       : super(TableManagerState(
           db: db,
           table: table,
@@ -4405,7 +4410,7 @@ class $$BookmarkInfoTableTableManager extends RootTableManager<
 }
 
 typedef $$BookmarkInfoTableProcessedTableManager = ProcessedTableManager<
-    _$Database,
+    _$DriftAppDatabase,
     $BookmarkInfoTable,
     BookmarkInfoData,
     $$BookmarkInfoTableFilterComposer,
@@ -4417,9 +4422,9 @@ typedef $$BookmarkInfoTableProcessedTableManager = ProcessedTableManager<
     BookmarkInfoData,
     PrefetchHooks Function({bool bookmarks_folder_id})>;
 
-class $DatabaseManager {
-  final _$Database _db;
-  $DatabaseManager(this._db);
+class $DriftAppDatabaseManager {
+  final _$DriftAppDatabase _db;
+  $DriftAppDatabaseManager(this._db);
   $$BooksFolderInfoTableTableTableManager get booksFolderInfoTable =>
       $$BooksFolderInfoTableTableTableManager(_db, _db.booksFolderInfoTable);
   $$AuthorsInfoTableTableTableManager get authorsInfoTable =>

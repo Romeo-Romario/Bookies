@@ -1,35 +1,44 @@
-import 'package:bookies/services/modules/adding_page_view/models/image_saver.dart';
+import 'package:bookies/data/entities/book_info_entity.dart';
+import 'package:bookies/data/repository/authors_repository.dart';
+import 'package:bookies/data/repository/book_repository.dart';
+import 'package:bookies/data/repository/genre_repository.dart';
+import 'package:bookies/features/book/add/widgets/author_picker/author_picker_dialog.dart';
+import 'package:bookies/features/book/add/widgets/author_picker/picked_author.dart';
 import 'package:bookies/services/modules/adding_page_view/models/save_book_action.dart';
-import 'package:bookies/services/modules/adding_page_view/widgets/author_picker_dialog.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/genre_picker_dialog.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/image_picker.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/input_pages_dialog.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/labeled_container.dart';
-import 'package:bookies/services/shared/custom_enums/image_source_type.dart';
-import 'package:bookies/services/shared/db/data.dart';
-import 'package:bookies/services/shared/models/db_manager.dart';
-import 'package:flutter/material.dart';
 
-class BookAddingPage extends StatefulWidget {
-  const BookAddingPage({super.key});
+import 'package:bookies/features/shared/widgets/expansion_chips/expansion_chips.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+
+class BookAddPage extends StatefulWidget {
+  const BookAddPage({super.key});
 
   @override
-  State<BookAddingPage> createState() => _BookAddingPageState();
+  State<BookAddPage> createState() => _BookAddPageState();
 }
 
-class _BookAddingPageState extends State<BookAddingPage> {
-  final DbManager dbManager = DbManager();
+class _BookAddPageState extends State<BookAddPage> {
+  final BookRepository bookRepository = GetIt.I.get();
+  final AuthorsRepository authorRepository = GetIt.I.get();
+  final GenreRepository genreRepository = GetIt.I.get();
+
   final bookNameController = TextEditingController();
   ImageSourceType imageSourceType = ImageSourceType.asset;
   int? numberOfPages;
   int? numberOfReadPages;
   String imagePath = "";
-  PickedAuthor? author;
+
   PickedGenre? genre;
+
+  final List<PickedAuthor> selectedAuthors = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.blueGrey[200],
         title: Text("Add book"),
@@ -56,7 +65,7 @@ class _BookAddingPageState extends State<BookAddingPage> {
             children: [
               SizedBox(height: 20),
               ImagePickerView(
-                onImagepathChanged: (imagePath) => this.imagePath = imagePath,
+                onImagePathChanged: (imagePath) => this.imagePath = imagePath,
                 onImageSourceTypeChanged: (imageSourceType) =>
                     this.imageSourceType = imageSourceType,
               ),
@@ -66,24 +75,25 @@ class _BookAddingPageState extends State<BookAddingPage> {
                     border: OutlineInputBorder(),
                     labelText: 'Input name of the book'),
               ),
-              LabeledContainer(
-                label: author?.author != null ? "Author" : null,
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    side: BorderSide(color: Colors.deepPurple, width: 1),
-                  ),
-                  onPressed: () async {
-                    author =
-                        await AuthorPickerDialog.showAsDialog(context: context);
-                    setState(() {});
-                  },
-                  label: Text(author?.author ?? "Select Author"),
-                  icon: Icon(Icons.account_circle_outlined),
-                ),
+              ExpansionChips.outlined(
+                length: selectedAuthors.length,
+                title: 'authors',
+                labelBuilder: (index) => Text(selectedAuthors[index].author),
+                onTap: (index) {
+                  setState(() {
+                    selectedAuthors.removeAt(index);
+                  });
+                },
+                onAddTap: () async {
+                  final author = await AuthorPickerDialog.showAsDialog(
+                    context: context,
+                  );
+                  setState(() {
+                    if (author != null) {
+                      selectedAuthors.add(author);
+                    }
+                  });
+                },
               ),
               LabeledContainer(
                 label: genre?.genreName != null ? "Genre" : null,
@@ -194,15 +204,35 @@ class _BookAddingPageState extends State<BookAddingPage> {
   }
 
   Future onAddBook() async {
-    //TODO: Save the image that will be used by book
-    //TODO: Author (check whether there are no Collusions)
-    //TODO: Genre (check whether there are no Collusions)
-
     if (checkProperties()) {
-      final finalImagePath = saveImage(imagePath!);
-      final authorId = saveAuthor(author!);
-      //TODO Save Genre
+      for (var element in selectedAuthors) {
+        if (element.id == null) {
+          await authorRepository.add(element.author);
+        }
+      }
+
+      int genreId = await genreRepository.add(genre!.genreName);
+
+      final finalImagePath = imageSourceType == ImageSourceType.local
+          ? await saveImage(imagePath)
+          : imagePath;
+
+      int bookId = await bookRepository.add(BookInfoEntity(
+        bookId: null,
+        folderId: null,
+        bookName: bookNameController.text,
+        imagePath: finalImagePath,
+        imageSourceType: imageSourceType,
+        readPages: numberOfReadPages ?? 0,
+        numberOfPages: numberOfPages!,
+        status: false,
+        authorId: 0,
+        genreId: genreId,
+        grade: 0,
+      ));
     }
+
+    Navigator.pop(context);
   }
 
   bool checkProperties() {
@@ -210,7 +240,7 @@ class _BookAddingPageState extends State<BookAddingPage> {
         numberOfPages == null ||
         numberOfReadPages == null ||
         imagePath.isEmpty ||
-        author == null ||
+        selectedAuthors.isEmpty ||
         genre == null) {
       alert(context);
       return false;

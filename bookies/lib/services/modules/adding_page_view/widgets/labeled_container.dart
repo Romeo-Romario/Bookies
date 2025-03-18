@@ -13,13 +13,16 @@ class _LabeledContainerState extends State<LabeledContainer> {
   @override
   Widget build(BuildContext context) {
     return InputDecorator(
-        decoration: InputDecoration(
-            labelText: widget.label,
-            labelStyle: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.deepPurple[600],
-                fontSize: 18),
-            border: InputBorder.none),
-        child: widget.child);
+      decoration: InputDecoration(
+        labelText: widget.label,
+        labelStyle: TextStyle(
+          fontWeight: FontWeight.w500,
+          color: Colors.deepPurple[600],
+          fontSize: 18,
+        ),
+        border: InputBorder.none,
+      ),
+      child: widget.child,
+    );
   }
 }

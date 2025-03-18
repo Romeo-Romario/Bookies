@@ -4,7 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
-part 'data.g.dart';
+part 'drift_app_database.g.dart';
 
 class BooksFolderInfoTable extends Table {
   IntColumn get books_folder_id => integer().autoIncrement()();
@@ -75,8 +75,8 @@ class BookmarkInfo extends Table {
   BookmarksFolderInfo,
   BookmarkInfo
 ])
-class Database extends _$Database {
-  Database() : super(_openConnection());
+class DriftAppDatabase extends _$DriftAppDatabase {
+  DriftAppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;

@@ -1,7 +1,7 @@
+import 'package:bookies/features/book/add/widgets/author_picker/picked_author.dart';
 import 'package:bookies/services/modules/adding_page_view/models/image_saver.dart';
-import 'package:bookies/services/modules/adding_page_view/widgets/author_picker_dialog.dart';
-import 'package:bookies/services/modules/adding_page_view/widgets/genre_picker_dialog.dart';
-import 'package:bookies/services/shared/db/data.dart';
+
+import 'package:bookies/data/source/drift/drift_app_database.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,7 +36,7 @@ Future<String> saveImage(String imagePath) async {
 }
 
 Future<int?> saveAuthor(PickedAuthor author) async {
-  final Database db = Database();
+  final DriftAppDatabase db = DriftAppDatabase();
   if (author.existedInDatabase) {
     return author.id;
   } else {

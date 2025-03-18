@@ -1,19 +1,19 @@
 import 'dart:io';
 
-import 'package:bookies/services/modules/adding_page_view/models/image_saver.dart';
+import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/services/modules/adding_page_view/widgets/assets_image_dialog_view/assets_image_dialog.dart';
-import 'package:bookies/services/shared/custom_enums/image_source_type.dart';
+
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImagePickerView extends StatefulWidget {
-  final void Function(String imagePath) onImagepathChanged;
+  final void Function(String imagePath) onImagePathChanged;
   final void Function(ImageSourceType imageSourceType) onImageSourceTypeChanged;
 
   const ImagePickerView({
     super.key,
-    required this.onImagepathChanged,
+    required this.onImagePathChanged,
     required this.onImageSourceTypeChanged,
   });
 
@@ -94,10 +94,14 @@ class _ImagePickerViewState extends State<ImagePickerView> {
 
   Future<Image?> _selectImageFromAssets() async {
     final assetImage = await AssetsImageDialog.showAsDialog(context: context);
+
+    if (assetImage == null) {
+      return null;
+    }
+
     try {
-      if (assetImage == null) {
-        return null;
-      }
+      widget.onImagePathChanged(assetImage);
+
       return Image.asset(assetImage);
     } catch (e) {
       return null;
@@ -112,7 +116,7 @@ class _ImagePickerViewState extends State<ImagePickerView> {
     }
 
     if (Platform.isWindows) {
-      widget.onImagepathChanged(pickedFile.path);
+      widget.onImagePathChanged(pickedFile.path);
       return Image.file(File(pickedFile.path),
           width: 200, height: 200, fit: BoxFit.cover);
     } else {
@@ -120,7 +124,7 @@ class _ImagePickerViewState extends State<ImagePickerView> {
       if (croppedImage == null) {
         return null;
       }
-      widget.onImagepathChanged(croppedImage.path);
+      widget.onImagePathChanged(croppedImage.path);
       return Image.file(File(croppedImage.path),
           width: 200, height: 200, fit: BoxFit.cover);
     }

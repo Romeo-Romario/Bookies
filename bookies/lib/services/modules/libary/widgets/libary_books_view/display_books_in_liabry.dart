@@ -1,10 +1,10 @@
-import 'package:bookies/services/modules/libary/models/book_info.dart';
+import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/services/modules/libary/widgets/libary_books_view/circular_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 
 class BookLibaryView extends StatelessWidget {
-  final BookInfo element;
+  final BookInfoEntity element;
   final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
   BookLibaryView({required this.element, super.key});
 
@@ -23,7 +23,9 @@ class BookLibaryView extends StatelessWidget {
               flex: 5,
               fit: FlexFit.loose,
               child: CustomCircularProgressBar(
-                  valueNotifier: _valueNotifier, element: element),
+                valueNotifier: _valueNotifier,
+                element: element,
+              ),
             ),
             Flexible(
               flex: 2,
@@ -36,11 +38,12 @@ class BookLibaryView extends StatelessWidget {
             ),
             if (element.status)
               Flexible(
-                  flex: 1,
-                  fit: FlexFit.loose,
-                  child: StarRating(
-                    rating: element.grade!.toDouble(),
-                  )),
+                flex: 1,
+                fit: FlexFit.loose,
+                child: StarRating(
+                  rating: element.grade!.toDouble(),
+                ),
+              ),
           ],
         ),
       ),
