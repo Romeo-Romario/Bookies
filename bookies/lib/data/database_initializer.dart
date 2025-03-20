@@ -1,13 +1,32 @@
+import 'package:bookies/data/entities/author_entity.dart';
+import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_it/get_it.dart';
 
 class DatabaseInitializer {
   static Future builtInEntitiesInitializer(
     GenreRepository repository,
     SharedPreferences prefs,
   ) async {
-    await repository.clear();
-    prefs.clear();
+    // await repository.clear();
+    // prefs.clear();
+
+    //TODO:Delete this lines when everything will be set
+    // final AuthorsRepository authorsRepository = GetIt.I.get();
+
+    // List<String> authors = [
+    //   "Andrzej Sapkowski",
+    //   "Brendon Sanderson",
+    //   "Joe Abercrombie",
+    //   "Roger Zelazny",
+    //   "Sarah J Maas",
+    //   "John Ronald Reuel Tolkien",
+    // ];
+
+    // for (var el in authors) {
+    //   authorsRepository.add(el);
+    // }
 
     if ((prefs.getBool('start') ?? true)) {
       await prefs.setBool('start', false);

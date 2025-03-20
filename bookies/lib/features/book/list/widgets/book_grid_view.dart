@@ -16,8 +16,8 @@ class BookGridView extends StatelessWidget {
       primary: false,
       padding: const EdgeInsets.all(16),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 460,
-        mainAxisExtent: 300,
+        maxCrossAxisExtent: 350,
+        mainAxisExtent: 250,
       ),
       itemCount: books.length,
       itemBuilder: (context, index) {

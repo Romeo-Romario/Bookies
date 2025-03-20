@@ -16,7 +16,7 @@ class CustomCircularProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double imageSize = 120; // Auto-scaled size
+    double imageSize = MediaQuery.of(context).size.width * 0.25;
 
     return Stack(
       alignment: Alignment.center, // Ensure everything is centered

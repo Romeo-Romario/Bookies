@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/features/book/list/widgets/circular_progress_bar.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +12,11 @@ class BookLibaryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+      margin: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(5.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -30,10 +31,17 @@ class BookLibaryView extends StatelessWidget {
             Flexible(
               flex: 2,
               fit: FlexFit.loose,
-              child: Text(
+              child: AutoSizeText(
                 element.bookName,
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w500,
+                ),
                 textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                minFontSize: 16,
+                stepGranularity: 1,
               ),
             ),
             if (element.status)

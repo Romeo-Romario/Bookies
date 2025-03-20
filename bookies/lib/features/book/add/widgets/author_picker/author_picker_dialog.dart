@@ -82,12 +82,17 @@ class _AuthorPickerDialogState extends State<AuthorPickerDialog> {
                     )),
                     FloatingActionButton(
                       onPressed: () async {
-                        Navigator.pop(
-                          context,
-                          PickedAuthor(
-                            author: _controller.text,
-                          ),
-                        );
+                        FocusScope.of(context).unfocus();
+                        if (_controller.text.trim().isEmpty) {
+                          Navigator.pop(context);
+                        } else {
+                          Navigator.pop(
+                            context,
+                            PickedAuthor(
+                              author: _controller.text,
+                            ),
+                          );
+                        }
                       },
                       shape: CircleBorder(),
                       mini: true,

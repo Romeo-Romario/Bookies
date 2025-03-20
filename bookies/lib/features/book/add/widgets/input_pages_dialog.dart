@@ -52,6 +52,7 @@ class _InputPagesDialogState extends State<InputPagesDialog> {
               height: 40,
               child: ElevatedButton(
                   onPressed: () {
+                    FocusScope.of(context).unfocus();
                     if (pagesNumberController.text.isEmpty) {
                       Navigator.pop(context, null);
                     } else {

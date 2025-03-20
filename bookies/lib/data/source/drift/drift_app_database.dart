@@ -9,27 +9,31 @@ part 'drift_app_database.g.dart';
 class BooksFolderInfoTable extends Table {
   IntColumn get books_folder_id => integer().autoIncrement()();
   TextColumn get books_folder_name => text()();
-  //TODO: change from nullable to suitable default value
   TextColumn get font_style => text().nullable()();
   TextColumn get font_color => text().nullable()();
 }
 
 class AuthorsInfoTable extends Table {
   IntColumn get author_id => integer().autoIncrement()();
-  TextColumn get author_fullname => text()();
+  TextColumn get author_fullname => text().unique()();
+}
+
+class AuthorsListTable extends Table {
+  IntColumn get authors_id =>
+      integer().references(AuthorsInfoTable, #author_id)();
+  IntColumn get book_id => integer().references(BookInfoTable, #book_id)();
 }
 
 class GenresInfoTable extends Table {
   IntColumn get genre_id => integer().autoIncrement()();
-  TextColumn get genre_name => text()();
+  TextColumn get genre_name => text().unique()();
   BoolColumn get built_in => boolean().withDefault(Constant(false))();
 }
 
 class BookInfoTable extends Table {
   IntColumn get book_id => integer().autoIncrement()();
-  IntColumn get books_folder_id => integer()
-      .references(BooksFolderInfoTable, #books_folder_id)
-      .withDefault(Constant(0))();
+  IntColumn get books_folder_id =>
+      integer().references(BooksFolderInfoTable, #books_folder_id).nullable()();
   TextColumn get book_name => text()();
   TextColumn get image_path => text()();
   BoolColumn get image_source_type => boolean()();
@@ -37,8 +41,6 @@ class BookInfoTable extends Table {
   IntColumn get number_of_pages => integer()();
   BoolColumn get status => boolean()();
   IntColumn get grade => integer()();
-  IntColumn get author_id =>
-      integer().references(AuthorsInfoTable, #author_id)();
   IntColumn get genre_id => integer().references(GenresInfoTable, #genre_id)();
 }
 
@@ -69,6 +71,7 @@ class BookmarkInfo extends Table {
 @DriftDatabase(tables: [
   BooksFolderInfoTable,
   AuthorsInfoTable,
+  AuthorsListTable,
   GenresInfoTable,
   BookInfoTable,
   ReadingUpdateInfo,

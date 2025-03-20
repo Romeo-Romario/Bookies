@@ -310,7 +310,9 @@ class $AuthorsInfoTableTable extends AuthorsInfoTable
   @override
   late final GeneratedColumn<String> author_fullname = GeneratedColumn<String>(
       'author_fullname', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
   @override
   List<GeneratedColumn> get $columns => [author_id, author_fullname];
   @override
@@ -501,7 +503,9 @@ class $GenresInfoTableTable extends GenresInfoTable
   @override
   late final GeneratedColumn<String> genre_name = GeneratedColumn<String>(
       'genre_name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
   static const VerificationMeta _built_inMeta =
       const VerificationMeta('built_in');
   @override
@@ -730,12 +734,11 @@ class $BookInfoTableTable extends BookInfoTable
       const VerificationMeta('books_folder_id');
   @override
   late final GeneratedColumn<int> books_folder_id = GeneratedColumn<int>(
-      'books_folder_id', aliasedName, false,
+      'books_folder_id', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES books_folder_info_table (books_folder_id)'),
-      defaultValue: Constant(0));
+          'REFERENCES books_folder_info_table (books_folder_id)'));
   static const VerificationMeta _book_nameMeta =
       const VerificationMeta('book_name');
   @override
@@ -782,15 +785,6 @@ class $BookInfoTableTable extends BookInfoTable
   late final GeneratedColumn<int> grade = GeneratedColumn<int>(
       'grade', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _author_idMeta =
-      const VerificationMeta('author_id');
-  @override
-  late final GeneratedColumn<int> author_id = GeneratedColumn<int>(
-      'author_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES authors_info_table (author_id)'));
   static const VerificationMeta _genre_idMeta =
       const VerificationMeta('genre_id');
   @override
@@ -811,7 +805,6 @@ class $BookInfoTableTable extends BookInfoTable
         number_of_pages,
         status,
         grade,
-        author_id,
         genre_id
       ];
   @override
@@ -884,12 +877,6 @@ class $BookInfoTableTable extends BookInfoTable
     } else if (isInserting) {
       context.missing(_gradeMeta);
     }
-    if (data.containsKey('author_id')) {
-      context.handle(_author_idMeta,
-          author_id.isAcceptableOrUnknown(data['author_id']!, _author_idMeta));
-    } else if (isInserting) {
-      context.missing(_author_idMeta);
-    }
     if (data.containsKey('genre_id')) {
       context.handle(_genre_idMeta,
           genre_id.isAcceptableOrUnknown(data['genre_id']!, _genre_idMeta));
@@ -908,7 +895,7 @@ class $BookInfoTableTable extends BookInfoTable
       book_id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}book_id'])!,
       books_folder_id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}books_folder_id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}books_folder_id']),
       book_name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}book_name'])!,
       image_path: attachedDatabase.typeMapping
@@ -923,8 +910,6 @@ class $BookInfoTableTable extends BookInfoTable
           .read(DriftSqlType.bool, data['${effectivePrefix}status'])!,
       grade: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}grade'])!,
-      author_id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}author_id'])!,
       genre_id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}genre_id'])!,
     );
@@ -939,7 +924,7 @@ class $BookInfoTableTable extends BookInfoTable
 class BookInfoTableData extends DataClass
     implements Insertable<BookInfoTableData> {
   final int book_id;
-  final int books_folder_id;
+  final int? books_folder_id;
   final String book_name;
   final String image_path;
   final bool image_source_type;
@@ -947,11 +932,10 @@ class BookInfoTableData extends DataClass
   final int number_of_pages;
   final bool status;
   final int grade;
-  final int author_id;
   final int genre_id;
   const BookInfoTableData(
       {required this.book_id,
-      required this.books_folder_id,
+      this.books_folder_id,
       required this.book_name,
       required this.image_path,
       required this.image_source_type,
@@ -959,13 +943,14 @@ class BookInfoTableData extends DataClass
       required this.number_of_pages,
       required this.status,
       required this.grade,
-      required this.author_id,
       required this.genre_id});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['book_id'] = Variable<int>(book_id);
-    map['books_folder_id'] = Variable<int>(books_folder_id);
+    if (!nullToAbsent || books_folder_id != null) {
+      map['books_folder_id'] = Variable<int>(books_folder_id);
+    }
     map['book_name'] = Variable<String>(book_name);
     map['image_path'] = Variable<String>(image_path);
     map['image_source_type'] = Variable<bool>(image_source_type);
@@ -973,7 +958,6 @@ class BookInfoTableData extends DataClass
     map['number_of_pages'] = Variable<int>(number_of_pages);
     map['status'] = Variable<bool>(status);
     map['grade'] = Variable<int>(grade);
-    map['author_id'] = Variable<int>(author_id);
     map['genre_id'] = Variable<int>(genre_id);
     return map;
   }
@@ -981,7 +965,9 @@ class BookInfoTableData extends DataClass
   BookInfoTableCompanion toCompanion(bool nullToAbsent) {
     return BookInfoTableCompanion(
       book_id: Value(book_id),
-      books_folder_id: Value(books_folder_id),
+      books_folder_id: books_folder_id == null && nullToAbsent
+          ? const Value.absent()
+          : Value(books_folder_id),
       book_name: Value(book_name),
       image_path: Value(image_path),
       image_source_type: Value(image_source_type),
@@ -989,7 +975,6 @@ class BookInfoTableData extends DataClass
       number_of_pages: Value(number_of_pages),
       status: Value(status),
       grade: Value(grade),
-      author_id: Value(author_id),
       genre_id: Value(genre_id),
     );
   }
@@ -999,7 +984,7 @@ class BookInfoTableData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return BookInfoTableData(
       book_id: serializer.fromJson<int>(json['book_id']),
-      books_folder_id: serializer.fromJson<int>(json['books_folder_id']),
+      books_folder_id: serializer.fromJson<int?>(json['books_folder_id']),
       book_name: serializer.fromJson<String>(json['book_name']),
       image_path: serializer.fromJson<String>(json['image_path']),
       image_source_type: serializer.fromJson<bool>(json['image_source_type']),
@@ -1007,7 +992,6 @@ class BookInfoTableData extends DataClass
       number_of_pages: serializer.fromJson<int>(json['number_of_pages']),
       status: serializer.fromJson<bool>(json['status']),
       grade: serializer.fromJson<int>(json['grade']),
-      author_id: serializer.fromJson<int>(json['author_id']),
       genre_id: serializer.fromJson<int>(json['genre_id']),
     );
   }
@@ -1016,7 +1000,7 @@ class BookInfoTableData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'book_id': serializer.toJson<int>(book_id),
-      'books_folder_id': serializer.toJson<int>(books_folder_id),
+      'books_folder_id': serializer.toJson<int?>(books_folder_id),
       'book_name': serializer.toJson<String>(book_name),
       'image_path': serializer.toJson<String>(image_path),
       'image_source_type': serializer.toJson<bool>(image_source_type),
@@ -1024,14 +1008,13 @@ class BookInfoTableData extends DataClass
       'number_of_pages': serializer.toJson<int>(number_of_pages),
       'status': serializer.toJson<bool>(status),
       'grade': serializer.toJson<int>(grade),
-      'author_id': serializer.toJson<int>(author_id),
       'genre_id': serializer.toJson<int>(genre_id),
     };
   }
 
   BookInfoTableData copyWith(
           {int? book_id,
-          int? books_folder_id,
+          Value<int?> books_folder_id = const Value.absent(),
           String? book_name,
           String? image_path,
           bool? image_source_type,
@@ -1039,11 +1022,12 @@ class BookInfoTableData extends DataClass
           int? number_of_pages,
           bool? status,
           int? grade,
-          int? author_id,
           int? genre_id}) =>
       BookInfoTableData(
         book_id: book_id ?? this.book_id,
-        books_folder_id: books_folder_id ?? this.books_folder_id,
+        books_folder_id: books_folder_id.present
+            ? books_folder_id.value
+            : this.books_folder_id,
         book_name: book_name ?? this.book_name,
         image_path: image_path ?? this.image_path,
         image_source_type: image_source_type ?? this.image_source_type,
@@ -1051,7 +1035,6 @@ class BookInfoTableData extends DataClass
         number_of_pages: number_of_pages ?? this.number_of_pages,
         status: status ?? this.status,
         grade: grade ?? this.grade,
-        author_id: author_id ?? this.author_id,
         genre_id: genre_id ?? this.genre_id,
       );
   BookInfoTableData copyWithCompanion(BookInfoTableCompanion data) {
@@ -1073,7 +1056,6 @@ class BookInfoTableData extends DataClass
           : this.number_of_pages,
       status: data.status.present ? data.status.value : this.status,
       grade: data.grade.present ? data.grade.value : this.grade,
-      author_id: data.author_id.present ? data.author_id.value : this.author_id,
       genre_id: data.genre_id.present ? data.genre_id.value : this.genre_id,
     );
   }
@@ -1090,7 +1072,6 @@ class BookInfoTableData extends DataClass
           ..write('number_of_pages: $number_of_pages, ')
           ..write('status: $status, ')
           ..write('grade: $grade, ')
-          ..write('author_id: $author_id, ')
           ..write('genre_id: $genre_id')
           ..write(')'))
         .toString();
@@ -1107,7 +1088,6 @@ class BookInfoTableData extends DataClass
       number_of_pages,
       status,
       grade,
-      author_id,
       genre_id);
   @override
   bool operator ==(Object other) =>
@@ -1122,13 +1102,12 @@ class BookInfoTableData extends DataClass
           other.number_of_pages == this.number_of_pages &&
           other.status == this.status &&
           other.grade == this.grade &&
-          other.author_id == this.author_id &&
           other.genre_id == this.genre_id);
 }
 
 class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
   final Value<int> book_id;
-  final Value<int> books_folder_id;
+  final Value<int?> books_folder_id;
   final Value<String> book_name;
   final Value<String> image_path;
   final Value<bool> image_source_type;
@@ -1136,7 +1115,6 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
   final Value<int> number_of_pages;
   final Value<bool> status;
   final Value<int> grade;
-  final Value<int> author_id;
   final Value<int> genre_id;
   const BookInfoTableCompanion({
     this.book_id = const Value.absent(),
@@ -1148,7 +1126,6 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
     this.number_of_pages = const Value.absent(),
     this.status = const Value.absent(),
     this.grade = const Value.absent(),
-    this.author_id = const Value.absent(),
     this.genre_id = const Value.absent(),
   });
   BookInfoTableCompanion.insert({
@@ -1161,7 +1138,6 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
     required int number_of_pages,
     required bool status,
     required int grade,
-    required int author_id,
     required int genre_id,
   })  : book_name = Value(book_name),
         image_path = Value(image_path),
@@ -1170,7 +1146,6 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
         number_of_pages = Value(number_of_pages),
         status = Value(status),
         grade = Value(grade),
-        author_id = Value(author_id),
         genre_id = Value(genre_id);
   static Insertable<BookInfoTableData> custom({
     Expression<int>? book_id,
@@ -1182,7 +1157,6 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
     Expression<int>? number_of_pages,
     Expression<bool>? status,
     Expression<int>? grade,
-    Expression<int>? author_id,
     Expression<int>? genre_id,
   }) {
     return RawValuesInsertable({
@@ -1195,14 +1169,13 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
       if (number_of_pages != null) 'number_of_pages': number_of_pages,
       if (status != null) 'status': status,
       if (grade != null) 'grade': grade,
-      if (author_id != null) 'author_id': author_id,
       if (genre_id != null) 'genre_id': genre_id,
     });
   }
 
   BookInfoTableCompanion copyWith(
       {Value<int>? book_id,
-      Value<int>? books_folder_id,
+      Value<int?>? books_folder_id,
       Value<String>? book_name,
       Value<String>? image_path,
       Value<bool>? image_source_type,
@@ -1210,7 +1183,6 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
       Value<int>? number_of_pages,
       Value<bool>? status,
       Value<int>? grade,
-      Value<int>? author_id,
       Value<int>? genre_id}) {
     return BookInfoTableCompanion(
       book_id: book_id ?? this.book_id,
@@ -1222,7 +1194,6 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
       number_of_pages: number_of_pages ?? this.number_of_pages,
       status: status ?? this.status,
       grade: grade ?? this.grade,
-      author_id: author_id ?? this.author_id,
       genre_id: genre_id ?? this.genre_id,
     );
   }
@@ -1257,9 +1228,6 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
     if (grade.present) {
       map['grade'] = Variable<int>(grade.value);
     }
-    if (author_id.present) {
-      map['author_id'] = Variable<int>(author_id.value);
-    }
     if (genre_id.present) {
       map['genre_id'] = Variable<int>(genre_id.value);
     }
@@ -1278,8 +1246,211 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
           ..write('number_of_pages: $number_of_pages, ')
           ..write('status: $status, ')
           ..write('grade: $grade, ')
-          ..write('author_id: $author_id, ')
           ..write('genre_id: $genre_id')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AuthorsListTableTable extends AuthorsListTable
+    with TableInfo<$AuthorsListTableTable, AuthorsListTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AuthorsListTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _authors_idMeta =
+      const VerificationMeta('authors_id');
+  @override
+  late final GeneratedColumn<int> authors_id = GeneratedColumn<int>(
+      'authors_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES authors_info_table (author_id)'));
+  static const VerificationMeta _book_idMeta =
+      const VerificationMeta('book_id');
+  @override
+  late final GeneratedColumn<int> book_id = GeneratedColumn<int>(
+      'book_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES book_info_table (book_id)'));
+  @override
+  List<GeneratedColumn> get $columns => [authors_id, book_id];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'authors_list_table';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<AuthorsListTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('authors_id')) {
+      context.handle(
+          _authors_idMeta,
+          authors_id.isAcceptableOrUnknown(
+              data['authors_id']!, _authors_idMeta));
+    } else if (isInserting) {
+      context.missing(_authors_idMeta);
+    }
+    if (data.containsKey('book_id')) {
+      context.handle(_book_idMeta,
+          book_id.isAcceptableOrUnknown(data['book_id']!, _book_idMeta));
+    } else if (isInserting) {
+      context.missing(_book_idMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  AuthorsListTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AuthorsListTableData(
+      authors_id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}authors_id'])!,
+      book_id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}book_id'])!,
+    );
+  }
+
+  @override
+  $AuthorsListTableTable createAlias(String alias) {
+    return $AuthorsListTableTable(attachedDatabase, alias);
+  }
+}
+
+class AuthorsListTableData extends DataClass
+    implements Insertable<AuthorsListTableData> {
+  final int authors_id;
+  final int book_id;
+  const AuthorsListTableData({required this.authors_id, required this.book_id});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['authors_id'] = Variable<int>(authors_id);
+    map['book_id'] = Variable<int>(book_id);
+    return map;
+  }
+
+  AuthorsListTableCompanion toCompanion(bool nullToAbsent) {
+    return AuthorsListTableCompanion(
+      authors_id: Value(authors_id),
+      book_id: Value(book_id),
+    );
+  }
+
+  factory AuthorsListTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AuthorsListTableData(
+      authors_id: serializer.fromJson<int>(json['authors_id']),
+      book_id: serializer.fromJson<int>(json['book_id']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'authors_id': serializer.toJson<int>(authors_id),
+      'book_id': serializer.toJson<int>(book_id),
+    };
+  }
+
+  AuthorsListTableData copyWith({int? authors_id, int? book_id}) =>
+      AuthorsListTableData(
+        authors_id: authors_id ?? this.authors_id,
+        book_id: book_id ?? this.book_id,
+      );
+  AuthorsListTableData copyWithCompanion(AuthorsListTableCompanion data) {
+    return AuthorsListTableData(
+      authors_id:
+          data.authors_id.present ? data.authors_id.value : this.authors_id,
+      book_id: data.book_id.present ? data.book_id.value : this.book_id,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuthorsListTableData(')
+          ..write('authors_id: $authors_id, ')
+          ..write('book_id: $book_id')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(authors_id, book_id);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AuthorsListTableData &&
+          other.authors_id == this.authors_id &&
+          other.book_id == this.book_id);
+}
+
+class AuthorsListTableCompanion extends UpdateCompanion<AuthorsListTableData> {
+  final Value<int> authors_id;
+  final Value<int> book_id;
+  final Value<int> rowid;
+  const AuthorsListTableCompanion({
+    this.authors_id = const Value.absent(),
+    this.book_id = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AuthorsListTableCompanion.insert({
+    required int authors_id,
+    required int book_id,
+    this.rowid = const Value.absent(),
+  })  : authors_id = Value(authors_id),
+        book_id = Value(book_id);
+  static Insertable<AuthorsListTableData> custom({
+    Expression<int>? authors_id,
+    Expression<int>? book_id,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (authors_id != null) 'authors_id': authors_id,
+      if (book_id != null) 'book_id': book_id,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AuthorsListTableCompanion copyWith(
+      {Value<int>? authors_id, Value<int>? book_id, Value<int>? rowid}) {
+    return AuthorsListTableCompanion(
+      authors_id: authors_id ?? this.authors_id,
+      book_id: book_id ?? this.book_id,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (authors_id.present) {
+      map['authors_id'] = Variable<int>(authors_id.value);
+    }
+    if (book_id.present) {
+      map['book_id'] = Variable<int>(book_id.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AuthorsListTableCompanion(')
+          ..write('authors_id: $authors_id, ')
+          ..write('book_id: $book_id, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -2159,6 +2330,8 @@ abstract class _$DriftAppDatabase extends GeneratedDatabase {
   late final $GenresInfoTableTable genresInfoTable =
       $GenresInfoTableTable(this);
   late final $BookInfoTableTable bookInfoTable = $BookInfoTableTable(this);
+  late final $AuthorsListTableTable authorsListTable =
+      $AuthorsListTableTable(this);
   late final $ReadingUpdateInfoTable readingUpdateInfo =
       $ReadingUpdateInfoTable(this);
   late final $BookmarksFolderInfoTable bookmarksFolderInfo =
@@ -2173,6 +2346,7 @@ abstract class _$DriftAppDatabase extends GeneratedDatabase {
         authorsInfoTable,
         genresInfoTable,
         bookInfoTable,
+        authorsListTable,
         readingUpdateInfo,
         bookmarksFolderInfo,
         bookmarkInfo
@@ -2443,18 +2617,20 @@ final class $$AuthorsInfoTableTableReferences extends BaseReferences<
   $$AuthorsInfoTableTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
 
-  static MultiTypedResultKey<$BookInfoTableTable, List<BookInfoTableData>>
-      _bookInfoTableRefsTable(_$DriftAppDatabase db) =>
-          MultiTypedResultKey.fromTable(db.bookInfoTable,
-              aliasName: $_aliasNameGenerator(
-                  db.authorsInfoTable.author_id, db.bookInfoTable.author_id));
+  static MultiTypedResultKey<$AuthorsListTableTable, List<AuthorsListTableData>>
+      _authorsListTableRefsTable(_$DriftAppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.authorsListTable,
+              aliasName: $_aliasNameGenerator(db.authorsInfoTable.author_id,
+                  db.authorsListTable.authors_id));
 
-  $$BookInfoTableTableProcessedTableManager get bookInfoTableRefs {
-    final manager = $$BookInfoTableTableTableManager($_db, $_db.bookInfoTable)
+  $$AuthorsListTableTableProcessedTableManager get authorsListTableRefs {
+    final manager = $$AuthorsListTableTableTableManager(
+            $_db, $_db.authorsListTable)
         .filter((f) =>
-            f.author_id.author_id.sqlEquals($_itemColumn<int>('author_id')!));
+            f.authors_id.author_id.sqlEquals($_itemColumn<int>('author_id')!));
 
-    final cache = $_typedResult.readTableOrNull(_bookInfoTableRefsTable($_db));
+    final cache =
+        $_typedResult.readTableOrNull(_authorsListTableRefsTable($_db));
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: cache));
   }
@@ -2476,19 +2652,19 @@ class $$AuthorsInfoTableTableFilterComposer
       column: $table.author_fullname,
       builder: (column) => ColumnFilters(column));
 
-  Expression<bool> bookInfoTableRefs(
-      Expression<bool> Function($$BookInfoTableTableFilterComposer f) f) {
-    final $$BookInfoTableTableFilterComposer composer = $composerBuilder(
+  Expression<bool> authorsListTableRefs(
+      Expression<bool> Function($$AuthorsListTableTableFilterComposer f) f) {
+    final $$AuthorsListTableTableFilterComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.author_id,
-        referencedTable: $db.bookInfoTable,
-        getReferencedColumn: (t) => t.author_id,
+        referencedTable: $db.authorsListTable,
+        getReferencedColumn: (t) => t.authors_id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            $$BookInfoTableTableFilterComposer(
+            $$AuthorsListTableTableFilterComposer(
               $db: $db,
-              $table: $db.bookInfoTable,
+              $table: $db.authorsListTable,
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -2530,19 +2706,19 @@ class $$AuthorsInfoTableTableAnnotationComposer
   GeneratedColumn<String> get author_fullname => $composableBuilder(
       column: $table.author_fullname, builder: (column) => column);
 
-  Expression<T> bookInfoTableRefs<T extends Object>(
-      Expression<T> Function($$BookInfoTableTableAnnotationComposer a) f) {
-    final $$BookInfoTableTableAnnotationComposer composer = $composerBuilder(
+  Expression<T> authorsListTableRefs<T extends Object>(
+      Expression<T> Function($$AuthorsListTableTableAnnotationComposer a) f) {
+    final $$AuthorsListTableTableAnnotationComposer composer = $composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.author_id,
-        referencedTable: $db.bookInfoTable,
-        getReferencedColumn: (t) => t.author_id,
+        referencedTable: $db.authorsListTable,
+        getReferencedColumn: (t) => t.authors_id,
         builder: (joinBuilder,
                 {$addJoinBuilderToRootComposer,
                 $removeJoinBuilderFromRootComposer}) =>
-            $$BookInfoTableTableAnnotationComposer(
+            $$AuthorsListTableTableAnnotationComposer(
               $db: $db,
-              $table: $db.bookInfoTable,
+              $table: $db.authorsListTable,
               $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
               joinBuilder: joinBuilder,
               $removeJoinBuilderFromRootComposer:
@@ -2563,7 +2739,7 @@ class $$AuthorsInfoTableTableTableManager extends RootTableManager<
     $$AuthorsInfoTableTableUpdateCompanionBuilder,
     (AuthorsInfoTableData, $$AuthorsInfoTableTableReferences),
     AuthorsInfoTableData,
-    PrefetchHooks Function({bool bookInfoTableRefs})> {
+    PrefetchHooks Function({bool authorsListTableRefs})> {
   $$AuthorsInfoTableTableTableManager(
       _$DriftAppDatabase db, $AuthorsInfoTableTable table)
       : super(TableManagerState(
@@ -2597,27 +2773,27 @@ class $$AuthorsInfoTableTableTableManager extends RootTableManager<
                     $$AuthorsInfoTableTableReferences(db, table, e)
                   ))
               .toList(),
-          prefetchHooksCallback: ({bookInfoTableRefs = false}) {
+          prefetchHooksCallback: ({authorsListTableRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [
-                if (bookInfoTableRefs) db.bookInfoTable
+                if (authorsListTableRefs) db.authorsListTable
               ],
               addJoins: null,
               getPrefetchedDataCallback: (items) async {
                 return [
-                  if (bookInfoTableRefs)
+                  if (authorsListTableRefs)
                     await $_getPrefetchedData<AuthorsInfoTableData,
-                            $AuthorsInfoTableTable, BookInfoTableData>(
+                            $AuthorsInfoTableTable, AuthorsListTableData>(
                         currentTable: table,
                         referencedTable: $$AuthorsInfoTableTableReferences
-                            ._bookInfoTableRefsTable(db),
+                            ._authorsListTableRefsTable(db),
                         managerFromTypedResult: (p0) =>
                             $$AuthorsInfoTableTableReferences(db, table, p0)
-                                .bookInfoTableRefs,
+                                .authorsListTableRefs,
                         referencedItemsForCurrentItem:
                             (item, referencedItems) => referencedItems
-                                .where((e) => e.author_id == item.author_id),
+                                .where((e) => e.authors_id == item.author_id),
                         typedResults: items)
                 ];
               },
@@ -2637,7 +2813,7 @@ typedef $$AuthorsInfoTableTableProcessedTableManager = ProcessedTableManager<
     $$AuthorsInfoTableTableUpdateCompanionBuilder,
     (AuthorsInfoTableData, $$AuthorsInfoTableTableReferences),
     AuthorsInfoTableData,
-    PrefetchHooks Function({bool bookInfoTableRefs})>;
+    PrefetchHooks Function({bool authorsListTableRefs})>;
 typedef $$GenresInfoTableTableCreateCompanionBuilder = GenresInfoTableCompanion
     Function({
   Value<int> genre_id,
@@ -2865,7 +3041,7 @@ typedef $$GenresInfoTableTableProcessedTableManager = ProcessedTableManager<
 typedef $$BookInfoTableTableCreateCompanionBuilder = BookInfoTableCompanion
     Function({
   Value<int> book_id,
-  Value<int> books_folder_id,
+  Value<int?> books_folder_id,
   required String book_name,
   required String image_path,
   required bool image_source_type,
@@ -2873,13 +3049,12 @@ typedef $$BookInfoTableTableCreateCompanionBuilder = BookInfoTableCompanion
   required int number_of_pages,
   required bool status,
   required int grade,
-  required int author_id,
   required int genre_id,
 });
 typedef $$BookInfoTableTableUpdateCompanionBuilder = BookInfoTableCompanion
     Function({
   Value<int> book_id,
-  Value<int> books_folder_id,
+  Value<int?> books_folder_id,
   Value<String> book_name,
   Value<String> image_path,
   Value<bool> image_source_type,
@@ -2887,7 +3062,6 @@ typedef $$BookInfoTableTableUpdateCompanionBuilder = BookInfoTableCompanion
   Value<int> number_of_pages,
   Value<bool> status,
   Value<int> grade,
-  Value<int> author_id,
   Value<int> genre_id,
 });
 
@@ -2902,29 +3076,13 @@ final class $$BookInfoTableTableReferences extends BaseReferences<
           db.bookInfoTable.books_folder_id,
           db.booksFolderInfoTable.books_folder_id));
 
-  $$BooksFolderInfoTableTableProcessedTableManager get books_folder_id {
-    final $_column = $_itemColumn<int>('books_folder_id')!;
-
+  $$BooksFolderInfoTableTableProcessedTableManager? get books_folder_id {
+    final $_column = $_itemColumn<int>('books_folder_id');
+    if ($_column == null) return null;
     final manager =
         $$BooksFolderInfoTableTableTableManager($_db, $_db.booksFolderInfoTable)
             .filter((f) => f.books_folder_id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_books_folder_idTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-        manager.$state.copyWith(prefetchedData: [item]));
-  }
-
-  static $AuthorsInfoTableTable _author_idTable(_$DriftAppDatabase db) =>
-      db.authorsInfoTable.createAlias($_aliasNameGenerator(
-          db.bookInfoTable.author_id, db.authorsInfoTable.author_id));
-
-  $$AuthorsInfoTableTableProcessedTableManager get author_id {
-    final $_column = $_itemColumn<int>('author_id')!;
-
-    final manager =
-        $$AuthorsInfoTableTableTableManager($_db, $_db.authorsInfoTable)
-            .filter((f) => f.author_id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_author_idTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: [item]));
@@ -2944,6 +3102,23 @@ final class $$BookInfoTableTableReferences extends BaseReferences<
     if (item == null) return manager;
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$AuthorsListTableTable, List<AuthorsListTableData>>
+      _authorsListTableRefsTable(_$DriftAppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.authorsListTable,
+              aliasName: $_aliasNameGenerator(
+                  db.bookInfoTable.book_id, db.authorsListTable.book_id));
+
+  $$AuthorsListTableTableProcessedTableManager get authorsListTableRefs {
+    final manager =
+        $$AuthorsListTableTableTableManager($_db, $_db.authorsListTable).filter(
+            (f) => f.book_id.book_id.sqlEquals($_itemColumn<int>('book_id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_authorsListTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
   }
 
   static MultiTypedResultKey<$ReadingUpdateInfoTable,
@@ -3040,26 +3215,6 @@ class $$BookInfoTableTableFilterComposer
     return composer;
   }
 
-  $$AuthorsInfoTableTableFilterComposer get author_id {
-    final $$AuthorsInfoTableTableFilterComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.author_id,
-        referencedTable: $db.authorsInfoTable,
-        getReferencedColumn: (t) => t.author_id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$AuthorsInfoTableTableFilterComposer(
-              $db: $db,
-              $table: $db.authorsInfoTable,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
-    return composer;
-  }
-
   $$GenresInfoTableTableFilterComposer get genre_id {
     final $$GenresInfoTableTableFilterComposer composer = $composerBuilder(
         composer: this,
@@ -3078,6 +3233,27 @@ class $$BookInfoTableTableFilterComposer
                   $removeJoinBuilderFromRootComposer,
             ));
     return composer;
+  }
+
+  Expression<bool> authorsListTableRefs(
+      Expression<bool> Function($$AuthorsListTableTableFilterComposer f) f) {
+    final $$AuthorsListTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.book_id,
+        referencedTable: $db.authorsListTable,
+        getReferencedColumn: (t) => t.book_id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AuthorsListTableTableFilterComposer(
+              $db: $db,
+              $table: $db.authorsListTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
   }
 
   Expression<bool> readingUpdateInfoRefs(
@@ -3179,26 +3355,6 @@ class $$BookInfoTableTableOrderingComposer
     return composer;
   }
 
-  $$AuthorsInfoTableTableOrderingComposer get author_id {
-    final $$AuthorsInfoTableTableOrderingComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.author_id,
-        referencedTable: $db.authorsInfoTable,
-        getReferencedColumn: (t) => t.author_id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$AuthorsInfoTableTableOrderingComposer(
-              $db: $db,
-              $table: $db.authorsInfoTable,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
-    return composer;
-  }
-
   $$GenresInfoTableTableOrderingComposer get genre_id {
     final $$GenresInfoTableTableOrderingComposer composer = $composerBuilder(
         composer: this,
@@ -3274,26 +3430,6 @@ class $$BookInfoTableTableAnnotationComposer
     return composer;
   }
 
-  $$AuthorsInfoTableTableAnnotationComposer get author_id {
-    final $$AuthorsInfoTableTableAnnotationComposer composer = $composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.author_id,
-        referencedTable: $db.authorsInfoTable,
-        getReferencedColumn: (t) => t.author_id,
-        builder: (joinBuilder,
-                {$addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer}) =>
-            $$AuthorsInfoTableTableAnnotationComposer(
-              $db: $db,
-              $table: $db.authorsInfoTable,
-              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-              joinBuilder: joinBuilder,
-              $removeJoinBuilderFromRootComposer:
-                  $removeJoinBuilderFromRootComposer,
-            ));
-    return composer;
-  }
-
   $$GenresInfoTableTableAnnotationComposer get genre_id {
     final $$GenresInfoTableTableAnnotationComposer composer = $composerBuilder(
         composer: this,
@@ -3312,6 +3448,27 @@ class $$BookInfoTableTableAnnotationComposer
                   $removeJoinBuilderFromRootComposer,
             ));
     return composer;
+  }
+
+  Expression<T> authorsListTableRefs<T extends Object>(
+      Expression<T> Function($$AuthorsListTableTableAnnotationComposer a) f) {
+    final $$AuthorsListTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.book_id,
+        referencedTable: $db.authorsListTable,
+        getReferencedColumn: (t) => t.book_id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AuthorsListTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.authorsListTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
   }
 
   Expression<T> readingUpdateInfoRefs<T extends Object>(
@@ -3373,8 +3530,8 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
     BookInfoTableData,
     PrefetchHooks Function(
         {bool books_folder_id,
-        bool author_id,
         bool genre_id,
+        bool authorsListTableRefs,
         bool readingUpdateInfoRefs,
         bool bookmarksFolderInfoRefs})> {
   $$BookInfoTableTableTableManager(
@@ -3390,7 +3547,7 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
               $$BookInfoTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> book_id = const Value.absent(),
-            Value<int> books_folder_id = const Value.absent(),
+            Value<int?> books_folder_id = const Value.absent(),
             Value<String> book_name = const Value.absent(),
             Value<String> image_path = const Value.absent(),
             Value<bool> image_source_type = const Value.absent(),
@@ -3398,7 +3555,6 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
             Value<int> number_of_pages = const Value.absent(),
             Value<bool> status = const Value.absent(),
             Value<int> grade = const Value.absent(),
-            Value<int> author_id = const Value.absent(),
             Value<int> genre_id = const Value.absent(),
           }) =>
               BookInfoTableCompanion(
@@ -3411,12 +3567,11 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
             number_of_pages: number_of_pages,
             status: status,
             grade: grade,
-            author_id: author_id,
             genre_id: genre_id,
           ),
           createCompanionCallback: ({
             Value<int> book_id = const Value.absent(),
-            Value<int> books_folder_id = const Value.absent(),
+            Value<int?> books_folder_id = const Value.absent(),
             required String book_name,
             required String image_path,
             required bool image_source_type,
@@ -3424,7 +3579,6 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
             required int number_of_pages,
             required bool status,
             required int grade,
-            required int author_id,
             required int genre_id,
           }) =>
               BookInfoTableCompanion.insert(
@@ -3437,7 +3591,6 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
             number_of_pages: number_of_pages,
             status: status,
             grade: grade,
-            author_id: author_id,
             genre_id: genre_id,
           ),
           withReferenceMapper: (p0) => p0
@@ -3448,13 +3601,14 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
               .toList(),
           prefetchHooksCallback: (
               {books_folder_id = false,
-              author_id = false,
               genre_id = false,
+              authorsListTableRefs = false,
               readingUpdateInfoRefs = false,
               bookmarksFolderInfoRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [
+                if (authorsListTableRefs) db.authorsListTable,
                 if (readingUpdateInfoRefs) db.readingUpdateInfo,
                 if (bookmarksFolderInfoRefs) db.bookmarksFolderInfo
               ],
@@ -3482,17 +3636,6 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
                         .books_folder_id,
                   ) as T;
                 }
-                if (author_id) {
-                  state = state.withJoin(
-                    currentTable: table,
-                    currentColumn: table.author_id,
-                    referencedTable:
-                        $$BookInfoTableTableReferences._author_idTable(db),
-                    referencedColumn: $$BookInfoTableTableReferences
-                        ._author_idTable(db)
-                        .author_id,
-                  ) as T;
-                }
                 if (genre_id) {
                   state = state.withJoin(
                     currentTable: table,
@@ -3509,6 +3652,19 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
               },
               getPrefetchedDataCallback: (items) async {
                 return [
+                  if (authorsListTableRefs)
+                    await $_getPrefetchedData<BookInfoTableData,
+                            $BookInfoTableTable, AuthorsListTableData>(
+                        currentTable: table,
+                        referencedTable: $$BookInfoTableTableReferences
+                            ._authorsListTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$BookInfoTableTableReferences(db, table, p0)
+                                .authorsListTableRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.book_id == item.book_id),
+                        typedResults: items),
                   if (readingUpdateInfoRefs)
                     await $_getPrefetchedData<BookInfoTableData,
                             $BookInfoTableTable, ReadingUpdateInfoData>(
@@ -3555,10 +3711,321 @@ typedef $$BookInfoTableTableProcessedTableManager = ProcessedTableManager<
     BookInfoTableData,
     PrefetchHooks Function(
         {bool books_folder_id,
-        bool author_id,
         bool genre_id,
+        bool authorsListTableRefs,
         bool readingUpdateInfoRefs,
         bool bookmarksFolderInfoRefs})>;
+typedef $$AuthorsListTableTableCreateCompanionBuilder
+    = AuthorsListTableCompanion Function({
+  required int authors_id,
+  required int book_id,
+  Value<int> rowid,
+});
+typedef $$AuthorsListTableTableUpdateCompanionBuilder
+    = AuthorsListTableCompanion Function({
+  Value<int> authors_id,
+  Value<int> book_id,
+  Value<int> rowid,
+});
+
+final class $$AuthorsListTableTableReferences extends BaseReferences<
+    _$DriftAppDatabase, $AuthorsListTableTable, AuthorsListTableData> {
+  $$AuthorsListTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $AuthorsInfoTableTable _authors_idTable(_$DriftAppDatabase db) =>
+      db.authorsInfoTable.createAlias($_aliasNameGenerator(
+          db.authorsListTable.authors_id, db.authorsInfoTable.author_id));
+
+  $$AuthorsInfoTableTableProcessedTableManager get authors_id {
+    final $_column = $_itemColumn<int>('authors_id')!;
+
+    final manager =
+        $$AuthorsInfoTableTableTableManager($_db, $_db.authorsInfoTable)
+            .filter((f) => f.author_id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_authors_idTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $BookInfoTableTable _book_idTable(_$DriftAppDatabase db) =>
+      db.bookInfoTable.createAlias($_aliasNameGenerator(
+          db.authorsListTable.book_id, db.bookInfoTable.book_id));
+
+  $$BookInfoTableTableProcessedTableManager get book_id {
+    final $_column = $_itemColumn<int>('book_id')!;
+
+    final manager = $$BookInfoTableTableTableManager($_db, $_db.bookInfoTable)
+        .filter((f) => f.book_id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_book_idTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$AuthorsListTableTableFilterComposer
+    extends Composer<_$DriftAppDatabase, $AuthorsListTableTable> {
+  $$AuthorsListTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$AuthorsInfoTableTableFilterComposer get authors_id {
+    final $$AuthorsInfoTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.authors_id,
+        referencedTable: $db.authorsInfoTable,
+        getReferencedColumn: (t) => t.author_id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AuthorsInfoTableTableFilterComposer(
+              $db: $db,
+              $table: $db.authorsInfoTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$BookInfoTableTableFilterComposer get book_id {
+    final $$BookInfoTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.book_id,
+        referencedTable: $db.bookInfoTable,
+        getReferencedColumn: (t) => t.book_id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$BookInfoTableTableFilterComposer(
+              $db: $db,
+              $table: $db.bookInfoTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$AuthorsListTableTableOrderingComposer
+    extends Composer<_$DriftAppDatabase, $AuthorsListTableTable> {
+  $$AuthorsListTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$AuthorsInfoTableTableOrderingComposer get authors_id {
+    final $$AuthorsInfoTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.authors_id,
+        referencedTable: $db.authorsInfoTable,
+        getReferencedColumn: (t) => t.author_id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AuthorsInfoTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.authorsInfoTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$BookInfoTableTableOrderingComposer get book_id {
+    final $$BookInfoTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.book_id,
+        referencedTable: $db.bookInfoTable,
+        getReferencedColumn: (t) => t.book_id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$BookInfoTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.bookInfoTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$AuthorsListTableTableAnnotationComposer
+    extends Composer<_$DriftAppDatabase, $AuthorsListTableTable> {
+  $$AuthorsListTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$AuthorsInfoTableTableAnnotationComposer get authors_id {
+    final $$AuthorsInfoTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.authors_id,
+        referencedTable: $db.authorsInfoTable,
+        getReferencedColumn: (t) => t.author_id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$AuthorsInfoTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.authorsInfoTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$BookInfoTableTableAnnotationComposer get book_id {
+    final $$BookInfoTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.book_id,
+        referencedTable: $db.bookInfoTable,
+        getReferencedColumn: (t) => t.book_id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$BookInfoTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.bookInfoTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$AuthorsListTableTableTableManager extends RootTableManager<
+    _$DriftAppDatabase,
+    $AuthorsListTableTable,
+    AuthorsListTableData,
+    $$AuthorsListTableTableFilterComposer,
+    $$AuthorsListTableTableOrderingComposer,
+    $$AuthorsListTableTableAnnotationComposer,
+    $$AuthorsListTableTableCreateCompanionBuilder,
+    $$AuthorsListTableTableUpdateCompanionBuilder,
+    (AuthorsListTableData, $$AuthorsListTableTableReferences),
+    AuthorsListTableData,
+    PrefetchHooks Function({bool authors_id, bool book_id})> {
+  $$AuthorsListTableTableTableManager(
+      _$DriftAppDatabase db, $AuthorsListTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AuthorsListTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AuthorsListTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AuthorsListTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> authors_id = const Value.absent(),
+            Value<int> book_id = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              AuthorsListTableCompanion(
+            authors_id: authors_id,
+            book_id: book_id,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required int authors_id,
+            required int book_id,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              AuthorsListTableCompanion.insert(
+            authors_id: authors_id,
+            book_id: book_id,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$AuthorsListTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({authors_id = false, book_id = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (authors_id) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.authors_id,
+                    referencedTable:
+                        $$AuthorsListTableTableReferences._authors_idTable(db),
+                    referencedColumn: $$AuthorsListTableTableReferences
+                        ._authors_idTable(db)
+                        .author_id,
+                  ) as T;
+                }
+                if (book_id) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.book_id,
+                    referencedTable:
+                        $$AuthorsListTableTableReferences._book_idTable(db),
+                    referencedColumn: $$AuthorsListTableTableReferences
+                        ._book_idTable(db)
+                        .book_id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$AuthorsListTableTableProcessedTableManager = ProcessedTableManager<
+    _$DriftAppDatabase,
+    $AuthorsListTableTable,
+    AuthorsListTableData,
+    $$AuthorsListTableTableFilterComposer,
+    $$AuthorsListTableTableOrderingComposer,
+    $$AuthorsListTableTableAnnotationComposer,
+    $$AuthorsListTableTableCreateCompanionBuilder,
+    $$AuthorsListTableTableUpdateCompanionBuilder,
+    (AuthorsListTableData, $$AuthorsListTableTableReferences),
+    AuthorsListTableData,
+    PrefetchHooks Function({bool authors_id, bool book_id})>;
 typedef $$ReadingUpdateInfoTableCreateCompanionBuilder
     = ReadingUpdateInfoCompanion Function({
   Value<int> update_id,
@@ -4433,6 +4900,8 @@ class $DriftAppDatabaseManager {
       $$GenresInfoTableTableTableManager(_db, _db.genresInfoTable);
   $$BookInfoTableTableTableManager get bookInfoTable =>
       $$BookInfoTableTableTableManager(_db, _db.bookInfoTable);
+  $$AuthorsListTableTableTableManager get authorsListTable =>
+      $$AuthorsListTableTableTableManager(_db, _db.authorsListTable);
   $$ReadingUpdateInfoTableTableManager get readingUpdateInfo =>
       $$ReadingUpdateInfoTableTableManager(_db, _db.readingUpdateInfo);
   $$BookmarksFolderInfoTableTableManager get bookmarksFolderInfo =>

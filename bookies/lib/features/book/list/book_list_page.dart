@@ -14,32 +14,7 @@ class BookListPage extends StatefulWidget {
 class _BookListPageState extends State<BookListPage> {
   final BookRepository bookRepository = GetIt.I.get();
 
-  List<BookInfoEntity> books = [
-    BookInfoEntity(
-        bookId: 0,
-        folderId: 0,
-        bookName: "Witcher 1",
-        imagePath: "assets/default_images/8.png",
-        imageSourceType: ImageSourceType.asset,
-        readPages: 100,
-        numberOfPages: 322,
-        status: false,
-        authorId: 1,
-        genreId: 1,
-        grade: null),
-    BookInfoEntity(
-        bookId: 0,
-        folderId: 0,
-        bookName: "Witcher 2",
-        imagePath: "assets/default_images/5.png",
-        imageSourceType: ImageSourceType.asset,
-        readPages: 333,
-        numberOfPages: 333,
-        status: true,
-        authorId: 1,
-        genreId: 1,
-        grade: 4),
-  ];
+  List<BookInfoEntity> books = [];
 
   late final Future<List<BookInfoEntity>> booksFuture;
 
@@ -73,6 +48,8 @@ class _BookListPageState extends State<BookListPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.pushNamed(context, "/adding");
+          books = await bookRepository.getAll();
+          setState(() {});
         },
         heroTag: UniqueKey(),
         foregroundColor: Colors.deepPurpleAccent,

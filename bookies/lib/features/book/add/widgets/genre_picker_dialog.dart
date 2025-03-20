@@ -131,10 +131,15 @@ class _GenrePickerDialogState extends State<GenrePickerDialog> {
                         )),
                         FloatingActionButton(
                           onPressed: () {
-                            Navigator.pop(
-                              context,
-                              PickedGenre(genreName: _controller.text),
-                            );
+                            FocusScope.of(context).unfocus();
+                            if (_controller.text.trim().isEmpty) {
+                              Navigator.pop(context);
+                            } else {
+                              Navigator.pop(
+                                context,
+                                PickedGenre(genreName: _controller.text),
+                              );
+                            }
                           },
                           shape: CircleBorder(),
                           mini: true,

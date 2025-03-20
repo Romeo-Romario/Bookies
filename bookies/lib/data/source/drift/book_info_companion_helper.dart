@@ -11,7 +11,6 @@ class BookInfoCompanionHelper {
       number_of_pages: entity.numberOfPages,
       status: entity.status,
       grade: entity.grade!,
-      author_id: entity.authorId!,
       genre_id: entity.genreId!,
     );
   }
@@ -25,7 +24,6 @@ class BookInfoCompanionHelper {
         readPages: dbSample.read_pages,
         numberOfPages: dbSample.number_of_pages,
         status: dbSample.status,
-        authorId: dbSample.author_id,
         genreId: dbSample.genre_id,
         grade: dbSample.grade,
       );

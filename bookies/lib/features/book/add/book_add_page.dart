@@ -1,4 +1,6 @@
+import 'package:bookies/data/entities/authors_list_entity.dart';
 import 'package:bookies/data/entities/book_info_entity.dart';
+import 'package:bookies/data/repository/authors_list_repository.dart';
 import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
@@ -25,7 +27,7 @@ class _BookAddPageState extends State<BookAddPage> {
   final BookRepository bookRepository = GetIt.I.get();
   final AuthorsRepository authorRepository = GetIt.I.get();
   final GenreRepository genreRepository = GetIt.I.get();
-
+  final AuthorsListRepository authorsListRepository = GetIt.I.get();
   final bookNameController = TextEditingController();
   ImageSourceType imageSourceType = ImageSourceType.asset;
   int? numberOfPages;
@@ -77,7 +79,7 @@ class _BookAddPageState extends State<BookAddPage> {
               ),
               ExpansionChips.outlined(
                 length: selectedAuthors.length,
-                title: 'authors',
+                title: 'Authors',
                 labelBuilder: (index) => Text(selectedAuthors[index].author),
                 onTap: (index) {
                   setState(() {
@@ -89,7 +91,8 @@ class _BookAddPageState extends State<BookAddPage> {
                     context: context,
                   );
                   setState(() {
-                    if (author != null) {
+                    if (author != null &&
+                        checkContainedAuthor(selectedAuthors, author)) {
                       selectedAuthors.add(author);
                     }
                   });
@@ -208,9 +211,14 @@ class _BookAddPageState extends State<BookAddPage> {
 
   Future onAddBook() async {
     if (checkProperties()) {
-      for (var element in selectedAuthors) {
-        if (element.id == null) {
-          await authorRepository.add(element.author);
+      // Give the ability to user not to set read pages
+      numberOfReadPages = numberOfReadPages ?? 0;
+
+      for (var i = 0; i < selectedAuthors.length; i++) {
+        if (!selectedAuthors[i].existedInDatabase) {
+          selectedAuthors[i] = PickedAuthor(
+              author: selectedAuthors[i].author,
+              id: await authorRepository.add(selectedAuthors[i].author));
         }
       }
 
@@ -226,31 +234,36 @@ class _BookAddPageState extends State<BookAddPage> {
         bookName: bookNameController.text,
         imagePath: finalImagePath,
         imageSourceType: imageSourceType,
-        readPages: numberOfReadPages ?? 0,
+        readPages: numberOfReadPages!,
         numberOfPages: numberOfPages!,
         status: false,
-        authorId: 0,
         genreId: genreId,
         grade: 0,
       ));
+
+      for (var element in selectedAuthors) {
+        await authorsListRepository
+            .add(AuthorsListEntity(bookId: bookId, authorId: element.id!));
+      }
     }
 
     Navigator.pop(context);
   }
 
   bool checkProperties() {
+    int _numberOfReadPages = numberOfPages ?? 0;
     if (bookNameController.text.isEmpty ||
         numberOfPages == null ||
-        numberOfReadPages == null ||
         imagePath.isEmpty ||
         selectedAuthors.isEmpty ||
         genre == null) {
       alert(context);
       return false;
     }
+
     if (numberOfPages! <= 0 ||
-        numberOfReadPages! < 0 ||
-        numberOfPages! < numberOfReadPages!) {
+        _numberOfReadPages < 0 ||
+        numberOfPages! < _numberOfReadPages) {
       alert(context);
       return false;
     }
@@ -277,5 +290,10 @@ class _BookAddPageState extends State<BookAddPage> {
     final imageName = await _imageSaver.saveImage(XFile(imagePath));
     final imageFile = await _imageSaver.getSavedImage(imageName);
     return imageFile.path;
+  }
+
+  bool checkContainedAuthor(
+      List<PickedAuthor> authors, PickedAuthor pickedAuthor) {
+    return authors.contains(pickedAuthor) ? false : true;
   }
 }
