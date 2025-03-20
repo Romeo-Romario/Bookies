@@ -1,6 +1,6 @@
 import 'package:bookies/data/entities/author_entity.dart';
 import 'package:bookies/data/repository/authors_repository.dart';
-import 'package:bookies/features/book/add/widgets/author_recomendation_list.dart';
+import 'package:bookies/features/book/add/widgets/author_picker/author_recomendation_list.dart';
 import 'package:bookies/features/book/add/widgets/author_picker/picked_author.dart';
 import 'package:bookies/data/source/drift/drift_app_database.dart';
 import 'package:flutter/material.dart';

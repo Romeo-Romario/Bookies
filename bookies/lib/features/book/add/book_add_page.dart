@@ -2,17 +2,17 @@ import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
+import 'package:bookies/features/book/add/logic/image_saver.dart';
 import 'package:bookies/features/book/add/widgets/author_picker/author_picker_dialog.dart';
 import 'package:bookies/features/book/add/widgets/author_picker/picked_author.dart';
-import 'package:bookies/services/modules/adding_page_view/models/save_book_action.dart';
-import 'package:bookies/services/modules/adding_page_view/widgets/genre_picker_dialog.dart';
-import 'package:bookies/services/modules/adding_page_view/widgets/image_picker.dart';
-import 'package:bookies/services/modules/adding_page_view/widgets/input_pages_dialog.dart';
-import 'package:bookies/services/modules/adding_page_view/widgets/labeled_container.dart';
-
+import 'package:bookies/features/book/add/widgets/genre_picker_dialog.dart';
+import 'package:bookies/features/book/add/widgets/image_picker.dart';
+import 'package:bookies/features/book/add/widgets/input_pages_dialog.dart';
+import 'package:bookies/features/book/add/widgets/labeled_container.dart';
 import 'package:bookies/features/shared/widgets/expansion_chips/expansion_chips.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:image_picker/image_picker.dart';
 
 class BookAddPage extends StatefulWidget {
   const BookAddPage({super.key});
@@ -196,6 +196,9 @@ class _BookAddPageState extends State<BookAddPage> {
                   ),
                 ],
               ),
+              SizedBox(
+                height: 60,
+              )
             ],
           ),
         ),
@@ -252,5 +255,27 @@ class _BookAddPageState extends State<BookAddPage> {
       return false;
     }
     return true;
+  }
+
+  void alert(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(
+            "Wrong Input",
+            textAlign: TextAlign.center,
+          ),
+          alignment: Alignment.center,
+        );
+      },
+    );
+  }
+
+  Future<String> saveImage(String imagePath) async {
+    ImageSaver _imageSaver = ImageSaver();
+    final imageName = await _imageSaver.saveImage(XFile(imagePath));
+    final imageFile = await _imageSaver.getSavedImage(imageName);
+    return imageFile.path;
   }
 }

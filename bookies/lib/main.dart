@@ -4,7 +4,6 @@ import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
 import 'package:bookies/data/source/drift/drift_app_database.dart';
 import 'package:bookies/features/book/add/book_add_page.dart';
-import 'package:bookies/features/book/add/widgets/author_recomendation_list.dart';
 import 'package:bookies/features/book/list/book_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bookies/data/entities/book_info_entity.dart';
-import 'package:bookies/services/modules/adding_page_view/widgets/assets_image_dialog_view/assets_image_dialog.dart';
+import 'package:bookies/features/book/add/widgets/assets_image_dialog_view/assets_image_dialog.dart';
 
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';

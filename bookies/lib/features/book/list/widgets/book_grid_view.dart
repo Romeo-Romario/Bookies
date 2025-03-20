@@ -1,5 +1,5 @@
 import 'package:bookies/data/entities/book_info_entity.dart';
-import 'package:bookies/services/modules/libary/widgets/libary_books_view/display_books_in_liabry.dart';
+import 'package:bookies/features/book/list/widgets/display_books_in_liabry.dart';
 import 'package:flutter/material.dart';
 
 class BookGridView extends StatelessWidget {

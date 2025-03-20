@@ -1,4 +1,4 @@
-import 'package:bookies/services/modules/adding_page_view/widgets/assets_image_dialog_view/dialog_book_crad_view.dart';
+import 'package:bookies/features/book/add/widgets/assets_image_dialog_view/dialog_book_crad_view.dart';
 import 'package:flutter/material.dart';
 
 class AssetsImageDialog extends StatefulWidget {

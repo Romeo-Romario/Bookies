@@ -1,4 +1,4 @@
-import 'package:bookies/services/modules/adding_page_view/widgets/labeled_container.dart';
+import 'package:bookies/features/book/add/widgets/labeled_container.dart';
 import 'package:bookies/features/shared/theme/tile_style.dart';
 import 'package:flutter/material.dart';
 
