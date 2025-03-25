@@ -1,5 +1,6 @@
 import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/source/drift/drift_app_database.dart';
+import 'package:drift/drift.dart';
 
 class BookInfoCompanionHelper {
   static BookInfoTableCompanion to(BookInfoEntity entity) {
@@ -10,7 +11,8 @@ class BookInfoCompanionHelper {
       read_pages: entity.readPages,
       number_of_pages: entity.numberOfPages,
       status: entity.status,
-      grade: entity.grade!,
+      grade: Value(entity.grade),
+      feedback: Value(entity.feedback),
       genre_id: entity.genreId!,
     );
   }
@@ -24,6 +26,7 @@ class BookInfoCompanionHelper {
         readPages: dbSample.read_pages,
         numberOfPages: dbSample.number_of_pages,
         status: dbSample.status,
+        feedback: dbSample.feedback,
         genreId: dbSample.genre_id,
         grade: dbSample.grade,
       );

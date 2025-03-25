@@ -13,6 +13,7 @@ import 'package:bookies/features/book/add/widgets/input_pages_dialog.dart';
 import 'package:bookies/features/book/add/widgets/labeled_container.dart';
 import 'package:bookies/features/shared/widgets/expansion_chips/expansion_chips.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating/flutter_rating.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -28,28 +29,46 @@ class _BookAddPageState extends State<BookAddPage> {
   final AuthorsRepository authorRepository = GetIt.I.get();
   final GenreRepository genreRepository = GetIt.I.get();
   final AuthorsListRepository authorsListRepository = GetIt.I.get();
+
   final bookNameController = TextEditingController();
+  final feedbackController = TextEditingController();
   ImageSourceType imageSourceType = ImageSourceType.asset;
+  String imagePath = "";
+  final List<PickedAuthor> selectedAuthors = [];
+  PickedGenre? genre;
   int? numberOfPages;
   int? numberOfReadPages;
-  String imagePath = "";
-
-  PickedGenre? genre;
-
-  final List<PickedAuthor> selectedAuthors = [];
-
+  double rating = 0;
+  bool pageMode = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueGrey[200],
-        title: Text("Add book"),
-        centerTitle: true,
-        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20), // Round the bottom corners
+            bottom: Radius.circular(20),
           ),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        title: SegmentedButton<String>(
+          segments: const [
+            ButtonSegment(
+                value: "New", label: Text("New Book"), icon: Icon(Icons.add)),
+            ButtonSegment(
+                value: "Finished",
+                label: Text("Finished"),
+                // icon: Icon(Icons.done_all_rounded)),
+                icon: Icon(Icons.book)),
+          ],
+          selected: {!pageMode ? "New" : "Finished"},
+          onSelectionChanged: (newSelection) {
+            setState(() {
+              pageMode = newSelection.first == "New" ? false : true;
+            });
+          },
+          multiSelectionEnabled: false,
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -75,7 +94,7 @@ class _BookAddPageState extends State<BookAddPage> {
                 controller: bookNameController,
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Input name of the book'),
+                    labelText: "Enter book title"),
               ),
               ExpansionChips.outlined(
                 length: selectedAuthors.length,
@@ -159,48 +178,77 @@ class _BookAddPageState extends State<BookAddPage> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: 140,
-                    height: 70,
-                    child: LabeledContainer(
-                      label:
-                          numberOfReadPages != null ? "Finished pages" : null,
-                      child: SizedBox(
-                        height: 50,
-                        child: OutlinedButton(
-                            onPressed: () async {
-                              numberOfReadPages = await InputPagesDialog(
-                                      message:
-                                          "Enter number of finised \n pages in the book")
-                                  .showAsDialog(context: context);
-                              setState(() {});
-                            },
-                            style: OutlinedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(7),
+                  if (!pageMode)
+                    SizedBox(
+                      width: 140,
+                      height: 70,
+                      child: LabeledContainer(
+                        label:
+                            numberOfReadPages != null ? "Finished pages" : null,
+                        child: SizedBox(
+                          height: 50,
+                          child: OutlinedButton(
+                              onPressed: () async {
+                                numberOfReadPages = await InputPagesDialog(
+                                        message:
+                                            "Enter number of finised \n pages in the book")
+                                    .showAsDialog(context: context);
+                                setState(() {});
+                              },
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                                side: BorderSide(
+                                    color: Colors.deepPurple, width: 1),
                               ),
-                              side: BorderSide(
-                                  color: Colors.deepPurple, width: 1),
-                            ),
-                            child: Center(
-                              child: numberOfReadPages == null
-                                  ? Text(
-                                      "Enter number of finished pages",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 12),
-                                    )
-                                  : Text(
-                                      numberOfReadPages.toString(),
-                                      style: TextStyle(fontSize: 18),
-                                    ),
-                            )),
+                              child: Center(
+                                child: numberOfReadPages == null
+                                    ? Text(
+                                        "Enter number of finished pages",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontSize: 12),
+                                      )
+                                    : Text(
+                                        numberOfReadPages.toString(),
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                              )),
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
+              if (pageMode)
+                LabeledContainer(
+                  label: "Rate the book:",
+                  child: StarRating(
+                    size: 50,
+                    rating: rating,
+                    allowHalfRating: true,
+                    onRatingChanged: (rating) =>
+                        setState(() => this.rating = rating),
+                  ),
+                ),
+              if (pageMode)
+                SizedBox(
+                  height: 250,
+                  width: double.infinity,
+                  child: TextFormField(
+                    controller: feedbackController,
+                    decoration: InputDecoration(
+                      labelText: "Write feedback",
+                      border: OutlineInputBorder(),
+                      alignLabelWithHint: true,
+                      contentPadding: EdgeInsets.only(top: 12, left: 12),
+                    ),
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical.top,
+                  ),
+                ),
               SizedBox(
-                height: 60,
+                height: 65,
               )
             ],
           ),
@@ -236,9 +284,10 @@ class _BookAddPageState extends State<BookAddPage> {
         imageSourceType: imageSourceType,
         readPages: numberOfReadPages!,
         numberOfPages: numberOfPages!,
-        status: false,
+        status: pageMode ? true : false,
+        feedback: pageMode ? feedbackController.text : null,
         genreId: genreId,
-        grade: 0,
+        grade: pageMode ? rating : null,
       ));
 
       for (var element in selectedAuthors) {
@@ -259,6 +308,15 @@ class _BookAddPageState extends State<BookAddPage> {
         genre == null) {
       alert(context);
       return false;
+    }
+
+    // Check if user add finished page
+    if (pageMode) {
+      if (rating == 0) {
+        alert(context);
+        return false;
+      }
+      numberOfReadPages = numberOfPages;
     }
 
     if (numberOfPages! <= 0 ||

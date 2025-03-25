@@ -16,7 +16,7 @@ class _BookListPageState extends State<BookListPage> {
 
   List<BookInfoEntity> books = [];
 
-  late final Future<List<BookInfoEntity>> booksFuture;
+  late Future<List<BookInfoEntity>> booksFuture;
 
   @override
   void initState() {
@@ -32,6 +32,11 @@ class _BookListPageState extends State<BookListPage> {
         title: Text("Libary"),
         centerTitle: true,
         backgroundColor: Colors.blue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+        ),
       ),
       body: SafeArea(
         child: FutureBuilder(
@@ -48,8 +53,10 @@ class _BookListPageState extends State<BookListPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.pushNamed(context, "/adding");
-          books = await bookRepository.getAll();
-          setState(() {});
+
+          setState(() {
+            booksFuture = bookRepository.getAll();
+          });
         },
         heroTag: UniqueKey(),
         foregroundColor: Colors.deepPurpleAccent,

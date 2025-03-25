@@ -9,7 +9,8 @@ class BookInfoEntity {
   final int readPages;
   final int numberOfPages;
   final bool status;
-  final int? grade;
+  final double? grade;
+  final String? feedback;
   final int? genreId;
 
   BookInfoEntity({
@@ -21,6 +22,7 @@ class BookInfoEntity {
     required this.readPages,
     required this.numberOfPages,
     required this.status,
+    required this.feedback,
     required this.genreId,
     required this.grade,
   });

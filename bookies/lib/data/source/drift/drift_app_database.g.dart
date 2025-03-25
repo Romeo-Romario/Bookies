@@ -780,11 +780,17 @@ class $BookInfoTableTable extends BookInfoTable
       requiredDuringInsert: true,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("status" IN (0, 1))'));
+  static const VerificationMeta _feedbackMeta =
+      const VerificationMeta('feedback');
+  @override
+  late final GeneratedColumn<String> feedback = GeneratedColumn<String>(
+      'feedback', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _gradeMeta = const VerificationMeta('grade');
   @override
-  late final GeneratedColumn<int> grade = GeneratedColumn<int>(
-      'grade', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<double> grade = GeneratedColumn<double>(
+      'grade', aliasedName, true,
+      type: DriftSqlType.double, requiredDuringInsert: false);
   static const VerificationMeta _genre_idMeta =
       const VerificationMeta('genre_id');
   @override
@@ -804,6 +810,7 @@ class $BookInfoTableTable extends BookInfoTable
         read_pages,
         number_of_pages,
         status,
+        feedback,
         grade,
         genre_id
       ];
@@ -871,11 +878,13 @@ class $BookInfoTableTable extends BookInfoTable
     } else if (isInserting) {
       context.missing(_statusMeta);
     }
+    if (data.containsKey('feedback')) {
+      context.handle(_feedbackMeta,
+          feedback.isAcceptableOrUnknown(data['feedback']!, _feedbackMeta));
+    }
     if (data.containsKey('grade')) {
       context.handle(
           _gradeMeta, grade.isAcceptableOrUnknown(data['grade']!, _gradeMeta));
-    } else if (isInserting) {
-      context.missing(_gradeMeta);
     }
     if (data.containsKey('genre_id')) {
       context.handle(_genre_idMeta,
@@ -908,8 +917,10 @@ class $BookInfoTableTable extends BookInfoTable
           .read(DriftSqlType.int, data['${effectivePrefix}number_of_pages'])!,
       status: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}status'])!,
+      feedback: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}feedback']),
       grade: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}grade'])!,
+          .read(DriftSqlType.double, data['${effectivePrefix}grade']),
       genre_id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}genre_id'])!,
     );
@@ -931,7 +942,8 @@ class BookInfoTableData extends DataClass
   final int read_pages;
   final int number_of_pages;
   final bool status;
-  final int grade;
+  final String? feedback;
+  final double? grade;
   final int genre_id;
   const BookInfoTableData(
       {required this.book_id,
@@ -942,7 +954,8 @@ class BookInfoTableData extends DataClass
       required this.read_pages,
       required this.number_of_pages,
       required this.status,
-      required this.grade,
+      this.feedback,
+      this.grade,
       required this.genre_id});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -957,7 +970,12 @@ class BookInfoTableData extends DataClass
     map['read_pages'] = Variable<int>(read_pages);
     map['number_of_pages'] = Variable<int>(number_of_pages);
     map['status'] = Variable<bool>(status);
-    map['grade'] = Variable<int>(grade);
+    if (!nullToAbsent || feedback != null) {
+      map['feedback'] = Variable<String>(feedback);
+    }
+    if (!nullToAbsent || grade != null) {
+      map['grade'] = Variable<double>(grade);
+    }
     map['genre_id'] = Variable<int>(genre_id);
     return map;
   }
@@ -974,7 +992,11 @@ class BookInfoTableData extends DataClass
       read_pages: Value(read_pages),
       number_of_pages: Value(number_of_pages),
       status: Value(status),
-      grade: Value(grade),
+      feedback: feedback == null && nullToAbsent
+          ? const Value.absent()
+          : Value(feedback),
+      grade:
+          grade == null && nullToAbsent ? const Value.absent() : Value(grade),
       genre_id: Value(genre_id),
     );
   }
@@ -991,7 +1013,8 @@ class BookInfoTableData extends DataClass
       read_pages: serializer.fromJson<int>(json['read_pages']),
       number_of_pages: serializer.fromJson<int>(json['number_of_pages']),
       status: serializer.fromJson<bool>(json['status']),
-      grade: serializer.fromJson<int>(json['grade']),
+      feedback: serializer.fromJson<String?>(json['feedback']),
+      grade: serializer.fromJson<double?>(json['grade']),
       genre_id: serializer.fromJson<int>(json['genre_id']),
     );
   }
@@ -1007,7 +1030,8 @@ class BookInfoTableData extends DataClass
       'read_pages': serializer.toJson<int>(read_pages),
       'number_of_pages': serializer.toJson<int>(number_of_pages),
       'status': serializer.toJson<bool>(status),
-      'grade': serializer.toJson<int>(grade),
+      'feedback': serializer.toJson<String?>(feedback),
+      'grade': serializer.toJson<double?>(grade),
       'genre_id': serializer.toJson<int>(genre_id),
     };
   }
@@ -1021,7 +1045,8 @@ class BookInfoTableData extends DataClass
           int? read_pages,
           int? number_of_pages,
           bool? status,
-          int? grade,
+          Value<String?> feedback = const Value.absent(),
+          Value<double?> grade = const Value.absent(),
           int? genre_id}) =>
       BookInfoTableData(
         book_id: book_id ?? this.book_id,
@@ -1034,7 +1059,8 @@ class BookInfoTableData extends DataClass
         read_pages: read_pages ?? this.read_pages,
         number_of_pages: number_of_pages ?? this.number_of_pages,
         status: status ?? this.status,
-        grade: grade ?? this.grade,
+        feedback: feedback.present ? feedback.value : this.feedback,
+        grade: grade.present ? grade.value : this.grade,
         genre_id: genre_id ?? this.genre_id,
       );
   BookInfoTableData copyWithCompanion(BookInfoTableCompanion data) {
@@ -1055,6 +1081,7 @@ class BookInfoTableData extends DataClass
           ? data.number_of_pages.value
           : this.number_of_pages,
       status: data.status.present ? data.status.value : this.status,
+      feedback: data.feedback.present ? data.feedback.value : this.feedback,
       grade: data.grade.present ? data.grade.value : this.grade,
       genre_id: data.genre_id.present ? data.genre_id.value : this.genre_id,
     );
@@ -1071,6 +1098,7 @@ class BookInfoTableData extends DataClass
           ..write('read_pages: $read_pages, ')
           ..write('number_of_pages: $number_of_pages, ')
           ..write('status: $status, ')
+          ..write('feedback: $feedback, ')
           ..write('grade: $grade, ')
           ..write('genre_id: $genre_id')
           ..write(')'))
@@ -1087,6 +1115,7 @@ class BookInfoTableData extends DataClass
       read_pages,
       number_of_pages,
       status,
+      feedback,
       grade,
       genre_id);
   @override
@@ -1101,6 +1130,7 @@ class BookInfoTableData extends DataClass
           other.read_pages == this.read_pages &&
           other.number_of_pages == this.number_of_pages &&
           other.status == this.status &&
+          other.feedback == this.feedback &&
           other.grade == this.grade &&
           other.genre_id == this.genre_id);
 }
@@ -1114,7 +1144,8 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
   final Value<int> read_pages;
   final Value<int> number_of_pages;
   final Value<bool> status;
-  final Value<int> grade;
+  final Value<String?> feedback;
+  final Value<double?> grade;
   final Value<int> genre_id;
   const BookInfoTableCompanion({
     this.book_id = const Value.absent(),
@@ -1125,6 +1156,7 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
     this.read_pages = const Value.absent(),
     this.number_of_pages = const Value.absent(),
     this.status = const Value.absent(),
+    this.feedback = const Value.absent(),
     this.grade = const Value.absent(),
     this.genre_id = const Value.absent(),
   });
@@ -1137,7 +1169,8 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
     required int read_pages,
     required int number_of_pages,
     required bool status,
-    required int grade,
+    this.feedback = const Value.absent(),
+    this.grade = const Value.absent(),
     required int genre_id,
   })  : book_name = Value(book_name),
         image_path = Value(image_path),
@@ -1145,7 +1178,6 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
         read_pages = Value(read_pages),
         number_of_pages = Value(number_of_pages),
         status = Value(status),
-        grade = Value(grade),
         genre_id = Value(genre_id);
   static Insertable<BookInfoTableData> custom({
     Expression<int>? book_id,
@@ -1156,7 +1188,8 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
     Expression<int>? read_pages,
     Expression<int>? number_of_pages,
     Expression<bool>? status,
-    Expression<int>? grade,
+    Expression<String>? feedback,
+    Expression<double>? grade,
     Expression<int>? genre_id,
   }) {
     return RawValuesInsertable({
@@ -1168,6 +1201,7 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
       if (read_pages != null) 'read_pages': read_pages,
       if (number_of_pages != null) 'number_of_pages': number_of_pages,
       if (status != null) 'status': status,
+      if (feedback != null) 'feedback': feedback,
       if (grade != null) 'grade': grade,
       if (genre_id != null) 'genre_id': genre_id,
     });
@@ -1182,7 +1216,8 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
       Value<int>? read_pages,
       Value<int>? number_of_pages,
       Value<bool>? status,
-      Value<int>? grade,
+      Value<String?>? feedback,
+      Value<double?>? grade,
       Value<int>? genre_id}) {
     return BookInfoTableCompanion(
       book_id: book_id ?? this.book_id,
@@ -1193,6 +1228,7 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
       read_pages: read_pages ?? this.read_pages,
       number_of_pages: number_of_pages ?? this.number_of_pages,
       status: status ?? this.status,
+      feedback: feedback ?? this.feedback,
       grade: grade ?? this.grade,
       genre_id: genre_id ?? this.genre_id,
     );
@@ -1225,8 +1261,11 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
     if (status.present) {
       map['status'] = Variable<bool>(status.value);
     }
+    if (feedback.present) {
+      map['feedback'] = Variable<String>(feedback.value);
+    }
     if (grade.present) {
-      map['grade'] = Variable<int>(grade.value);
+      map['grade'] = Variable<double>(grade.value);
     }
     if (genre_id.present) {
       map['genre_id'] = Variable<int>(genre_id.value);
@@ -1245,6 +1284,7 @@ class BookInfoTableCompanion extends UpdateCompanion<BookInfoTableData> {
           ..write('read_pages: $read_pages, ')
           ..write('number_of_pages: $number_of_pages, ')
           ..write('status: $status, ')
+          ..write('feedback: $feedback, ')
           ..write('grade: $grade, ')
           ..write('genre_id: $genre_id')
           ..write(')'))
@@ -3048,7 +3088,8 @@ typedef $$BookInfoTableTableCreateCompanionBuilder = BookInfoTableCompanion
   required int read_pages,
   required int number_of_pages,
   required bool status,
-  required int grade,
+  Value<String?> feedback,
+  Value<double?> grade,
   required int genre_id,
 });
 typedef $$BookInfoTableTableUpdateCompanionBuilder = BookInfoTableCompanion
@@ -3061,7 +3102,8 @@ typedef $$BookInfoTableTableUpdateCompanionBuilder = BookInfoTableCompanion
   Value<int> read_pages,
   Value<int> number_of_pages,
   Value<bool> status,
-  Value<int> grade,
+  Value<String?> feedback,
+  Value<double?> grade,
   Value<int> genre_id,
 });
 
@@ -3192,7 +3234,10 @@ class $$BookInfoTableTableFilterComposer
   ColumnFilters<bool> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get grade => $composableBuilder(
+  ColumnFilters<String> get feedback => $composableBuilder(
+      column: $table.feedback, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get grade => $composableBuilder(
       column: $table.grade, builder: (column) => ColumnFilters(column));
 
   $$BooksFolderInfoTableTableFilterComposer get books_folder_id {
@@ -3331,7 +3376,10 @@ class $$BookInfoTableTableOrderingComposer
   ColumnOrderings<bool> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get grade => $composableBuilder(
+  ColumnOrderings<String> get feedback => $composableBuilder(
+      column: $table.feedback, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get grade => $composableBuilder(
       column: $table.grade, builder: (column) => ColumnOrderings(column));
 
   $$BooksFolderInfoTableTableOrderingComposer get books_folder_id {
@@ -3406,7 +3454,10 @@ class $$BookInfoTableTableAnnotationComposer
   GeneratedColumn<bool> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
-  GeneratedColumn<int> get grade =>
+  GeneratedColumn<String> get feedback =>
+      $composableBuilder(column: $table.feedback, builder: (column) => column);
+
+  GeneratedColumn<double> get grade =>
       $composableBuilder(column: $table.grade, builder: (column) => column);
 
   $$BooksFolderInfoTableTableAnnotationComposer get books_folder_id {
@@ -3554,7 +3605,8 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
             Value<int> read_pages = const Value.absent(),
             Value<int> number_of_pages = const Value.absent(),
             Value<bool> status = const Value.absent(),
-            Value<int> grade = const Value.absent(),
+            Value<String?> feedback = const Value.absent(),
+            Value<double?> grade = const Value.absent(),
             Value<int> genre_id = const Value.absent(),
           }) =>
               BookInfoTableCompanion(
@@ -3566,6 +3618,7 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
             read_pages: read_pages,
             number_of_pages: number_of_pages,
             status: status,
+            feedback: feedback,
             grade: grade,
             genre_id: genre_id,
           ),
@@ -3578,7 +3631,8 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
             required int read_pages,
             required int number_of_pages,
             required bool status,
-            required int grade,
+            Value<String?> feedback = const Value.absent(),
+            Value<double?> grade = const Value.absent(),
             required int genre_id,
           }) =>
               BookInfoTableCompanion.insert(
@@ -3590,6 +3644,7 @@ class $$BookInfoTableTableTableManager extends RootTableManager<
             read_pages: read_pages,
             number_of_pages: number_of_pages,
             status: status,
+            feedback: feedback,
             grade: grade,
             genre_id: genre_id,
           ),

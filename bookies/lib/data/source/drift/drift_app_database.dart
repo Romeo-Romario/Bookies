@@ -40,7 +40,8 @@ class BookInfoTable extends Table {
   IntColumn get read_pages => integer()();
   IntColumn get number_of_pages => integer()();
   BoolColumn get status => boolean()();
-  IntColumn get grade => integer()();
+  TextColumn get feedback => text().nullable()();
+  RealColumn get grade => real().nullable()();
   IntColumn get genre_id => integer().references(GenresInfoTable, #genre_id)();
 }
 
