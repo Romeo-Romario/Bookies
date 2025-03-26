@@ -1,5 +1,6 @@
 import 'package:bookies/data/database_initializer.dart';
 import 'package:bookies/data/repository/authors_list_repository.dart';
+import 'package:bookies/data/repository/authors_list_with_authors_repository.dart';
 import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
@@ -17,6 +18,7 @@ void main() async {
 
   GetIt.I.registerSingleton<SharedPreferences>(
       await SharedPreferences.getInstance());
+
   GetIt.I.registerSingleton<BookRepository>(
     BookRepositoryImpl(database),
   );
@@ -28,6 +30,9 @@ void main() async {
   );
   GetIt.I.registerSingleton<AuthorsListRepository>(
     AuthorsListRepositoryImpl(database),
+  );
+  GetIt.I.registerSingleton<AuthorsListWithAuthorsRepository>(
+    AuthorsListWithAuthorsRepositoryImpl(database),
   );
 
   await DatabaseInitializer.builtInEntitiesInitializer(

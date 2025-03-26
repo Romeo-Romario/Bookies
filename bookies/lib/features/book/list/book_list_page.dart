@@ -53,7 +53,6 @@ class _BookListPageState extends State<BookListPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Navigator.pushNamed(context, "/adding");
-
           setState(() {
             booksFuture = bookRepository.getAll();
           });
