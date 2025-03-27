@@ -16,42 +16,46 @@ class CustomCircularProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double imageSize = MediaQuery.of(context).size.width * 0.25;
+    return DashedCircularProgressBar.aspectRatio(
+      aspectRatio: 1,
+      valueNotifier: _valueNotifier,
+      progress: element.readPages.toDouble(),
+      maxProgress: element.numberOfPages.toDouble(),
+      startAngle: 225,
+      sweepAngle: 270,
+      foregroundColor: Colors.green,
+      backgroundColor: const Color(0xffeeeeee),
+      foregroundStrokeWidth: 10,
+      backgroundStrokeWidth: 10,
+      animation: true,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final widgetSize = Size(constraints.maxWidth, constraints.maxHeight);
 
-    return Stack(
-      alignment: Alignment.center, // Ensure everything is centered
-      children: [
-        // Circular Progress Bar
-        DashedCircularProgressBar.aspectRatio(
-          aspectRatio: 1,
-          valueNotifier: _valueNotifier,
-          progress: element.readPages.toDouble(),
-          maxProgress: element.numberOfPages.toDouble(),
-          startAngle: 225,
-          sweepAngle: 270,
-          foregroundColor: Colors.green,
-          backgroundColor: const Color(0xffeeeeee),
-          foregroundStrokeWidth: 10,
-          backgroundStrokeWidth: 10,
-          animation: true,
-        ),
-
-        // Book Image (Inside the Circle)
-        Container(
-          height: imageSize,
-          width: imageSize,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          child: switch (element.imageSourceType) {
-            ImageSourceType.asset =>
-              Image.asset(element.imagePath, fit: BoxFit.contain),
-            ImageSourceType.local =>
-              Image.file(File(element.imagePath), fit: BoxFit.contain),
-          },
-        ),
-      ],
+          return Hero(
+            tag: element.bookId.toString(),
+            child: Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: SizedBox(
+                  width: widgetSize.width * 0.5,
+                  height: widgetSize.height * 0.7,
+                  child: switch (element.imageSourceType) {
+                    ImageSourceType.asset => Image.asset(
+                        element.imagePath,
+                        fit: BoxFit.cover,
+                      ),
+                    ImageSourceType.local => Image.file(
+                        File(element.imagePath),
+                        fit: BoxFit.cover,
+                      ),
+                  },
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

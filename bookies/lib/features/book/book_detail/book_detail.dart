@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bookies/data/entities/authors_list_with_authors_entity.dart';
 import 'package:bookies/data/entities/book_info_entity.dart';
+import 'package:bookies/data/entities/genre_entity.dart';
 import 'package:bookies/data/repository/authors_list_with_authors_repository.dart';
+import 'package:bookies/data/repository/genre_repository.dart';
+import 'package:bookies/features/book/add/widgets/labeled_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:get_it/get_it.dart';
@@ -18,13 +21,15 @@ class BookDetail extends StatefulWidget {
 
 class _BookDetailState extends State<BookDetail> {
   late Future<List<AuthorsListWithAuthorsEntity>> futureAuthorslist;
-  final AuthorsListWithAuthorsRepositoryImpl authorsListRepository =
-      GetIt.I.get();
+  late Future<GenreEntity> futureGenre;
+  final AuthorsListWithAuthorsRepository authorsListRepository = GetIt.I.get();
+  final GenreRepository genreRepository = GetIt.I.get();
   @override
   void initState() {
     super.initState();
     futureAuthorslist =
         authorsListRepository.getAuthors(widget.bookInfo.bookId!);
+    futureGenre = genreRepository.search(widget.bookInfo.genreId!);
   }
 
   @override
@@ -73,19 +78,22 @@ class _BookDetailState extends State<BookDetail> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Container(
-                  width: 150,
-                  height: 200,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(20.0),
+                Hero(
+                  tag: widget.bookInfo.bookId.toString(),
+                  child: Container(
+                    width: 150,
+                    height: 200,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: image,
                   ),
-                  child: image,
                 ),
                 SizedBox(
                   height: 200,
-                  width: 220,
+                  width: 150,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -114,7 +122,7 @@ class _BookDetailState extends State<BookDetail> {
                           ),
                           style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
-                                vertical: 16, horizontal: 16),
+                                vertical: 12, horizontal: 12),
                             minimumSize: Size(20, 60),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -208,7 +216,7 @@ class _BookDetailState extends State<BookDetail> {
                   size: 25,
                 ),
                 style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 100),
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 90),
                   minimumSize: Size(70, 60),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
@@ -240,7 +248,53 @@ class _BookDetailState extends State<BookDetail> {
                   );
                 },
               ),
-            )
+            ),
+            Card(
+                child: FutureBuilder(
+              future: futureGenre,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting ||
+                    snapshot.connectionState == ConnectionState.active) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text("Error"));
+                }
+                final data = snapshot.data;
+
+                return ListTile(
+                  leading: Icon(Icons.auto_fix_high_outlined),
+                  title: Text("Genre: "),
+                  subtitle: Text(data!.name),
+                );
+              },
+            )),
+            if (widget.bookInfo.status)
+              LabeledContainer(
+                label: "Feedback",
+                labelSize: 22,
+                child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    constraints: BoxConstraints(
+                      minHeight: 100,
+                    ),
+                    child: widget.bookInfo.feedback == null
+                        ? Center(
+                            child: Text("No feedback"),
+                          )
+                        : Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Text(
+                              widget.bookInfo.feedback!,
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ))),
+              )
           ],
         ),
       ),

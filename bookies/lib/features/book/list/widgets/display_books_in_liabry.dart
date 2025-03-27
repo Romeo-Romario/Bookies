@@ -47,7 +47,7 @@ class BookLibaryView extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
-                  maxLines: 3,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   minFontSize: 16,
                   stepGranularity: 1,

@@ -5,7 +5,7 @@ import 'package:drift/drift.dart';
 abstract class GenreRepository {
   Future<int> add(String genre);
   Future<List<GenreEntity>> getAll();
-
+  Future<GenreEntity> search(int searchedGenreId);
   Future<int> clear();
 }
 
@@ -44,6 +44,20 @@ class GenreRepositoryImpl extends GenreRepository {
       name: data.genre_name,
       builtIn: data.built_in,
     );
+  }
+
+  Future<GenreEntity> search(int searchedGenreId) {
+    final query = source.select(source.genresInfoTable)
+      ..where(
+        (tbl) => tbl.genre_id.equals(searchedGenreId),
+      );
+    final result = query
+        .map(
+          (p0) => GenreEntity(
+              id: p0.genre_id, name: p0.genre_name, builtIn: p0.built_in),
+        )
+        .getSingle();
+    return result;
   }
 
   @override
