@@ -40,6 +40,13 @@ class _BookAddPageState extends State<BookAddPage> {
   int? numberOfReadPages;
   double rating = 0;
   bool pageMode = false;
+
+  @override
+  void initState() {
+    //TODO: implement todo
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

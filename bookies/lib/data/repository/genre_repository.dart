@@ -46,6 +46,7 @@ class GenreRepositoryImpl extends GenreRepository {
     );
   }
 
+  @override
   Future<GenreEntity> search(int searchedGenreId) {
     final query = source.select(source.genresInfoTable)
       ..where(

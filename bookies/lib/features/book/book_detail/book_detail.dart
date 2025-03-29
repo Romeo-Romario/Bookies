@@ -10,6 +10,7 @@ import 'package:bookies/features/book/add/widgets/labeled_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:get_it/get_it.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class BookDetail extends StatefulWidget {
   const BookDetail({super.key, required this.bookInfo});
@@ -228,47 +229,44 @@ class _BookDetailState extends State<BookDetail> {
               child: FutureBuilder(
                 future: futureAuthorslist,
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting ||
-                      snapshot.connectionState == ConnectionState.active) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Center(child: Text("Error"));
-                  }
-                  final data = snapshot.data;
-
-                  return ListTile(
-                    leading: Icon(Icons.account_circle_outlined),
-                    title: Text(data!.length == 1 ? "Author" : "Authors"),
-                    subtitle: Text(
-                      data
-                          .map((author) => author.authorEntity!.fullName)
-                          .join("\n"),
+                  return Skeletonizer(
+                    enabled:
+                        snapshot.connectionState == ConnectionState.waiting ||
+                            snapshot.connectionState == ConnectionState.active,
+                    child: ListTile(
+                      leading: Icon(Icons.account_circle_outlined),
+                      title: Text(snapshot.hasData && snapshot.data!.length == 1
+                          ? "Author"
+                          : "Authors"),
+                      subtitle: Text(
+                        snapshot.hasData
+                            ? snapshot.data!
+                                .map((author) => author.authorEntity!.fullName)
+                                .join("\n")
+                            : "Loading...",
+                      ),
                     ),
                   );
                 },
               ),
             ),
             Card(
-                child: FutureBuilder(
-              future: futureGenre,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting ||
-                    snapshot.connectionState == ConnectionState.active) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text("Error"));
-                }
-                final data = snapshot.data;
-
-                return ListTile(
-                  leading: Icon(Icons.auto_fix_high_outlined),
-                  title: Text("Genre: "),
-                  subtitle: Text(data!.name),
-                );
-              },
-            )),
+              child: FutureBuilder(
+                future: futureGenre,
+                builder: (context, snapshot) {
+                  return Skeletonizer(
+                    enabled:
+                        snapshot.connectionState == ConnectionState.waiting ||
+                            snapshot.connectionState == ConnectionState.active,
+                    child: ListTile(
+                      leading: Icon(Icons.auto_fix_high_outlined),
+                      title: Text("Genre: "),
+                      subtitle: Text(snapshot.data?.name ?? "Loading..."),
+                    ),
+                  );
+                },
+              ),
+            ),
             if (widget.bookInfo.status)
               LabeledContainer(
                 label: "Feedback",
@@ -282,7 +280,7 @@ class _BookDetailState extends State<BookDetail> {
                     constraints: BoxConstraints(
                       minHeight: 100,
                     ),
-                    child: widget.bookInfo.feedback == null
+                    child: widget.bookInfo.feedback!.isEmpty
                         ? Center(
                             child: Text("No feedback"),
                           )

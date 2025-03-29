@@ -31,7 +31,6 @@ class CustomCircularProgressBar extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final widgetSize = Size(constraints.maxWidth, constraints.maxHeight);
-
           return Hero(
             tag: element.bookId.toString(),
             child: Center(
