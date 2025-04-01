@@ -25,8 +25,8 @@ void main() async {
   GetIt.I.registerSingleton<GenreRepository>(
     GenreRepositoryImpl(database),
   );
-  GetIt.I.registerSingleton<AuthorsRepository>(
-    AuthorsRepositoryImpl(database),
+  GetIt.I.registerSingleton<AuthorRepository>(
+    AuthorRepositoryImpl(database),
   );
   GetIt.I.registerSingleton<AuthorsListRepository>(
     AuthorsListRepositoryImpl(database),
@@ -48,7 +48,7 @@ void main() async {
     ),
     routes: {
       '/': (context) => BookListPage(),
-      '/adding': (contex) => BookAddPage(),
+      '/adding': (contex) => BookAddPage.create(),
     },
   ));
 }

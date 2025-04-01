@@ -2,15 +2,16 @@ import 'package:bookies/data/entities/author_entity.dart';
 import 'package:bookies/data/source/drift/drift_app_database.dart';
 import 'package:drift/drift.dart';
 
-abstract class AuthorsRepository {
+abstract class AuthorRepository {
   Future<int> add(String name);
   Future<List<AuthorEntity>> search(String? text);
+  Future<List<AuthorEntity>> getAllByBook(int bookId);
 }
 
-class AuthorsRepositoryImpl extends AuthorsRepository {
+class AuthorRepositoryImpl extends AuthorRepository {
   final DriftAppDatabase source;
 
-  AuthorsRepositoryImpl(this.source);
+  AuthorRepositoryImpl(this.source);
 
   @override
   Future<int> add(String name) {
@@ -38,5 +39,26 @@ class AuthorsRepositoryImpl extends AuthorsRepository {
       id: data.author_id,
       fullName: data.author_fullname,
     );
+  }
+
+  @override
+  Future<List<AuthorEntity>> getAllByBook(int bookId) async {
+    final query = source.select(source.authorsListTable).join([
+      leftOuterJoin(
+        source.authorsInfoTable, // The table to join
+        source.authorsInfoTable.author_id
+            .equalsExp(source.authorsListTable.authors_id),
+      )
+    ])
+      ..where(source.authorsListTable.book_id.equals(bookId));
+
+    final authorBookPairs = await query.get();
+
+    return authorBookPairs
+        .map((e) => AuthorEntity(
+              id: e.readTable(source.authorsInfoTable).author_id,
+              fullName: e.readTable(source.authorsInfoTable).author_fullname,
+            ))
+        .toList();
   }
 }

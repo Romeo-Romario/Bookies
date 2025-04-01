@@ -8,11 +8,16 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImagePickerView extends StatefulWidget {
+  final String? initialPath;
+  final ImageSourceType? initialType;
+
   final void Function(String imagePath) onImagePathChanged;
   final void Function(ImageSourceType imageSourceType) onImageSourceTypeChanged;
 
   const ImagePickerView({
     super.key,
+    this.initialPath,
+    this.initialType,
     required this.onImagePathChanged,
     required this.onImageSourceTypeChanged,
   });
@@ -26,6 +31,35 @@ class _ImagePickerViewState extends State<ImagePickerView> {
 
   Image? selectedImage;
   ImageSourceType selectedType = ImageSourceType.asset;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final initialPath = widget.initialPath;
+    final initialType = widget.initialType;
+
+    if (initialPath == null || initialType == null) {
+      return;
+    }
+
+    if (initialPath.isEmpty) {
+      return;
+    }
+
+    selectedType = initialType;
+
+    selectedImage = switch (selectedType) {
+      ImageSourceType.asset => Image.asset(initialPath),
+      ImageSourceType.local => Image.file(
+          File(initialPath),
+          width: 200,
+          height: 200,
+          fit: BoxFit.cover,
+        ),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final sourceTypes = ImageSourceType.values.toList();

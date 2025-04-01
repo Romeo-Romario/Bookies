@@ -6,6 +6,7 @@ import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/entities/genre_entity.dart';
 import 'package:bookies/data/repository/authors_list_with_authors_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
+import 'package:bookies/features/book/add/book_add_page.dart';
 import 'package:bookies/features/book/add/widgets/labeled_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
@@ -62,7 +63,15 @@ class _BookDetailState extends State<BookDetail> {
           Padding(
             padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
             child: FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        BookAddPage.edit(book: widget.bookInfo),
+                  ),
+                );
+              },
               elevation: 0,
               backgroundColor: Colors.transparent,
               child: Icon(Icons.settings),

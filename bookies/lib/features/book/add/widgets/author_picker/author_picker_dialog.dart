@@ -23,7 +23,7 @@ class AuthorPickerDialog extends StatefulWidget {
 }
 
 class _AuthorPickerDialogState extends State<AuthorPickerDialog> {
-  final AuthorsRepository authorsRepository = GetIt.I.get();
+  final AuthorRepository authorsRepository = GetIt.I.get();
 
   final _controller = TextEditingController();
 

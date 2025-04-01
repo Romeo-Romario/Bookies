@@ -1,6 +1,7 @@
 import 'package:bookies/data/entities/authors_list_entity.dart';
 import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/repository/authors_list_repository.dart';
+import 'package:bookies/data/repository/authors_list_with_authors_repository.dart';
 import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
@@ -18,7 +19,13 @@ import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
 class BookAddPage extends StatefulWidget {
-  const BookAddPage({super.key});
+  final BookInfoEntity? book;
+
+  bool get isCreate => book == null;
+  bool get isEdit => book != null;
+
+  const BookAddPage.edit({super.key, required this.book});
+  const BookAddPage.create({super.key}) : book = null;
 
   @override
   State<BookAddPage> createState() => _BookAddPageState();
@@ -26,9 +33,11 @@ class BookAddPage extends StatefulWidget {
 
 class _BookAddPageState extends State<BookAddPage> {
   final BookRepository bookRepository = GetIt.I.get();
-  final AuthorsRepository authorRepository = GetIt.I.get();
+  final AuthorRepository authorRepository = GetIt.I.get();
   final GenreRepository genreRepository = GetIt.I.get();
   final AuthorsListRepository authorsListRepository = GetIt.I.get();
+  final AuthorsListWithAuthorsRepository authorsListWithAuthorsRepository =
+      GetIt.I.get();
 
   final bookNameController = TextEditingController();
   final feedbackController = TextEditingController();
@@ -41,10 +50,30 @@ class _BookAddPageState extends State<BookAddPage> {
   double rating = 0;
   bool pageMode = false;
 
+  late final Future prepareEditFuture;
+
   @override
   void initState() {
-    //TODO: implement todo
     super.initState();
+
+    final book = widget.book;
+
+    prepareEditFuture = book == null ? Future.value() : getPrepareEditFuture();
+
+    if (book == null) {
+      return;
+    }
+
+    bookNameController.text = book.bookName;
+    feedbackController.text = book.feedback ?? '';
+
+    imageSourceType = book.imageSourceType;
+    imagePath = book.imagePath;
+
+    rating = book.grade ?? 0;
+    pageMode = book.status;
+    numberOfPages = book.numberOfPages;
+    numberOfReadPages = book.readPages;
   }
 
   @override
@@ -78,229 +107,281 @@ class _BookAddPageState extends State<BookAddPage> {
           multiSelectionEnabled: false,
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: onAddBook,
-        heroTag: UniqueKey(),
-        icon: Icon(Icons.add),
-        label: Text("Add to libary"),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50),
-          child: Column(
-            spacing: 10,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 20),
-              ImagePickerView(
-                onImagePathChanged: (imagePath) => this.imagePath = imagePath,
-                onImageSourceTypeChanged: (imageSourceType) =>
-                    this.imageSourceType = imageSourceType,
-              ),
-              TextFormField(
-                controller: bookNameController,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Enter book title"),
-              ),
-              ExpansionChips.outlined(
-                length: selectedAuthors.length,
-                title: 'Authors',
-                labelBuilder: (index) => Text(selectedAuthors[index].author),
-                onTap: (index) {
-                  setState(() {
-                    selectedAuthors.removeAt(index);
-                  });
-                },
-                onAddTap: () async {
-                  final author = await AuthorPickerDialog.showAsDialog(
-                    context: context,
-                  );
-                  setState(() {
-                    if (author != null &&
-                        checkContainedAuthor(selectedAuthors, author)) {
-                      selectedAuthors.add(author);
-                    }
-                  });
-                },
-              ),
-              LabeledContainer(
-                label: genre?.genreName != null ? "Genre" : null,
-                child: SizedBox(
-                  width: 200,
-                  height: 50,
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      side: BorderSide(color: Colors.deepPurple, width: 1),
+      floatingActionButton: widget.isCreate
+          ? FloatingActionButton.extended(
+              onPressed: onAddBook,
+              icon: Icon(Icons.add),
+              label: Text("Add"),
+            )
+          : FloatingActionButton.extended(
+              onPressed: onEditBook,
+              icon: Icon(Icons.edit),
+              label: Text("Edit"),
+            ),
+      body: FutureBuilder(
+          future: prepareEditFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Text('Fuck You');
+            }
+
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50),
+                child: Column(
+                  spacing: 10,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: 20),
+                    ImagePickerView(
+                      initialPath: imagePath,
+                      initialType: imageSourceType,
+                      onImagePathChanged: (imagePath) =>
+                          this.imagePath = imagePath,
+                      onImageSourceTypeChanged: (imageSourceType) =>
+                          this.imageSourceType = imageSourceType,
                     ),
-                    onPressed: () async {
-                      genre = await GenrePickerDialog.showAsDialog(
-                          context: context);
-                      setState(() {});
-                    },
-                    label: Text(genre?.genreName ?? "Select Genre"),
-                    icon: Icon(Icons.auto_fix_high_outlined),
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  SizedBox(
-                    width: 140,
-                    height: 70,
-                    child: LabeledContainer(
-                      label: numberOfPages != null ? "Number of pages" : null,
+                    TextFormField(
+                      controller: bookNameController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: "Enter book title"),
+                    ),
+                    ExpansionChips.outlined(
+                      length: selectedAuthors.length,
+                      title: 'Authors',
+                      labelBuilder: (index) =>
+                          Text(selectedAuthors[index].author),
+                      onTap: (index) {
+                        setState(() {
+                          selectedAuthors.removeAt(index);
+                        });
+                      },
+                      onAddTap: () async {
+                        final author = await AuthorPickerDialog.showAsDialog(
+                          context: context,
+                        );
+                        setState(() {
+                          if (author != null &&
+                              checkContainedAuthor(selectedAuthors, author)) {
+                            selectedAuthors.add(author);
+                          }
+                        });
+                      },
+                    ),
+                    LabeledContainer(
+                      label: genre?.genreName != null ? "Genre" : null,
                       child: SizedBox(
+                        width: 200,
                         height: 50,
-                        child: OutlinedButton(
-                            onPressed: () async {
-                              numberOfPages = await InputPagesDialog(
-                                      message:
-                                          "Enter number of pages \n in the book")
-                                  .showAsDialog(context: context);
-                              setState(() {});
-                            },
-                            style: OutlinedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(7),
-                              ),
-                              side: BorderSide(
-                                  color: Colors.deepPurple, width: 1),
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7),
                             ),
-                            child: Center(
-                              child: numberOfPages == null
-                                  ? Text(
-                                      "Enter number of pages",
-                                      textAlign: TextAlign.center,
-                                    )
-                                  : Text(
-                                      numberOfPages.toString(),
-                                      style: TextStyle(fontSize: 18),
-                                    ),
-                            )),
-                      ),
-                    ),
-                  ),
-                  if (!pageMode)
-                    SizedBox(
-                      width: 140,
-                      height: 70,
-                      child: LabeledContainer(
-                        label:
-                            numberOfReadPages != null ? "Finished pages" : null,
-                        child: SizedBox(
-                          height: 50,
-                          child: OutlinedButton(
-                              onPressed: () async {
-                                numberOfReadPages = await InputPagesDialog(
-                                        message:
-                                            "Enter number of finised \n pages in the book")
-                                    .showAsDialog(context: context);
-                                setState(() {});
-                              },
-                              style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(7),
-                                ),
-                                side: BorderSide(
-                                    color: Colors.deepPurple, width: 1),
-                              ),
-                              child: Center(
-                                child: numberOfReadPages == null
-                                    ? Text(
-                                        "Enter number of finished pages",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontSize: 12),
-                                      )
-                                    : Text(
-                                        numberOfReadPages.toString(),
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                              )),
+                            side:
+                                BorderSide(color: Colors.deepPurple, width: 1),
+                          ),
+                          onPressed: () async {
+                            genre = await GenrePickerDialog.showAsDialog(
+                                context: context);
+                            setState(() {});
+                          },
+                          label: Text(genre?.genreName ?? "Select Genre"),
+                          icon: Icon(Icons.auto_fix_high_outlined),
                         ),
                       ),
                     ),
-                ],
-              ),
-              if (pageMode)
-                LabeledContainer(
-                  label: "Rate the book:",
-                  child: StarRating(
-                    size: 50,
-                    rating: rating,
-                    allowHalfRating: true,
-                    onRatingChanged: (rating) =>
-                        setState(() => this.rating = rating),
-                  ),
-                ),
-              if (pageMode)
-                SizedBox(
-                  height: 250,
-                  width: double.infinity,
-                  child: TextFormField(
-                    controller: feedbackController,
-                    decoration: InputDecoration(
-                      labelText: "Write feedback",
-                      border: OutlineInputBorder(),
-                      alignLabelWithHint: true,
-                      contentPadding: EdgeInsets.only(top: 12, left: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SizedBox(
+                          width: 140,
+                          height: 70,
+                          child: LabeledContainer(
+                            label: numberOfPages != null
+                                ? "Number of pages"
+                                : null,
+                            child: SizedBox(
+                              height: 50,
+                              child: OutlinedButton(
+                                  onPressed: () async {
+                                    numberOfPages = await InputPagesDialog(
+                                            message:
+                                                "Enter number of pages \n in the book")
+                                        .showAsDialog(context: context);
+                                    setState(() {});
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(7),
+                                    ),
+                                    side: BorderSide(
+                                        color: Colors.deepPurple, width: 1),
+                                  ),
+                                  child: Center(
+                                    child: numberOfPages == null
+                                        ? Text(
+                                            "Enter number of pages",
+                                            textAlign: TextAlign.center,
+                                          )
+                                        : Text(
+                                            numberOfPages.toString(),
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                  )),
+                            ),
+                          ),
+                        ),
+                        if (!pageMode)
+                          SizedBox(
+                            width: 140,
+                            height: 70,
+                            child: LabeledContainer(
+                              label: numberOfReadPages != null
+                                  ? "Finished pages"
+                                  : null,
+                              child: SizedBox(
+                                height: 50,
+                                child: OutlinedButton(
+                                    onPressed: () async {
+                                      numberOfReadPages = await InputPagesDialog(
+                                              message:
+                                                  "Enter number of finised \n pages in the book")
+                                          .showAsDialog(context: context);
+                                      setState(() {});
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                      side: BorderSide(
+                                          color: Colors.deepPurple, width: 1),
+                                    ),
+                                    child: Center(
+                                      child: numberOfReadPages == null
+                                          ? Text(
+                                              "Enter number of finished pages",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(fontSize: 12),
+                                            )
+                                          : Text(
+                                              numberOfReadPages.toString(),
+                                              style: TextStyle(fontSize: 18),
+                                            ),
+                                    )),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
-                    maxLines: null,
-                    expands: true,
-                    textAlignVertical: TextAlignVertical.top,
-                  ),
+                    if (pageMode)
+                      LabeledContainer(
+                        label: "Rate the book:",
+                        child: StarRating(
+                          size: 50,
+                          rating: rating,
+                          allowHalfRating: true,
+                          onRatingChanged: (rating) =>
+                              setState(() => this.rating = rating),
+                        ),
+                      ),
+                    if (pageMode)
+                      SizedBox(
+                        height: 250,
+                        width: double.infinity,
+                        child: TextFormField(
+                          controller: feedbackController,
+                          decoration: InputDecoration(
+                            labelText: "Write feedback",
+                            border: OutlineInputBorder(),
+                            alignLabelWithHint: true,
+                            contentPadding: EdgeInsets.only(top: 12, left: 12),
+                          ),
+                          maxLines: null,
+                          expands: true,
+                          textAlignVertical: TextAlignVertical.top,
+                        ),
+                      ),
+                    SizedBox(
+                      height: 65,
+                    )
+                  ],
                 ),
-              SizedBox(
-                height: 65,
-              )
-            ],
-          ),
-        ),
-      ),
+              ),
+            );
+          }),
     );
   }
 
+  Future getPrepareEditFuture() async {
+    final book = widget.book;
+    if (book == null) {
+      return;
+    }
+
+    final asd = await genreRepository.search(widget.book!.genreId!);
+
+    genre = PickedGenre(genreName: asd.name, id: asd.id);
+
+    final map = await authorRepository.getAllByBook(book.bookId!);
+
+    final res = map
+        .map(
+          (e) => PickedAuthor(author: e.fullName, id: e.id!),
+        )
+        .toList();
+
+    selectedAuthors.addAll(res);
+  }
+
   Future onAddBook() async {
-    if (checkProperties()) {
-      // Give the ability to user not to set read pages
-      numberOfReadPages = numberOfReadPages ?? 0;
+    if (checkProperties() == false) {
+      return;
+    }
 
-      for (var i = 0; i < selectedAuthors.length; i++) {
-        if (!selectedAuthors[i].existedInDatabase) {
-          selectedAuthors[i] = PickedAuthor(
-              author: selectedAuthors[i].author,
-              id: await authorRepository.add(selectedAuthors[i].author));
-        }
+    // Give the ability to user not to set read pages
+    numberOfReadPages = numberOfReadPages ?? 0;
+
+    for (var i = 0; i < selectedAuthors.length; i++) {
+      if (!selectedAuthors[i].existedInDatabase) {
+        selectedAuthors[i] = PickedAuthor(
+            author: selectedAuthors[i].author,
+            id: await authorRepository.add(selectedAuthors[i].author));
       }
+    }
 
-      int genreId = await genreRepository.add(genre!.genreName);
+    int genreId = await genreRepository.add(genre!.genreName);
 
-      final finalImagePath = imageSourceType == ImageSourceType.local
-          ? await saveImage(imagePath)
-          : imagePath;
+    final finalImagePath = imageSourceType == ImageSourceType.local
+        ? await saveImage(imagePath)
+        : imagePath;
 
-      int bookId = await bookRepository.add(BookInfoEntity(
-        bookId: null,
-        folderId: null,
-        bookName: bookNameController.text,
-        imagePath: finalImagePath,
-        imageSourceType: imageSourceType,
-        readPages: numberOfReadPages!,
-        numberOfPages: numberOfPages!,
-        status: pageMode ? true : false,
-        feedback: pageMode ? feedbackController.text : null,
-        genreId: genreId,
-        grade: pageMode ? rating : null,
-      ));
+    int bookId = await bookRepository.add(BookInfoEntity(
+      bookId: null,
+      folderId: null,
+      bookName: bookNameController.text,
+      imagePath: finalImagePath,
+      imageSourceType: imageSourceType,
+      readPages: numberOfReadPages!,
+      numberOfPages: numberOfPages!,
+      status: pageMode ? true : false,
+      feedback: pageMode ? feedbackController.text : null,
+      genreId: genreId,
+      grade: pageMode ? rating : null,
+    ));
 
-      for (var element in selectedAuthors) {
-        await authorsListRepository
-            .add(AuthorsListEntity(bookId: bookId, authorId: element.id!));
-      }
+    for (var element in selectedAuthors) {
+      await authorsListRepository
+          .add(AuthorsListEntity(bookId: bookId, authorId: element.id!));
+    }
+
+    Navigator.pop(context);
+  }
+
+  Future onEditBook() async {
+    if (checkProperties() == false) {
+      return;
     }
 
     Navigator.pop(context);

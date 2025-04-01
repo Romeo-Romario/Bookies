@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bookies/data/entities/book_info_entity.dart';
-import 'package:bookies/features/book/book_detail/book_detail.dart';
+import 'package:bookies/features/book/detail/book_detail.dart';
 import 'package:bookies/features/book/list/widgets/circular_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
