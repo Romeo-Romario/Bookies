@@ -72,228 +72,233 @@ class _BookDetailState extends State<BookDetail> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(30.0),
-        child: Column(
-          spacing: 30,
-          children: [
-            // Section 1
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Hero(
-                  tag: widget.bookInfo.bookId.toString(),
-                  child: Container(
-                    width: 150,
-                    height: 200,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: image,
-                  ),
-                ),
-                SizedBox(
-                  height: 200,
-                  width: 150,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    spacing: widget.bookInfo.status ? 20 : 30,
-                    children: [
-                      Text(
-                        !widget.bookInfo.status
-                            ? "${widget.bookInfo.readPages}/${widget.bookInfo.numberOfPages}"
-                            : "Finished", // Depents on book status
-                        style: TextStyle(
-                          color: Colors.green[900],
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 30,
+            children: [
+              // Section 1
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Hero(
+                    tag: widget.bookInfo.bookId.toString(),
+                    child: Container(
+                      width: 150,
+                      height: 200,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
-                      if (!widget.bookInfo.status)
-                        OutlinedButton.icon(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.edit_note_outlined,
-                            size: 30,
+                      child: image,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 200,
+                    width: 150,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      spacing: widget.bookInfo.status ? 20 : 30,
+                      children: [
+                        Text(
+                          !widget.bookInfo.status
+                              ? "${widget.bookInfo.readPages}/${widget.bookInfo.numberOfPages}"
+                              : "Finished", // Depents on book status
+                          style: TextStyle(
+                            color: Colors.green[900],
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
                           ),
-                          label: Text(
-                            "Update progress",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 12),
-                            minimumSize: Size(20, 60),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                        ),
+                        if (!widget.bookInfo.status)
+                          OutlinedButton.icon(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.edit_note_outlined,
+                              size: 30,
+                            ),
+                            label: Text(
+                              "Update progress",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 12),
+                              minimumSize: Size(20, 60),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           ),
-                        ),
-                      if (widget.bookInfo.status)
-                        SizedBox(
-                          height: 80,
-                          child: Center(
-                              child: Column(
-                            children: [
-                              StarRating(
-                                starCount: 3,
-                                size: 40,
-                                rating: widget.bookInfo.grade!,
-                                allowHalfRating: true,
-                              ),
-                              StarRating(
-                                starCount: 2,
-                                size: 40,
-                                rating: widget.bookInfo.grade! - 3,
-                                allowHalfRating: true,
-                              )
-                            ],
-                          )),
-                        )
-                    ],
-                  ),
-                )
-              ],
-            ),
-            // Section 2
-            if (!widget.bookInfo.status)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () {},
-                    label: Text(
-                      "Add bookmark",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    icon: Icon(
-                      Icons.bookmark_add_outlined,
-                      size: 20,
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                      minimumSize: Size(20, 60),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () {},
-                    label: Text(
-                      "Bookmarks",
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                    icon: Icon(
-                      Icons.collections_bookmark_outlined,
-                      size: 20,
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                      minimumSize: Size(20, 60),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                        if (widget.bookInfo.status)
+                          SizedBox(
+                            height: 80,
+                            child: Center(
+                                child: Column(
+                              children: [
+                                StarRating(
+                                  starCount: 3,
+                                  size: 40,
+                                  rating: widget.bookInfo.grade!,
+                                  allowHalfRating: true,
+                                ),
+                                StarRating(
+                                  starCount: 2,
+                                  size: 40,
+                                  rating: widget.bookInfo.grade! - 3,
+                                  allowHalfRating: true,
+                                )
+                              ],
+                            )),
+                          )
+                      ],
                     ),
                   )
                 ],
               ),
-            if (widget.bookInfo.status)
-              OutlinedButton.icon(
-                onPressed: () {},
-                label: Text(
-                  "Bookmarks",
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                ),
-                icon: Icon(
-                  Icons.collections_bookmark_outlined,
-                  size: 25,
-                ),
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 90),
-                  minimumSize: Size(70, 60),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-              ),
-            // Section 3
-            Card(
-              child: FutureBuilder(
-                future: futureAuthorslist,
-                builder: (context, snapshot) {
-                  return Skeletonizer(
-                    enabled:
-                        snapshot.connectionState == ConnectionState.waiting ||
-                            snapshot.connectionState == ConnectionState.active,
-                    child: ListTile(
-                      leading: Icon(Icons.account_circle_outlined),
-                      title: Text(snapshot.hasData && snapshot.data!.length == 1
-                          ? "Author"
-                          : "Authors"),
-                      subtitle: Text(
-                        snapshot.hasData
-                            ? snapshot.data!
-                                .map((author) => author.authorEntity!.fullName)
-                                .join("\n")
-                            : "Loading...",
+              // Section 2
+              if (!widget.bookInfo.status)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: () {},
+                      label: Text(
+                        "Add bookmark",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      icon: Icon(
+                        Icons.bookmark_add_outlined,
+                        size: 20,
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                        minimumSize: Size(20, 60),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
                       ),
                     ),
-                  );
-                },
+                    OutlinedButton.icon(
+                      onPressed: () {},
+                      label: Text(
+                        "Bookmarks",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      icon: Icon(
+                        Icons.collections_bookmark_outlined,
+                        size: 20,
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                        minimumSize: Size(20, 60),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              if (widget.bookInfo.status)
+                OutlinedButton.icon(
+                  onPressed: () {},
+                  label: Text(
+                    "Bookmarks",
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                  icon: Icon(
+                    Icons.collections_bookmark_outlined,
+                    size: 25,
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 90),
+                    minimumSize: Size(70, 60),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+              // Section 3
+              Card(
+                child: FutureBuilder(
+                  future: futureAuthorslist,
+                  builder: (context, snapshot) {
+                    return Skeletonizer(
+                      enabled: snapshot.connectionState ==
+                              ConnectionState.waiting ||
+                          snapshot.connectionState == ConnectionState.active,
+                      child: ListTile(
+                        leading: Icon(Icons.account_circle_outlined),
+                        title: Text(
+                            snapshot.hasData && snapshot.data!.length == 1
+                                ? "Author"
+                                : "Authors"),
+                        subtitle: Text(
+                          snapshot.hasData
+                              ? snapshot.data!
+                                  .map(
+                                      (author) => author.authorEntity!.fullName)
+                                  .join("\n")
+                              : "Loading...",
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            Card(
-              child: FutureBuilder(
-                future: futureGenre,
-                builder: (context, snapshot) {
-                  return Skeletonizer(
-                    enabled:
-                        snapshot.connectionState == ConnectionState.waiting ||
-                            snapshot.connectionState == ConnectionState.active,
-                    child: ListTile(
-                      leading: Icon(Icons.auto_fix_high_outlined),
-                      title: Text("Genre: "),
-                      subtitle: Text(snapshot.data?.name ?? "Loading..."),
-                    ),
-                  );
-                },
+              Card(
+                child: FutureBuilder(
+                  future: futureGenre,
+                  builder: (context, snapshot) {
+                    return Skeletonizer(
+                      enabled: snapshot.connectionState ==
+                              ConnectionState.waiting ||
+                          snapshot.connectionState == ConnectionState.active,
+                      child: ListTile(
+                        leading: Icon(Icons.auto_fix_high_outlined),
+                        title: Text("Genre: "),
+                        subtitle: Text(snapshot.data?.name ?? "Loading..."),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            if (widget.bookInfo.status)
-              LabeledContainer(
-                label: "Feedback",
-                labelSize: 22,
-                child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    constraints: BoxConstraints(
-                      minHeight: 100,
-                    ),
-                    child: widget.bookInfo.feedback!.isEmpty
-                        ? Center(
-                            child: Text("No feedback"),
-                          )
-                        : Padding(
-                            padding: EdgeInsets.all(10.0),
-                            child: Text(
-                              widget.bookInfo.feedback!,
-                              style: TextStyle(
-                                fontSize: 16,
-                              ),
-                            ))),
-              )
-          ],
+              if (widget.bookInfo.status)
+                LabeledContainer(
+                  label: "Feedback",
+                  labelSize: 22,
+                  child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      constraints: BoxConstraints(
+                        minHeight: 100,
+                      ),
+                      child: widget.bookInfo.feedback!.isEmpty
+                          ? Center(
+                              child: Text("No feedback"),
+                            )
+                          : Padding(
+                              padding: EdgeInsets.all(10.0),
+                              child: Text(
+                                widget.bookInfo.feedback!,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ))),
+                )
+            ],
+          ),
         ),
       ),
     );
