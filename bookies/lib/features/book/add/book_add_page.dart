@@ -52,6 +52,9 @@ class _BookAddPageState extends State<BookAddPage> {
 
   late final Future prepareEditFuture;
 
+  List<PickedAuthor>? editBookAuthors; //Compare with other final list
+  Key resetKey = UniqueKey(); // Return starting image to image picker
+  bool previosImageChanged = false;
   @override
   void initState() {
     super.initState();
@@ -122,7 +125,7 @@ class _BookAddPageState extends State<BookAddPage> {
           future: prepareEditFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Text('Fuck You');
+              return Center(child: Text('Loading...'));
             }
 
             return SingleChildScrollView(
@@ -130,17 +133,54 @@ class _BookAddPageState extends State<BookAddPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: Column(
                   spacing: 10,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(height: 20),
-                    ImagePickerView(
-                      initialPath: imagePath,
-                      initialType: imageSourceType,
-                      onImagePathChanged: (imagePath) =>
-                          this.imagePath = imagePath,
-                      onImageSourceTypeChanged: (imageSourceType) =>
-                          this.imageSourceType = imageSourceType,
+                    Stack(
+                      children: [
+                        ImagePickerView(
+                          key: resetKey,
+                          initialPath: imagePath,
+                          initialType: imageSourceType,
+                          onImagePathChanged: (imagePath) =>
+                              this.imagePath = imagePath,
+                          onImageSourceTypeChanged: (imageSourceType) =>
+                              this.imageSourceType = imageSourceType,
+                          onPreviosImageChanged: (previosImageChanged) =>
+                              setState(() => this.previosImageChanged =
+                                  previosImageChanged),
+                        ),
+                        if (widget.book != null && previosImageChanged)
+                          Positioned(
+                            top: 8,
+                            left: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                OutlinedButton.icon(
+                                  onPressed: resetImagePicker,
+                                  style: OutlinedButton.styleFrom(
+                                    backgroundColor: Colors.white
+                                        .withOpacity(0.8), // Semi-transparent
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size(50, 50),
+                                  ),
+                                  label: Icon(
+                                      Icons.keyboard_double_arrow_left_sharp,
+                                      size: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
                     ),
+                    if (widget.book != null)
+                      SizedBox(
+                        height: 5,
+                      ),
                     TextFormField(
                       controller: bookNameController,
                       decoration: const InputDecoration(
@@ -333,6 +373,7 @@ class _BookAddPageState extends State<BookAddPage> {
         .toList();
 
     selectedAuthors.addAll(res);
+    editBookAuthors = selectedAuthors;
   }
 
   Future onAddBook() async {
@@ -383,6 +424,22 @@ class _BookAddPageState extends State<BookAddPage> {
     if (checkProperties() == false) {
       return;
     }
+
+    // Image
+    String? finalImagePath;
+    if (previosImageChanged &&
+        widget.book!.imageSourceType != ImageSourceType.asset) {
+      deletePreviousImage(widget.book!.imagePath);
+
+      finalImagePath = imageSourceType == ImageSourceType.local
+          ? await saveImage(imagePath)
+          : imagePath;
+    }
+
+    // Genre
+    int? genreId = genre!.existedInDatabase
+        ? genre!.id
+        : await genreRepository.add(genre!.genreName);
 
     Navigator.pop(context);
   }
@@ -441,5 +498,19 @@ class _BookAddPageState extends State<BookAddPage> {
   bool checkContainedAuthor(
       List<PickedAuthor> authors, PickedAuthor pickedAuthor) {
     return authors.contains(pickedAuthor) ? false : true;
+  }
+
+  void deletePreviousImage(String imagepath) {
+    ImageSaver imageSaver = ImageSaver();
+    imageSaver.deleteImage(imagePath);
+  }
+
+  void resetImagePicker() {
+    setState(() {
+      imagePath = widget.book!.imagePath;
+      imageSourceType = widget.book!.imageSourceType;
+      resetKey = UniqueKey(); // Generates a new key to force widget rebuild
+      previosImageChanged = false;
+    });
   }
 }

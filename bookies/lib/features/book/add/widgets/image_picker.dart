@@ -13,6 +13,7 @@ class ImagePickerView extends StatefulWidget {
 
   final void Function(String imagePath) onImagePathChanged;
   final void Function(ImageSourceType imageSourceType) onImageSourceTypeChanged;
+  final void Function(bool previosImageChenged) onPreviosImageChanged;
 
   const ImagePickerView({
     super.key,
@@ -20,6 +21,7 @@ class ImagePickerView extends StatefulWidget {
     this.initialType,
     required this.onImagePathChanged,
     required this.onImageSourceTypeChanged,
+    required this.onPreviosImageChanged,
   });
 
   @override
@@ -31,11 +33,11 @@ class _ImagePickerViewState extends State<ImagePickerView> {
 
   Image? selectedImage;
   ImageSourceType selectedType = ImageSourceType.asset;
+  final bool hui = true;
 
   @override
   void initState() {
     super.initState();
-
     final initialPath = widget.initialPath;
     final initialType = widget.initialType;
 
@@ -122,6 +124,7 @@ class _ImagePickerViewState extends State<ImagePickerView> {
 
     setState(() {
       widget.onImageSourceTypeChanged(selectedType);
+      widget.onPreviosImageChanged(hui);
       selectedImage = image;
     });
   }

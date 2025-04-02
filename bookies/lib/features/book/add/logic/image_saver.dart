@@ -38,6 +38,23 @@ class ImageSaver {
     }
   }
 
+  Future<void> deleteImage(String imagePath) async {
+    final dir = Directory(await getDirectory()); // Get the directory
+    final file = File(imagePath);
+
+    // Ensure the file is inside the target directory
+    if (!file.path.startsWith(dir.path)) {
+      return;
+    }
+
+    if (await file.exists()) {
+      await file.delete();
+      print("File deleted: $imagePath");
+    } else {
+      print("File does not exist: $imagePath");
+    }
+  }
+
   Future<void> printAllusersImagesNames() async {
     final dir = Directory(await getDirectory()); // Get the directory
     final List<FileSystemEntity> files = dir.listSync(); // Get all files

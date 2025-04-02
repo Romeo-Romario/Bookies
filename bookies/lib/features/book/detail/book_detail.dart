@@ -79,9 +79,9 @@ class _BookDetailState extends State<BookDetail> {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             spacing: 30,
