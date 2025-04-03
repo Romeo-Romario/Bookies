@@ -5,6 +5,7 @@ import 'package:bookies/data/entities/authors_list_with_authors_entity.dart';
 import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/entities/genre_entity.dart';
 import 'package:bookies/data/repository/authors_list_with_authors_repository.dart';
+import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
 import 'package:bookies/features/book/add/book_add_page.dart';
 import 'package:bookies/features/book/add/widgets/labeled_container.dart';
@@ -14,34 +15,77 @@ import 'package:get_it/get_it.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class BookDetail extends StatefulWidget {
-  const BookDetail({super.key, required this.bookInfo});
-  final BookInfoEntity bookInfo;
+  final int bookId;
+
+  const BookDetail({super.key, required this.bookId});
 
   @override
   State<BookDetail> createState() => _BookDetailState();
 }
 
 class _BookDetailState extends State<BookDetail> {
-  late Future<List<AuthorsListWithAuthorsEntity>> futureAuthorslist;
-  late Future<GenreEntity> futureGenre;
+  late BookInfoEntity bookInfo;
+  late List<AuthorsListWithAuthorsEntity> authors;
+  late GenreEntity genre;
+  late Future initFuture;
+
   final AuthorsListWithAuthorsRepository authorsListRepository = GetIt.I.get();
   final GenreRepository genreRepository = GetIt.I.get();
+  final BookRepository bookRepository = GetIt.I.get();
+
   @override
   void initState() {
     super.initState();
-    futureAuthorslist =
-        authorsListRepository.getAuthors(widget.bookInfo.bookId!);
-    futureGenre = genreRepository.search(widget.bookInfo.genreId!);
+    initFuture = loadFuture();
   }
 
   @override
   Widget build(BuildContext context) {
-    final image = switch (widget.bookInfo.imageSourceType) {
-      ImageSourceType.asset => Image.asset(widget.bookInfo.imagePath),
-      ImageSourceType.local => Image.file(File(widget.bookInfo.imagePath),
+    return FutureBuilder(
+      future: initFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return success();
+        }
+        return Scaffold(
+          body: Center(child: Text("Loading...")),
+        );
+      },
+    );
+  }
+
+  void onEditPageTab() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BookAddPage.edit(book: bookInfo),
+      ),
+    );
+
+    if (result == null) {
+      return;
+    }
+
+    if (result is BookInfoEntity) {
+      setState(() {
+        initFuture = loadFuture();
+      });
+    }
+  }
+
+  Future loadFuture() async {
+    final bookId = widget.bookId;
+    bookInfo = (await bookRepository.getOne(bookId))!;
+    authors = await authorsListRepository.getAuthors(bookId);
+    genre = await genreRepository.search(bookInfo.genreId!);
+  }
+
+  Widget success() {
+    final image = switch (bookInfo!.imageSourceType) {
+      ImageSourceType.asset => Image.asset(bookInfo.imagePath),
+      ImageSourceType.local => Image.file(File(bookInfo.imagePath),
           width: 200, height: 200, fit: BoxFit.cover),
     };
-
     return Scaffold(
       backgroundColor: Colors.indigo[100],
       appBar: AppBar(
@@ -54,7 +98,7 @@ class _BookDetailState extends State<BookDetail> {
         title: Padding(
           padding: EdgeInsets.all(6.0),
           child: AutoSizeText(
-            widget.bookInfo.bookName,
+            bookInfo!.bookName,
             maxLines: 2,
             minFontSize: 6,
           ),
@@ -63,15 +107,7 @@ class _BookDetailState extends State<BookDetail> {
           Padding(
             padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
             child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        BookAddPage.edit(book: widget.bookInfo),
-                  ),
-                );
-              },
+              onPressed: onEditPageTab,
               elevation: 0,
               backgroundColor: Colors.transparent,
               child: Icon(Icons.settings),
@@ -91,7 +127,7 @@ class _BookDetailState extends State<BookDetail> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Hero(
-                    tag: widget.bookInfo.bookId.toString(),
+                    tag: bookInfo.bookId.toString(),
                     child: Container(
                       width: 150,
                       height: 200,
@@ -109,19 +145,19 @@ class _BookDetailState extends State<BookDetail> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      spacing: widget.bookInfo.status ? 20 : 30,
+                      spacing: bookInfo.status ? 20 : 30,
                       children: [
                         Text(
-                          !widget.bookInfo.status
-                              ? "${widget.bookInfo.readPages}/${widget.bookInfo.numberOfPages}"
-                              : "Finished", // Depents on book status
+                          bookInfo.status
+                              ? "Finished"
+                              : "${bookInfo.readPages}/${bookInfo.numberOfPages}", // Depents on book status
                           style: TextStyle(
                             color: Colors.green[900],
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        if (!widget.bookInfo.status)
+                        if (!bookInfo.status)
                           OutlinedButton.icon(
                             onPressed: () {},
                             icon: Icon(
@@ -141,7 +177,7 @@ class _BookDetailState extends State<BookDetail> {
                               ),
                             ),
                           ),
-                        if (widget.bookInfo.status)
+                        if (bookInfo.status)
                           SizedBox(
                             height: 80,
                             child: Center(
@@ -150,13 +186,13 @@ class _BookDetailState extends State<BookDetail> {
                                 StarRating(
                                   starCount: 3,
                                   size: 40,
-                                  rating: widget.bookInfo.grade!,
+                                  rating: bookInfo.grade!,
                                   allowHalfRating: true,
                                 ),
                                 StarRating(
                                   starCount: 2,
                                   size: 40,
-                                  rating: widget.bookInfo.grade! - 3,
+                                  rating: bookInfo.grade! - 3,
                                   allowHalfRating: true,
                                 )
                               ],
@@ -168,7 +204,7 @@ class _BookDetailState extends State<BookDetail> {
                 ],
               ),
               // Section 2
-              if (!widget.bookInfo.status)
+              if (!bookInfo.status)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -214,7 +250,7 @@ class _BookDetailState extends State<BookDetail> {
                     )
                   ],
                 ),
-              if (widget.bookInfo.status)
+              if (bookInfo.status)
                 OutlinedButton.icon(
                   onPressed: () {},
                   label: Text(
@@ -237,50 +273,24 @@ class _BookDetailState extends State<BookDetail> {
                 ),
               // Section 3
               Card(
-                child: FutureBuilder(
-                  future: futureAuthorslist,
-                  builder: (context, snapshot) {
-                    return Skeletonizer(
-                      enabled: snapshot.connectionState ==
-                              ConnectionState.waiting ||
-                          snapshot.connectionState == ConnectionState.active,
-                      child: ListTile(
-                        leading: Icon(Icons.account_circle_outlined),
-                        title: Text(
-                            snapshot.hasData && snapshot.data!.length == 1
-                                ? "Author"
-                                : "Authors"),
-                        subtitle: Text(
-                          snapshot.hasData
-                              ? snapshot.data!
-                                  .map(
-                                      (author) => author.authorEntity!.fullName)
-                                  .join("\n")
-                              : "Loading...",
-                        ),
-                      ),
-                    );
-                  },
+                child: ListTile(
+                  leading: Icon(Icons.account_circle_outlined),
+                  title: Text(authors.length == 1 ? "Author" : "Authors"),
+                  subtitle: Text(
+                    authors
+                        .map((author) => author.authorEntity!.fullName)
+                        .join("\n"),
+                  ),
                 ),
               ),
               Card(
-                child: FutureBuilder(
-                  future: futureGenre,
-                  builder: (context, snapshot) {
-                    return Skeletonizer(
-                      enabled: snapshot.connectionState ==
-                              ConnectionState.waiting ||
-                          snapshot.connectionState == ConnectionState.active,
-                      child: ListTile(
-                        leading: Icon(Icons.auto_fix_high_outlined),
-                        title: Text("Genre: "),
-                        subtitle: Text(snapshot.data?.name ?? "Loading..."),
-                      ),
-                    );
-                  },
+                child: ListTile(
+                  leading: Icon(Icons.auto_fix_high_outlined),
+                  title: Text("Genre: "),
+                  subtitle: Text(genre.name),
                 ),
               ),
-              if (widget.bookInfo.status)
+              if (bookInfo.status)
                 LabeledContainer(
                   label: "Feedback",
                   labelSize: 22,
@@ -293,14 +303,14 @@ class _BookDetailState extends State<BookDetail> {
                       constraints: BoxConstraints(
                         minHeight: 100,
                       ),
-                      child: widget.bookInfo.feedback!.isEmpty
+                      child: bookInfo.feedback!.isEmpty
                           ? Center(
                               child: Text("No feedback"),
                             )
                           : Padding(
                               padding: EdgeInsets.all(10.0),
                               child: Text(
-                                widget.bookInfo.feedback!,
+                                bookInfo.feedback!,
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),

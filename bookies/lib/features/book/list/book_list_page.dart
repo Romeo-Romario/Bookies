@@ -1,5 +1,6 @@
 import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/repository/book_repository.dart';
+import 'package:bookies/features/book/detail/book_detail.dart';
 import 'package:bookies/features/book/list/widgets/book_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -21,7 +22,6 @@ class _BookListPageState extends State<BookListPage> {
   @override
   void initState() {
     super.initState();
-
     booksFuture = bookRepository.getAll();
   }
 
@@ -43,10 +43,25 @@ class _BookListPageState extends State<BookListPage> {
           future: booksFuture,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return BookGridView(books: snapshot.data!);
+              return BookGridView(
+                books: snapshot.data!,
+                onTap: (entity) async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BookDetail(bookId: entity.bookId!),
+                    ),
+                  );
+                  setState(() {
+                    booksFuture = bookRepository.getAll();
+                  });
+                },
+              );
             }
 
-            return BookGridView(books: books);
+            return Center(
+              child: Text("Loading..."),
+            );
           },
         ),
       ),

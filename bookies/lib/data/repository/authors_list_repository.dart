@@ -1,9 +1,11 @@
 import 'package:bookies/data/entities/authors_list_entity.dart';
 import 'package:bookies/data/source/drift/drift_app_database.dart';
+import 'package:drift/drift.dart';
 
 abstract class AuthorsListRepository {
   Future<void> add(AuthorsListEntity entity);
   Future<List<AuthorsListEntity>> get(int book_id);
+  Future<void> deletePair(int book_id, int author_id);
 }
 
 class AuthorsListRepositoryImpl extends AuthorsListRepository {
@@ -16,6 +18,8 @@ class AuthorsListRepositoryImpl extends AuthorsListRepository {
     source.into(source.authorsListTable).insert(
         AuthorsListTableCompanion.insert(
             authors_id: entity.authorId, book_id: entity.bookId));
+    print(
+        "the entity with author id: ${entity.authorId} was added to AuthorsListEntity");
   }
 
   @override
@@ -30,10 +34,15 @@ class AuthorsListRepositoryImpl extends AuthorsListRepository {
         .get();
   }
 
-  // static AuthorsListEntity map(AuthorsListEntity data) {
-  //   return AuthorsListEntity(
-  //     authorId: data.authorId,
-  //     bookId: data.bookId,
-  //   );
-  // }
+  Future<void> deletePair(int book_id, int author_id) async {
+    final query = source.delete(source.authorsListTable)
+      ..where(
+        (tbl) => Expression.and(
+            [tbl.authors_id.equals(author_id), tbl.book_id.equals(book_id)]),
+      );
+
+    await query.go();
+    print(
+        "The element with book_id: ${book_id} and ${author_id}: should be deleted");
+  }
 }

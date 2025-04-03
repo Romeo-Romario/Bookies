@@ -31,6 +31,21 @@ class BookInfoCompanionHelper {
         grade: dbSample.grade,
       );
 
+  static BookInfoTableCompanion toEdit(BookInfoEntity entity) {
+    return BookInfoTableCompanion.insert(
+      book_id: Value(entity.bookId!),
+      book_name: entity.bookName,
+      image_path: entity.imagePath,
+      image_source_type: imageSourceTypeToBool(entity.imageSourceType),
+      read_pages: entity.readPages,
+      number_of_pages: entity.numberOfPages,
+      status: entity.status,
+      grade: Value(entity.grade),
+      feedback: Value(entity.feedback),
+      genre_id: entity.genreId!,
+    );
+  }
+
   static ImageSourceType boolToImageSourceType(bool value) {
     return value ? ImageSourceType.local : ImageSourceType.asset;
   }

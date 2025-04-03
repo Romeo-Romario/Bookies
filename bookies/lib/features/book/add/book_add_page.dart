@@ -52,7 +52,7 @@ class _BookAddPageState extends State<BookAddPage> {
 
   late final Future prepareEditFuture;
 
-  List<PickedAuthor>? editBookAuthors; //Compare with other final list
+  List<PickedAuthor> editBookAuthors = []; //Compare with other final list
   Key resetKey = UniqueKey(); // Return starting image to image picker
   bool previosImageChanged = false;
   @override
@@ -373,7 +373,7 @@ class _BookAddPageState extends State<BookAddPage> {
         .toList();
 
     selectedAuthors.addAll(res);
-    editBookAuthors = selectedAuthors;
+    editBookAuthors.addAll(selectedAuthors);
   }
 
   Future onAddBook() async {
@@ -434,6 +434,10 @@ class _BookAddPageState extends State<BookAddPage> {
       finalImagePath = imageSourceType == ImageSourceType.local
           ? await saveImage(imagePath)
           : imagePath;
+    } else {
+      finalImagePath = imageSourceType == ImageSourceType.local
+          ? await saveImage(imagePath)
+          : imagePath;
     }
 
     // Genre
@@ -441,7 +445,26 @@ class _BookAddPageState extends State<BookAddPage> {
         ? genre!.id
         : await genreRepository.add(genre!.genreName);
 
-    Navigator.pop(context);
+    // Handle authors
+    await checkAuthorsOnEdit(
+        widget.book!.bookId!, selectedAuthors, editBookAuthors!);
+
+    final result = BookInfoEntity(
+      bookId: widget.book!.bookId,
+      folderId: widget.book?.folderId,
+      bookName: bookNameController.text,
+      imagePath: finalImagePath,
+      imageSourceType: imageSourceType,
+      readPages: numberOfReadPages!,
+      numberOfPages: numberOfPages!,
+      status: pageMode ? true : false,
+      feedback: pageMode ? feedbackController.text : null,
+      genreId: genreId,
+      grade: pageMode ? rating : null,
+    );
+
+    await bookRepository.update(result);
+    Navigator.pop(context, result);
   }
 
   bool checkProperties() {
@@ -512,5 +535,33 @@ class _BookAddPageState extends State<BookAddPage> {
       resetKey = UniqueKey(); // Generates a new key to force widget rebuild
       previosImageChanged = false;
     });
+  }
+
+  // All actions with authorslist table and authors table on book edit
+  Future<void> checkAuthorsOnEdit(int bookId, List<PickedAuthor> newAuthors,
+      List<PickedAuthor> pastAuthors) async {
+    //Add all new authors
+    for (var i = 0; i < newAuthors.length; i++) {
+      if (!newAuthors[i].existedInDatabase) {
+        newAuthors[i] = PickedAuthor(
+            author: newAuthors[i].author,
+            id: await authorRepository.add(newAuthors[i].author));
+      }
+    }
+
+    // Add new pairs in AuthorsListTable if nessesary
+    for (var i = 0; i < newAuthors.length; i++) {
+      if (!pastAuthors.contains(newAuthors[i])) {
+        await authorsListRepository.add(
+            AuthorsListEntity(bookId: bookId, authorId: newAuthors[i].id!));
+      }
+    }
+
+    //Delete authors that was removed
+    for (var i = 0; i < pastAuthors.length; i++) {
+      if (!newAuthors.contains(pastAuthors[i])) {
+        await authorsListRepository.deletePair(bookId, pastAuthors[i].id!);
+      }
+    }
   }
 }

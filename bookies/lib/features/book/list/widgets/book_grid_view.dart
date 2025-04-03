@@ -3,12 +3,14 @@ import 'package:bookies/features/book/list/widgets/display_books_in_liabry.dart'
 import 'package:flutter/material.dart';
 
 class BookGridView extends StatelessWidget {
+  final void Function(BookInfoEntity entity) onTap;
+  final List<BookInfoEntity> books;
+
   const BookGridView({
     super.key,
     required this.books,
+    required this.onTap,
   });
-
-  final List<BookInfoEntity> books;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,10 @@ class BookGridView extends StatelessWidget {
       itemCount: books.length,
       itemBuilder: (context, index) {
         final element = books[index];
-        return BookLibaryView(element: element);
+        return BookLibaryView(
+          element: element,
+          onTap: onTap,
+        );
       },
     );
   }

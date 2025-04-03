@@ -6,20 +6,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 
 class BookLibaryView extends StatelessWidget {
+  final void Function(BookInfoEntity entity) onTap;
   final BookInfoEntity element;
   final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
-  BookLibaryView({required this.element, super.key});
+  BookLibaryView({
+    super.key,
+    required this.element,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => BookDetail(bookInfo: element)),
-        );
-      },
+      onTap: () => onTap(element),
       child: Card(
         margin: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
