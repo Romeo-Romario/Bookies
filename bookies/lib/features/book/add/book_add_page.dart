@@ -1,7 +1,6 @@
 import 'package:bookies/data/entities/authors_list_entity.dart';
 import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/repository/authors_list_repository.dart';
-import 'package:bookies/data/repository/authors_list_with_authors_repository.dart';
 import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
@@ -36,8 +35,6 @@ class _BookAddPageState extends State<BookAddPage> {
   final AuthorRepository authorRepository = GetIt.I.get();
   final GenreRepository genreRepository = GetIt.I.get();
   final AuthorsListRepository authorsListRepository = GetIt.I.get();
-  final AuthorsListWithAuthorsRepository authorsListWithAuthorsRepository =
-      GetIt.I.get();
 
   final bookNameController = TextEditingController();
   final feedbackController = TextEditingController();
@@ -153,7 +150,7 @@ class _BookAddPageState extends State<BookAddPage> {
                         if (widget.book != null && previosImageChanged)
                           Positioned(
                             top: 8,
-                            left: 2,
+                            left: 0,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

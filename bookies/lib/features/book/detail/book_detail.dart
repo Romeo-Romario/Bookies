@@ -1,14 +1,15 @@
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bookies/data/entities/authors_list_with_authors_entity.dart';
+import 'package:bookies/data/entities/author_entity.dart';
 import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/entities/genre_entity.dart';
-import 'package:bookies/data/repository/authors_list_with_authors_repository.dart';
+import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
 import 'package:bookies/features/book/add/book_add_page.dart';
 import 'package:bookies/features/book/add/widgets/labeled_container.dart';
+import 'package:bookies/features/book/detail/widgets/update_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:get_it/get_it.dart';
@@ -25,11 +26,11 @@ class BookDetail extends StatefulWidget {
 
 class _BookDetailState extends State<BookDetail> {
   late BookInfoEntity bookInfo;
-  late List<AuthorsListWithAuthorsEntity> authors;
+  late List<AuthorEntity> authors;
   late GenreEntity genre;
   late Future initFuture;
 
-  final AuthorsListWithAuthorsRepository authorsListRepository = GetIt.I.get();
+  final AuthorRepository authorRepository = GetIt.I.get();
   final GenreRepository genreRepository = GetIt.I.get();
   final BookRepository bookRepository = GetIt.I.get();
 
@@ -76,12 +77,12 @@ class _BookDetailState extends State<BookDetail> {
   Future loadFuture() async {
     final bookId = widget.bookId;
     bookInfo = (await bookRepository.getOne(bookId))!;
-    authors = await authorsListRepository.getAuthors(bookId);
+    authors = await authorRepository.getAllByBook(bookId);
     genre = await genreRepository.search(bookInfo.genreId!);
   }
 
   Widget success() {
-    final image = switch (bookInfo!.imageSourceType) {
+    final image = switch (bookInfo.imageSourceType) {
       ImageSourceType.asset => Image.asset(bookInfo.imagePath),
       ImageSourceType.local => Image.file(File(bookInfo.imagePath),
           width: 200, height: 200, fit: BoxFit.cover),
@@ -98,7 +99,7 @@ class _BookDetailState extends State<BookDetail> {
         title: Padding(
           padding: EdgeInsets.all(6.0),
           child: AutoSizeText(
-            bookInfo!.bookName,
+            bookInfo.bookName,
             maxLines: 2,
             minFontSize: 6,
           ),
@@ -159,7 +160,12 @@ class _BookDetailState extends State<BookDetail> {
                         ),
                         if (!bookInfo.status)
                           OutlinedButton.icon(
-                            onPressed: () {},
+                            onPressed: () async {
+                              await showUpdateDialog(
+                                  context: context,
+                                  numberOfPages: bookInfo.numberOfPages,
+                                  readPages: bookInfo.readPages);
+                            },
                             icon: Icon(
                               Icons.edit_note_outlined,
                               size: 30,
@@ -277,9 +283,7 @@ class _BookDetailState extends State<BookDetail> {
                   leading: Icon(Icons.account_circle_outlined),
                   title: Text(authors.length == 1 ? "Author" : "Authors"),
                   subtitle: Text(
-                    authors
-                        .map((author) => author.authorEntity!.fullName)
-                        .join("\n"),
+                    authors.map((author) => author.fullName).join("\n"),
                   ),
                 ),
               ),
