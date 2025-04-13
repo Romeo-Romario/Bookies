@@ -30,6 +30,7 @@ class _BookDetailState extends State<BookDetail> {
   late GenreEntity genre;
   late Future initFuture;
 
+  int? updatedPages;
   final AuthorRepository authorRepository = GetIt.I.get();
   final GenreRepository genreRepository = GetIt.I.get();
   final BookRepository bookRepository = GetIt.I.get();
@@ -160,12 +161,8 @@ class _BookDetailState extends State<BookDetail> {
                         ),
                         if (!bookInfo.status)
                           OutlinedButton.icon(
-                            onPressed: () async {
-                              await showUpdateDialog(
-                                  context: context,
-                                  numberOfPages: bookInfo.numberOfPages,
-                                  readPages: bookInfo.readPages);
-                            },
+                            //TODO: sleep
+                            onPressed: onUpdate,
                             icon: Icon(
                               Icons.edit_note_outlined,
                               size: 30,
@@ -325,5 +322,38 @@ class _BookDetailState extends State<BookDetail> {
         ),
       ),
     );
+  }
+
+  //TODO: go to sleep
+  Future onUpdate() async {
+    updatedPages = await showUpdateDialog(
+        context: context,
+        numberOfPages: bookInfo.numberOfPages,
+        readPages: bookInfo.readPages);
+    if (updatedPages == null) {
+      return;
+    }
+    checkUpdatePages();
+    await bookRepository.updatePages(bookInfo.bookId!, updatedPages!);
+    setState(() {
+      initFuture = loadFuture();
+    });
+  }
+
+  Future checkUpdatePages() async {
+    if (updatedPages! < bookInfo.readPages) {
+      updatedPages = bookInfo.readPages;
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Text(
+                "You cannot read backwards",
+                textAlign: TextAlign.center,
+              ),
+              alignment: Alignment.center,
+            );
+          });
+    }
   }
 }

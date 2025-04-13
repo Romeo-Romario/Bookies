@@ -9,6 +9,7 @@ abstract class BookRepository {
   Future<List<BookInfoEntity>> getAll();
   Future<BookInfoEntity?> getOne(int bookId);
   Future<void> update(BookInfoEntity entity);
+  Future<void> updatePages(int bookId, int readPages);
 }
 
 class BookRepositoryImpl extends BookRepository {
@@ -43,5 +44,12 @@ class BookRepositoryImpl extends BookRepository {
     await source
         .update(source.bookInfoTable)
         .replace(BookInfoCompanionHelper.toEdit(entity));
+  }
+
+  @override
+  Future<void> updatePages(int bookId, int readPages) async {
+    final query = source.update(source.bookInfoTable)
+      ..where((tbl) => tbl.book_id.equals(bookId));
+    query.write(BookInfoTableCompanion(read_pages: Value(readPages)));
   }
 }

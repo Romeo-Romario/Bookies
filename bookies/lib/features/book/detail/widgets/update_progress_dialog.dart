@@ -17,13 +17,22 @@ Future<int?> showUpdateDialog(
 class UpdateProgressDialog extends StatelessWidget {
   final int readPages;
   final int numberOfPages;
-
+  final List<FixedExtentScrollController> controllers;
   UpdateProgressDialog(
-      {super.key, required this.numberOfPages, required this.readPages});
+      {super.key, required this.numberOfPages, required this.readPages})
+      : controllers = List.generate(
+          numberOfPages.toString().length,
+          (index) {
+            String strReadPages = "0" *
+                    (numberOfPages.toString().length -
+                        readPages.toString().length) +
+                readPages.toString();
+            return FixedExtentScrollController(
+                initialItem: int.parse(strReadPages[index]));
+          },
+        );
 
   final List<int> numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-  int get numberOfScrolls => numberOfPages.toString().length;
 
   final _controller = FixedExtentScrollController(initialItem: 2);
   @override
@@ -37,21 +46,34 @@ class UpdateProgressDialog extends StatelessWidget {
           spacing: 20,
           children: [
             Text("Update progress"),
-            SizedBox(
-              height: 150, // Make sure height is fixed
-              child: Row(
-                children: [
-                  Expanded(
-                    child: NumbersScrollView(
-                        controller: _controller, numbers: numbers),
-                  ),
-                ],
-              ),
-            ),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                  numberOfPages.toString().length,
+                  (index) {
+                    if (index == 0) {
+                      return NumbersScrollView(
+                          controller: controllers[index],
+                          numbers: List.generate(
+                            int.parse(numberOfPages.toString()[0]) + 1,
+                            (index) => index,
+                          ));
+                    }
+                    return NumbersScrollView(
+                        controller: controllers[index], numbers: numbers);
+                  },
+                )),
             ElevatedButton(
               onPressed: () {
-                print(_controller.selectedItem);
-                Navigator.pop(context, 42); // Return some value
+                Navigator.pop(
+                    context,
+                    int.parse(controllers
+                        .map(
+                          (e) => e.selectedItem,
+                        )
+                        .toList()
+                        .join()));
               },
               child: Text("Submit"),
             ),
