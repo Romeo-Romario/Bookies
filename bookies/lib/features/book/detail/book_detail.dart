@@ -9,6 +9,7 @@ import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
 import 'package:bookies/features/book/add/book_add_page.dart';
 import 'package:bookies/features/book/add/widgets/labeled_container.dart';
+import 'package:bookies/features/book/detail/widgets/finish_book_page.dart';
 import 'package:bookies/features/book/detail/widgets/update_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
@@ -161,7 +162,6 @@ class _BookDetailState extends State<BookDetail> {
                         ),
                         if (!bookInfo.status)
                           OutlinedButton.icon(
-                            //TODO: sleep
                             onPressed: onUpdate,
                             icon: Icon(
                               Icons.edit_note_outlined,
@@ -326,15 +326,48 @@ class _BookDetailState extends State<BookDetail> {
 
   //TODO: go to sleep
   Future onUpdate() async {
+    final data;
+
     updatedPages = await showUpdateDialog(
         context: context,
         numberOfPages: bookInfo.numberOfPages,
         readPages: bookInfo.readPages);
+
     if (updatedPages == null) {
       return;
     }
+
     checkUpdatePages();
+
+    if (updatedPages! >= bookInfo.numberOfPages) {
+      data = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FinishBookPage(
+              bookName: bookInfo.bookName,
+            ),
+          ));
+      if (data == null) {
+        updatedPages = bookInfo.readPages;
+        return;
+      }
+
+      bookRepository.update(BookInfoEntity(
+          bookId: bookInfo.bookId,
+          folderId: bookInfo.folderId,
+          bookName: bookInfo.bookName,
+          imagePath: bookInfo.imagePath,
+          imageSourceType: bookInfo.imageSourceType,
+          readPages: bookInfo.numberOfPages,
+          numberOfPages: bookInfo.numberOfPages,
+          status: true,
+          feedback: data["feedback"],
+          genreId: bookInfo.genreId,
+          grade: data["rating"]));
+    }
+
     await bookRepository.updatePages(bookInfo.bookId!, updatedPages!);
+
     setState(() {
       initFuture = loadFuture();
     });
@@ -354,6 +387,9 @@ class _BookDetailState extends State<BookDetail> {
               alignment: Alignment.center,
             );
           });
+    }
+    if (updatedPages! > bookInfo.numberOfPages) {
+      updatedPages = bookInfo.numberOfPages;
     }
   }
 }
