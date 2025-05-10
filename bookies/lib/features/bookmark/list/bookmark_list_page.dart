@@ -1,3 +1,4 @@
+import 'package:bookies/features/bookmark/list/widgets/sort_style_popup_menu.dart';
 import 'package:flutter/material.dart';
 
 class BookmarksListPage extends StatefulWidget {
@@ -9,6 +10,8 @@ class BookmarksListPage extends StatefulWidget {
 
 class _BookmarksListPageState extends State<BookmarksListPage> {
   String selectedValue = 'newToOld';
+  bool searchMode = false;
+  final searchController = TextEditingController();
   final data = [
     {
       "title": "1",
@@ -45,57 +48,17 @@ class _BookmarksListPageState extends State<BookmarksListPage> {
             padding: EdgeInsets.fromLTRB(0.0, 0.0, 20.0, 0.0),
             child: FloatingActionButton(
               heroTag: null,
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  searchMode = true;
+                });
+              },
               elevation: 0,
               backgroundColor: Colors.transparent,
               child: Icon(Icons.search_rounded, size: 30.0),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(0.0, 0.0, 20.0, 0.0),
-            child: PopupMenuButton(
-              icon: Icon(Icons.sort_rounded, size: 24.0),
-              onSelected: (value) {
-                setState(() {
-                  selectedValue = value;
-                });
-              },
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: "From new to old",
-                  child: Card(
-                      child: ListTile(
-                    leading: Icon(Icons.date_range),
-                    title: Text("From new to old"),
-                  )),
-                ),
-                PopupMenuItem(
-                  value: "From old to new",
-                  child: Card(
-                      child: ListTile(
-                    leading: Icon(Icons.date_range_outlined),
-                    title: Text("From old to new"),
-                  )),
-                ),
-                PopupMenuItem(
-                  value: "From A to Z",
-                  child: Card(
-                      child: ListTile(
-                    leading: Icon(Icons.sort_by_alpha_outlined),
-                    title: Text("From A to Z"),
-                  )),
-                ),
-                PopupMenuItem(
-                  value: "From Z to A",
-                  child: Card(
-                      child: ListTile(
-                    leading: Icon(Icons.sort_by_alpha_rounded),
-                    title: Text("From Z to A"),
-                  )),
-                ),
-              ],
-            ),
-          )
+          SortStylePopupMenu(func: changeSortStyle)
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -103,24 +66,60 @@ class _BookmarksListPageState extends State<BookmarksListPage> {
         onPressed: () {},
         child: Icon(Icons.bookmark_add_outlined, size: 24.0),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: ListView.builder(
-          itemCount: data.length,
-          itemBuilder: (context, index) {
-            final item = data[index];
-            return Card(
-              child: ListTile(
-                  title: Text(item["title"]!),
-                  subtitle: Text(
-                    item["text"]!,
-                    maxLines: 3,
-                    overflow: TextOverflow.fade,
-                  )),
-            );
-          },
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          setState(() => searchMode = false);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            spacing: 10,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (searchMode)
+                TextFormField(
+                  controller: searchController,
+                  decoration: InputDecoration(
+                    labelText: "Enter title of searched Bookmark",
+                    border: OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                    contentPadding: EdgeInsets.only(top: 12, left: 12),
+                  ),
+                ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    final item = data[index];
+                    return Card(
+                      child: ListTile(
+                        title: Text(item["title"]!),
+                        subtitle: Text(
+                          item["text"]!,
+                          maxLines: 3,
+                          overflow: TextOverflow.fade,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void changeSortStyle(String? value) {
+    if (value == null) {
+      return;
+    }
+    setState(() {
+      selectedValue = value;
+    });
+    // print(selectedValue);
   }
 }
