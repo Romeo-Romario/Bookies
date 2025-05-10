@@ -1,3 +1,4 @@
+import 'package:bookies/features/bookmark/detail/bookmark_detail.dart';
 import 'package:bookies/features/bookmark/list/widgets/sort_style_popup_menu.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +14,102 @@ class _BookmarksListPageState extends State<BookmarksListPage> {
   bool searchMode = false;
   final searchController = TextEditingController();
   final data = [
+    {
+      "title": "1",
+      "text": "Gugugaga",
+    },
+    {
+      "title": "2",
+      "text": "Short example text for a bookmark.",
+    },
+    {
+      "title": "3",
+      "text": """This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.""",
+    },
+    {
+      "title": "1",
+      "text": "Gugugaga",
+    },
+    {
+      "title": "2",
+      "text": "Short example text for a bookmark.",
+    },
+    {
+      "title": "3",
+      "text": """This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.""",
+    },
+    {
+      "title": "1",
+      "text": "Gugugaga",
+    },
+    {
+      "title": "2",
+      "text": "Short example text for a bookmark.",
+    },
+    {
+      "title": "3",
+      "text": """This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.""",
+    },
+    {
+      "title": "1",
+      "text": "Gugugaga",
+    },
+    {
+      "title": "2",
+      "text": "Short example text for a bookmark.",
+    },
+    {
+      "title": "3",
+      "text": """This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.""",
+    },
+    {
+      "title": "1",
+      "text": "Gugugaga",
+    },
+    {
+      "title": "2",
+      "text": "Short example text for a bookmark.",
+    },
+    {
+      "title": "3",
+      "text": """This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.""",
+    },
+    {
+      "title": "1",
+      "text": "Gugugaga",
+    },
+    {
+      "title": "2",
+      "text": "Short example text for a bookmark.",
+    },
+    {
+      "title": "3",
+      "text": """This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.This is a much longer bookmark entry designed to
+        test how the layout handles around 120 characters of text in a single field.""",
+    },
     {
       "title": "1",
       "text": "Gugugaga",
@@ -63,7 +160,16 @@ class _BookmarksListPageState extends State<BookmarksListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: null,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BookmarkDetail(
+                  func: addBookMark,
+                  option: true,
+                ),
+              ));
+        },
         child: Icon(Icons.bookmark_add_outlined, size: 24.0),
       ),
       body: GestureDetector(
@@ -98,7 +204,7 @@ class _BookmarksListPageState extends State<BookmarksListPage> {
                         title: Text(item["title"]!),
                         subtitle: Text(
                           item["text"]!,
-                          maxLines: 3,
+                          maxLines: 4,
                           overflow: TextOverflow.fade,
                         ),
                       ),
@@ -121,5 +227,10 @@ class _BookmarksListPageState extends State<BookmarksListPage> {
       selectedValue = value;
     });
     // print(selectedValue);
+  }
+
+  void addBookMark() {
+    setState(() {});
+    Navigator.pop(context);
   }
 }
