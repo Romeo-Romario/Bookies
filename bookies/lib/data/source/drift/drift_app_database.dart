@@ -64,7 +64,9 @@ class BookmarkInfo extends Table {
   IntColumn get bookmark_id => integer().autoIncrement()();
   IntColumn get bookmarks_folder_id => integer()
       .references(BookmarksFolderInfo, #bookmarks_folder_id)
-      .withDefault(Constant(0))();
+      .nullable()();
+  DateTimeColumn get creationTime =>
+      dateTime().withDefault(currentDateAndTime)();
   TextColumn get bookmark_title => text().nullable()();
   TextColumn get bookmark_text => text()();
 }

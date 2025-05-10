@@ -2094,12 +2094,19 @@ class $BookmarkInfoTable extends BookmarkInfo
       const VerificationMeta('bookmarks_folder_id');
   @override
   late final GeneratedColumn<int> bookmarks_folder_id = GeneratedColumn<int>(
-      'bookmarks_folder_id', aliasedName, false,
+      'bookmarks_folder_id', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES bookmarks_folder_info (bookmarks_folder_id)'),
-      defaultValue: Constant(0));
+          'REFERENCES bookmarks_folder_info (bookmarks_folder_id)'));
+  static const VerificationMeta _creationTimeMeta =
+      const VerificationMeta('creationTime');
+  @override
+  late final GeneratedColumn<DateTime> creationTime = GeneratedColumn<DateTime>(
+      'creation_time', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   static const VerificationMeta _bookmark_titleMeta =
       const VerificationMeta('bookmark_title');
   @override
@@ -2113,8 +2120,13 @@ class $BookmarkInfoTable extends BookmarkInfo
       'bookmark_text', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns =>
-      [bookmark_id, bookmarks_folder_id, bookmark_title, bookmark_text];
+  List<GeneratedColumn> get $columns => [
+        bookmark_id,
+        bookmarks_folder_id,
+        creationTime,
+        bookmark_title,
+        bookmark_text
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2136,6 +2148,12 @@ class $BookmarkInfoTable extends BookmarkInfo
           _bookmarks_folder_idMeta,
           bookmarks_folder_id.isAcceptableOrUnknown(
               data['bookmarks_folder_id']!, _bookmarks_folder_idMeta));
+    }
+    if (data.containsKey('creation_time')) {
+      context.handle(
+          _creationTimeMeta,
+          creationTime.isAcceptableOrUnknown(
+              data['creation_time']!, _creationTimeMeta));
     }
     if (data.containsKey('bookmark_title')) {
       context.handle(
@@ -2163,7 +2181,9 @@ class $BookmarkInfoTable extends BookmarkInfo
       bookmark_id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}bookmark_id'])!,
       bookmarks_folder_id: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}bookmarks_folder_id'])!,
+          DriftSqlType.int, data['${effectivePrefix}bookmarks_folder_id']),
+      creationTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}creation_time'])!,
       bookmark_title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}bookmark_title']),
       bookmark_text: attachedDatabase.typeMapping
@@ -2180,19 +2200,24 @@ class $BookmarkInfoTable extends BookmarkInfo
 class BookmarkInfoData extends DataClass
     implements Insertable<BookmarkInfoData> {
   final int bookmark_id;
-  final int bookmarks_folder_id;
+  final int? bookmarks_folder_id;
+  final DateTime creationTime;
   final String? bookmark_title;
   final String bookmark_text;
   const BookmarkInfoData(
       {required this.bookmark_id,
-      required this.bookmarks_folder_id,
+      this.bookmarks_folder_id,
+      required this.creationTime,
       this.bookmark_title,
       required this.bookmark_text});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['bookmark_id'] = Variable<int>(bookmark_id);
-    map['bookmarks_folder_id'] = Variable<int>(bookmarks_folder_id);
+    if (!nullToAbsent || bookmarks_folder_id != null) {
+      map['bookmarks_folder_id'] = Variable<int>(bookmarks_folder_id);
+    }
+    map['creation_time'] = Variable<DateTime>(creationTime);
     if (!nullToAbsent || bookmark_title != null) {
       map['bookmark_title'] = Variable<String>(bookmark_title);
     }
@@ -2203,7 +2228,10 @@ class BookmarkInfoData extends DataClass
   BookmarkInfoCompanion toCompanion(bool nullToAbsent) {
     return BookmarkInfoCompanion(
       bookmark_id: Value(bookmark_id),
-      bookmarks_folder_id: Value(bookmarks_folder_id),
+      bookmarks_folder_id: bookmarks_folder_id == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bookmarks_folder_id),
+      creationTime: Value(creationTime),
       bookmark_title: bookmark_title == null && nullToAbsent
           ? const Value.absent()
           : Value(bookmark_title),
@@ -2217,7 +2245,8 @@ class BookmarkInfoData extends DataClass
     return BookmarkInfoData(
       bookmark_id: serializer.fromJson<int>(json['bookmark_id']),
       bookmarks_folder_id:
-          serializer.fromJson<int>(json['bookmarks_folder_id']),
+          serializer.fromJson<int?>(json['bookmarks_folder_id']),
+      creationTime: serializer.fromJson<DateTime>(json['creationTime']),
       bookmark_title: serializer.fromJson<String?>(json['bookmark_title']),
       bookmark_text: serializer.fromJson<String>(json['bookmark_text']),
     );
@@ -2227,7 +2256,8 @@ class BookmarkInfoData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'bookmark_id': serializer.toJson<int>(bookmark_id),
-      'bookmarks_folder_id': serializer.toJson<int>(bookmarks_folder_id),
+      'bookmarks_folder_id': serializer.toJson<int?>(bookmarks_folder_id),
+      'creationTime': serializer.toJson<DateTime>(creationTime),
       'bookmark_title': serializer.toJson<String?>(bookmark_title),
       'bookmark_text': serializer.toJson<String>(bookmark_text),
     };
@@ -2235,12 +2265,16 @@ class BookmarkInfoData extends DataClass
 
   BookmarkInfoData copyWith(
           {int? bookmark_id,
-          int? bookmarks_folder_id,
+          Value<int?> bookmarks_folder_id = const Value.absent(),
+          DateTime? creationTime,
           Value<String?> bookmark_title = const Value.absent(),
           String? bookmark_text}) =>
       BookmarkInfoData(
         bookmark_id: bookmark_id ?? this.bookmark_id,
-        bookmarks_folder_id: bookmarks_folder_id ?? this.bookmarks_folder_id,
+        bookmarks_folder_id: bookmarks_folder_id.present
+            ? bookmarks_folder_id.value
+            : this.bookmarks_folder_id,
+        creationTime: creationTime ?? this.creationTime,
         bookmark_title:
             bookmark_title.present ? bookmark_title.value : this.bookmark_title,
         bookmark_text: bookmark_text ?? this.bookmark_text,
@@ -2252,6 +2286,9 @@ class BookmarkInfoData extends DataClass
       bookmarks_folder_id: data.bookmarks_folder_id.present
           ? data.bookmarks_folder_id.value
           : this.bookmarks_folder_id,
+      creationTime: data.creationTime.present
+          ? data.creationTime.value
+          : this.creationTime,
       bookmark_title: data.bookmark_title.present
           ? data.bookmark_title.value
           : this.bookmark_title,
@@ -2266,6 +2303,7 @@ class BookmarkInfoData extends DataClass
     return (StringBuffer('BookmarkInfoData(')
           ..write('bookmark_id: $bookmark_id, ')
           ..write('bookmarks_folder_id: $bookmarks_folder_id, ')
+          ..write('creationTime: $creationTime, ')
           ..write('bookmark_title: $bookmark_title, ')
           ..write('bookmark_text: $bookmark_text')
           ..write(')'))
@@ -2273,38 +2311,43 @@ class BookmarkInfoData extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(
-      bookmark_id, bookmarks_folder_id, bookmark_title, bookmark_text);
+  int get hashCode => Object.hash(bookmark_id, bookmarks_folder_id,
+      creationTime, bookmark_title, bookmark_text);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is BookmarkInfoData &&
           other.bookmark_id == this.bookmark_id &&
           other.bookmarks_folder_id == this.bookmarks_folder_id &&
+          other.creationTime == this.creationTime &&
           other.bookmark_title == this.bookmark_title &&
           other.bookmark_text == this.bookmark_text);
 }
 
 class BookmarkInfoCompanion extends UpdateCompanion<BookmarkInfoData> {
   final Value<int> bookmark_id;
-  final Value<int> bookmarks_folder_id;
+  final Value<int?> bookmarks_folder_id;
+  final Value<DateTime> creationTime;
   final Value<String?> bookmark_title;
   final Value<String> bookmark_text;
   const BookmarkInfoCompanion({
     this.bookmark_id = const Value.absent(),
     this.bookmarks_folder_id = const Value.absent(),
+    this.creationTime = const Value.absent(),
     this.bookmark_title = const Value.absent(),
     this.bookmark_text = const Value.absent(),
   });
   BookmarkInfoCompanion.insert({
     this.bookmark_id = const Value.absent(),
     this.bookmarks_folder_id = const Value.absent(),
+    this.creationTime = const Value.absent(),
     this.bookmark_title = const Value.absent(),
     required String bookmark_text,
   }) : bookmark_text = Value(bookmark_text);
   static Insertable<BookmarkInfoData> custom({
     Expression<int>? bookmark_id,
     Expression<int>? bookmarks_folder_id,
+    Expression<DateTime>? creationTime,
     Expression<String>? bookmark_title,
     Expression<String>? bookmark_text,
   }) {
@@ -2312,6 +2355,7 @@ class BookmarkInfoCompanion extends UpdateCompanion<BookmarkInfoData> {
       if (bookmark_id != null) 'bookmark_id': bookmark_id,
       if (bookmarks_folder_id != null)
         'bookmarks_folder_id': bookmarks_folder_id,
+      if (creationTime != null) 'creation_time': creationTime,
       if (bookmark_title != null) 'bookmark_title': bookmark_title,
       if (bookmark_text != null) 'bookmark_text': bookmark_text,
     });
@@ -2319,12 +2363,14 @@ class BookmarkInfoCompanion extends UpdateCompanion<BookmarkInfoData> {
 
   BookmarkInfoCompanion copyWith(
       {Value<int>? bookmark_id,
-      Value<int>? bookmarks_folder_id,
+      Value<int?>? bookmarks_folder_id,
+      Value<DateTime>? creationTime,
       Value<String?>? bookmark_title,
       Value<String>? bookmark_text}) {
     return BookmarkInfoCompanion(
       bookmark_id: bookmark_id ?? this.bookmark_id,
       bookmarks_folder_id: bookmarks_folder_id ?? this.bookmarks_folder_id,
+      creationTime: creationTime ?? this.creationTime,
       bookmark_title: bookmark_title ?? this.bookmark_title,
       bookmark_text: bookmark_text ?? this.bookmark_text,
     );
@@ -2338,6 +2384,9 @@ class BookmarkInfoCompanion extends UpdateCompanion<BookmarkInfoData> {
     }
     if (bookmarks_folder_id.present) {
       map['bookmarks_folder_id'] = Variable<int>(bookmarks_folder_id.value);
+    }
+    if (creationTime.present) {
+      map['creation_time'] = Variable<DateTime>(creationTime.value);
     }
     if (bookmark_title.present) {
       map['bookmark_title'] = Variable<String>(bookmark_title.value);
@@ -2353,6 +2402,7 @@ class BookmarkInfoCompanion extends UpdateCompanion<BookmarkInfoData> {
     return (StringBuffer('BookmarkInfoCompanion(')
           ..write('bookmark_id: $bookmark_id, ')
           ..write('bookmarks_folder_id: $bookmarks_folder_id, ')
+          ..write('creationTime: $creationTime, ')
           ..write('bookmark_title: $bookmark_title, ')
           ..write('bookmark_text: $bookmark_text')
           ..write(')'))
@@ -4682,14 +4732,16 @@ typedef $$BookmarksFolderInfoTableProcessedTableManager = ProcessedTableManager<
 typedef $$BookmarkInfoTableCreateCompanionBuilder = BookmarkInfoCompanion
     Function({
   Value<int> bookmark_id,
-  Value<int> bookmarks_folder_id,
+  Value<int?> bookmarks_folder_id,
+  Value<DateTime> creationTime,
   Value<String?> bookmark_title,
   required String bookmark_text,
 });
 typedef $$BookmarkInfoTableUpdateCompanionBuilder = BookmarkInfoCompanion
     Function({
   Value<int> bookmark_id,
-  Value<int> bookmarks_folder_id,
+  Value<int?> bookmarks_folder_id,
+  Value<DateTime> creationTime,
   Value<String?> bookmark_title,
   Value<String> bookmark_text,
 });
@@ -4704,9 +4756,9 @@ final class $$BookmarkInfoTableReferences extends BaseReferences<
           db.bookmarkInfo.bookmarks_folder_id,
           db.bookmarksFolderInfo.bookmarks_folder_id));
 
-  $$BookmarksFolderInfoTableProcessedTableManager get bookmarks_folder_id {
-    final $_column = $_itemColumn<int>('bookmarks_folder_id')!;
-
+  $$BookmarksFolderInfoTableProcessedTableManager? get bookmarks_folder_id {
+    final $_column = $_itemColumn<int>('bookmarks_folder_id');
+    if ($_column == null) return null;
     final manager =
         $$BookmarksFolderInfoTableTableManager($_db, $_db.bookmarksFolderInfo)
             .filter((f) => f.bookmarks_folder_id.sqlEquals($_column));
@@ -4728,6 +4780,9 @@ class $$BookmarkInfoTableFilterComposer
   });
   ColumnFilters<int> get bookmark_id => $composableBuilder(
       column: $table.bookmark_id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get creationTime => $composableBuilder(
+      column: $table.creationTime, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get bookmark_title => $composableBuilder(
       column: $table.bookmark_title,
@@ -4768,6 +4823,10 @@ class $$BookmarkInfoTableOrderingComposer
   });
   ColumnOrderings<int> get bookmark_id => $composableBuilder(
       column: $table.bookmark_id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get creationTime => $composableBuilder(
+      column: $table.creationTime,
+      builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get bookmark_title => $composableBuilder(
       column: $table.bookmark_title,
@@ -4810,6 +4869,9 @@ class $$BookmarkInfoTableAnnotationComposer
   });
   GeneratedColumn<int> get bookmark_id => $composableBuilder(
       column: $table.bookmark_id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get creationTime => $composableBuilder(
+      column: $table.creationTime, builder: (column) => column);
 
   GeneratedColumn<String> get bookmark_title => $composableBuilder(
       column: $table.bookmark_title, builder: (column) => column);
@@ -4864,25 +4926,29 @@ class $$BookmarkInfoTableTableManager extends RootTableManager<
               $$BookmarkInfoTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> bookmark_id = const Value.absent(),
-            Value<int> bookmarks_folder_id = const Value.absent(),
+            Value<int?> bookmarks_folder_id = const Value.absent(),
+            Value<DateTime> creationTime = const Value.absent(),
             Value<String?> bookmark_title = const Value.absent(),
             Value<String> bookmark_text = const Value.absent(),
           }) =>
               BookmarkInfoCompanion(
             bookmark_id: bookmark_id,
             bookmarks_folder_id: bookmarks_folder_id,
+            creationTime: creationTime,
             bookmark_title: bookmark_title,
             bookmark_text: bookmark_text,
           ),
           createCompanionCallback: ({
             Value<int> bookmark_id = const Value.absent(),
-            Value<int> bookmarks_folder_id = const Value.absent(),
+            Value<int?> bookmarks_folder_id = const Value.absent(),
+            Value<DateTime> creationTime = const Value.absent(),
             Value<String?> bookmark_title = const Value.absent(),
             required String bookmark_text,
           }) =>
               BookmarkInfoCompanion.insert(
             bookmark_id: bookmark_id,
             bookmarks_folder_id: bookmarks_folder_id,
+            creationTime: creationTime,
             bookmark_title: bookmark_title,
             bookmark_text: bookmark_text,
           ),
