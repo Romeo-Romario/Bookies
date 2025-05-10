@@ -13,13 +13,13 @@ class NumbersScrollView extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 100,
-      width: 40,
+      width: 60,
       child: ListWheelScrollView.useDelegate(
         controller: _controller,
         itemExtent: 40,
-        diameterRatio: 1.5,
-        offAxisFraction: -0.3,
-        magnification: 1.05,
+        diameterRatio: 1.2,
+        // offAxisFraction: -0.3,
+        magnification: 1.08,
         useMagnifier: true,
         childDelegate: ListWheelChildListDelegate(
           children: numbers
@@ -28,12 +28,10 @@ class NumbersScrollView extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 2),
+                    child: Center(
                       child: Text(e.toString(),
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w500)),
+                              fontSize: 24, fontWeight: FontWeight.w600)),
                     ),
                   )))
               .toList(),

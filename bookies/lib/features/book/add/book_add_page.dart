@@ -444,7 +444,7 @@ class _BookAddPageState extends State<BookAddPage> {
 
     // Handle authors
     await checkAuthorsOnEdit(
-        widget.book!.bookId!, selectedAuthors, editBookAuthors!);
+        widget.book!.bookId!, selectedAuthors, editBookAuthors);
 
     final result = BookInfoEntity(
       bookId: widget.book!.bookId,
@@ -452,7 +452,7 @@ class _BookAddPageState extends State<BookAddPage> {
       bookName: bookNameController.text,
       imagePath: finalImagePath,
       imageSourceType: imageSourceType,
-      readPages: numberOfReadPages!,
+      readPages: numberOfReadPages ?? 0,
       numberOfPages: numberOfPages!,
       status: pageMode ? true : false,
       feedback: pageMode ? feedbackController.text : null,

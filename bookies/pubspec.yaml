@@ -46,6 +46,7 @@ dependencies:
   image_cropper: ^9.0.0
   get_it: ^8.0.3
   skeletonizer: ^1.4.3
+  flutter_expandable_fab: ^2.5.0
 
 dev_dependencies:
   flutter_test:
