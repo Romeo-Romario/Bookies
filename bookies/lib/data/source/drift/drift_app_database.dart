@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 part 'drift_app_database.g.dart';
 
 class BooksFolderInfoTable extends Table {
+  IntColumn get parent_book_folder_id => integer().nullable()();
   IntColumn get books_folder_id => integer().autoIncrement()();
   TextColumn get books_folder_name => text()();
   TextColumn get font_style => text().nullable()();
@@ -54,13 +55,15 @@ class ReadingUpdateInfo extends Table {
 }
 
 class BookmarksFolderInfo extends Table {
-  IntColumn get bookmarks_folder_id => integer().autoIncrement()();
   IntColumn get book_id => integer().references(BookInfoTable, #book_id)();
+  IntColumn get parent_bookmarks_folder_id => integer().nullable()();
+  IntColumn get bookmarks_folder_id => integer().autoIncrement()();
   TextColumn get bookmarks_folder_name => text()();
   TextColumn get bookmarks_folder_color => text()();
 }
 
 class BookmarkInfo extends Table {
+  IntColumn get book_id => integer().references(BookInfoTable, #book_id)();
   IntColumn get bookmark_id => integer().autoIncrement()();
   IntColumn get bookmarks_folder_id => integer()
       .references(BookmarksFolderInfo, #bookmarks_folder_id)

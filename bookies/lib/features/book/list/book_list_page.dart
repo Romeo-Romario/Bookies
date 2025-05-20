@@ -2,6 +2,7 @@ import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/features/book/detail/book_detail.dart';
 import 'package:bookies/features/book/list/widgets/book_grid_view.dart';
+import 'package:bookies/features/statistic/statistic_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -37,6 +38,18 @@ class _BookListPageState extends State<BookListPage> {
             bottom: Radius.circular(20),
           ),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StatisticPage(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.stacked_line_chart_rounded))
+        ],
       ),
       body: SafeArea(
         child: FutureBuilder(
