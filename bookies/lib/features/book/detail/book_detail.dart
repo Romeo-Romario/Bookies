@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bookies/data/entities/author_entity.dart';
 import 'package:bookies/data/entities/book_info_entity.dart';
@@ -179,14 +178,21 @@ class _BookDetailState extends State<BookDetail> {
                             : Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  AnimatedFlipCounter(
-                                    value: animatedReadPages,
-                                    duration: Duration(milliseconds: 1200),
-                                    textStyle: TextStyle(
-                                      color: Colors.green[900],
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                                  TweenAnimationBuilder<double>(
+                                    tween: Tween(
+                                        begin: 0,
+                                        end: bookInfo.readPages.toDouble()),
+                                    duration: Duration(milliseconds: 1500),
+                                    builder: (context, value, child) {
+                                      return Text(
+                                        value.toInt().toString(),
+                                        style: TextStyle(
+                                          color: Colors.green[900],
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      );
+                                    },
                                   ),
                                   Text(
                                     " / ${bookInfo.numberOfPages}",
