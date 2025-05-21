@@ -1,22 +1,37 @@
+import 'package:bookies/data/entities/bookmark_entity.dart';
+import 'package:bookies/data/repository/bookmark_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class BookmarkDetail extends StatelessWidget {
-  final VoidCallback? func;
+  final int bookId;
+  final VoidCallback func;
   final bool option; // "true" means add new | "false" means edit existing
-  final int? id;
+  final BookmarkEntity? bookmark;
 
   final titileController = TextEditingController();
   final textController = TextEditingController();
+  BookmarkRepository bookmarkRepository = GetIt.I.get();
+
   BookmarkDetail(
-      {super.key, required this.func, required this.option, this.id});
+      {super.key,
+      required this.bookId,
+      required this.func,
+      required this.option,
+      this.bookmark});
 
   @override
   Widget build(BuildContext context) {
+    if (bookmark != null) {
+      titileController.text = bookmark?.title ?? "";
+      textController.text = bookmark?.text ?? "";
+    }
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
           icon: Icon(option ? Icons.bookmark_add : Icons.edit_note),
           label: Text(option ? "Add Bookmark" : "EditBookmark"),
-          onPressed: func),
+          onPressed: () => onSubmit(context)),
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
         title: Text("Bookmark options"),
@@ -28,10 +43,11 @@ class BookmarkDetail extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: 20,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [Text("Created"), Text(" 2023-10-25")],
-              ),
+              if (!option)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [Text("Created"), Text(" 2023-10-25")],
+                ),
               TextFormField(
                 controller: titileController,
                 decoration: InputDecoration(
@@ -68,5 +84,34 @@ class BookmarkDetail extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void onSubmit(BuildContext context) {
+    if (titileController.text.isEmpty || textController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text("Input Error"),
+          content: Text("Both title and text fields must be filled."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    if (bookmark == null) {
+      bookmarkRepository.add(
+          bookId, titileController.text, textController.text);
+      func();
+    } else {
+      bookmarkRepository.update(
+          bookmark!.id!, titileController.text, textController.text);
+      func();
+    }
   }
 }

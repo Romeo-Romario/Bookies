@@ -2,6 +2,7 @@ import 'package:bookies/data/database_initializer.dart';
 import 'package:bookies/data/repository/authors_list_repository.dart';
 import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/book_repository.dart';
+import 'package:bookies/data/repository/bookmark_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
 import 'package:bookies/data/source/drift/drift_app_database.dart';
 import 'package:bookies/features/book/add/book_add_page.dart';
@@ -29,6 +30,9 @@ void main() async {
   );
   GetIt.I.registerSingleton<AuthorsListRepository>(
     AuthorsListRepositoryImpl(database),
+  );
+  GetIt.I.registerSingleton<BookmarkRepository>(
+    BookmarkRepositoryImpl(database),
   );
 
   await DatabaseInitializer.builtInEntitiesInitializer(

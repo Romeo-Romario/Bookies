@@ -16,8 +16,6 @@ class BookListPage extends StatefulWidget {
 class _BookListPageState extends State<BookListPage> {
   final BookRepository bookRepository = GetIt.I.get();
 
-  List<BookInfoEntity> books = [];
-
   late Future<List<BookInfoEntity>> booksFuture;
 
   @override

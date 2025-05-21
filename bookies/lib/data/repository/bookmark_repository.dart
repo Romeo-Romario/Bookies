@@ -7,7 +7,7 @@ abstract class BookmarkRepository {
   Future update(int id, String title, String text);
   Future delete(int id);
   Future<List<BookmarkEntity>> search(int book_id, String line, int sortType);
-  Future<BookmarkEntity?> getOne(int id);
+  Future<BookmarkEntity> getOne(int id);
 }
 
 class BookmarkRepositoryImpl extends BookmarkRepository {
@@ -79,7 +79,6 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
           (p0) => BookmarkEntity(
               book_id: p0.book_id,
               id: p0.bookmark_id,
-              folderId: p0.bookmarks_folder_id,
               creationTime: p0.creationTime,
               title: p0.bookmark_title,
               text: p0.bookmark_text),
@@ -88,7 +87,7 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
   }
 
   @override
-  Future<BookmarkEntity?> getOne(int id) async {
+  Future<BookmarkEntity> getOne(int id) async {
     final query = source.select(source.bookmarkInfo)
       ..where((tbl) => tbl.bookmark_id.equals(id));
 
@@ -97,11 +96,10 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
           (p0) => BookmarkEntity(
               book_id: p0.book_id,
               id: p0.bookmark_id,
-              folderId: p0.bookmarks_folder_id,
               creationTime: p0.creationTime,
               title: p0.bookmark_title,
               text: p0.bookmark_text),
         )
-        .getSingleOrNull();
+        .getSingle();
   }
 }

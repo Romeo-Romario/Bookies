@@ -236,7 +236,9 @@ class _BookDetailState extends State<BookDetail> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BookmarksListPage(),
+                            builder: (context) => BookmarksListPage(
+                              bookId: widget.bookId,
+                            ),
                           ),
                         );
                       },

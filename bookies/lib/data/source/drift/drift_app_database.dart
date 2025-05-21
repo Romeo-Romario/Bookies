@@ -22,7 +22,8 @@ class AuthorsInfoTable extends Table {
 class AuthorsListTable extends Table {
   IntColumn get authors_id =>
       integer().references(AuthorsInfoTable, #author_id)();
-  IntColumn get book_id => integer().references(BookInfoTable, #book_id)();
+  IntColumn get book_id => integer()
+      .references(BookInfoTable, #book_id, onDelete: KeyAction.cascade)();
 }
 
 class GenresInfoTable extends Table {
@@ -48,26 +49,17 @@ class BookInfoTable extends Table {
 
 class ReadingUpdateInfo extends Table {
   IntColumn get update_id => integer().autoIncrement()();
-  IntColumn get book_id => integer().references(BookInfoTable, #book_id)();
+  IntColumn get book_id => integer()
+      .references(BookInfoTable, #book_id, onDelete: KeyAction.cascade)();
   DateTimeColumn get update_time =>
       dateTime().withDefault(currentDateAndTime)();
   IntColumn get page_number => integer()();
 }
 
-class BookmarksFolderInfo extends Table {
-  IntColumn get book_id => integer().references(BookInfoTable, #book_id)();
-  IntColumn get parent_bookmarks_folder_id => integer().nullable()();
-  IntColumn get bookmarks_folder_id => integer().autoIncrement()();
-  TextColumn get bookmarks_folder_name => text()();
-  TextColumn get bookmarks_folder_color => text()();
-}
-
 class BookmarkInfo extends Table {
-  IntColumn get book_id => integer().references(BookInfoTable, #book_id)();
+  IntColumn get book_id => integer()
+      .references(BookInfoTable, #book_id, onDelete: KeyAction.cascade)();
   IntColumn get bookmark_id => integer().autoIncrement()();
-  IntColumn get bookmarks_folder_id => integer()
-      .references(BookmarksFolderInfo, #bookmarks_folder_id)
-      .nullable()();
   DateTimeColumn get creationTime =>
       dateTime().withDefault(currentDateAndTime)();
   TextColumn get bookmark_title => text().nullable()();
@@ -81,7 +73,6 @@ class BookmarkInfo extends Table {
   GenresInfoTable,
   BookInfoTable,
   ReadingUpdateInfo,
-  BookmarksFolderInfo,
   BookmarkInfo
 ])
 class DriftAppDatabase extends _$DriftAppDatabase {
@@ -89,6 +80,15 @@ class DriftAppDatabase extends _$DriftAppDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      beforeOpen: (details) async {
+        await customStatement('PRAGMA foreign_keys = ON');
+      },
+    );
+  }
 
   static QueryExecutor _openConnection() {
     return driftDatabase(

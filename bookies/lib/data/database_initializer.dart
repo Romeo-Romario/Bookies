@@ -13,20 +13,20 @@ class DatabaseInitializer {
     // prefs.clear();
 
     //TODO:Delete this lines when everything will be set
-    // final AuthorsRepository authorsRepository = GetIt.I.get();
+    final AuthorRepository authorsRepository = GetIt.I.get();
 
-    // List<String> authors = [
-    //   "Andrzej Sapkowski",
-    //   "Brendon Sanderson",
-    //   "Joe Abercrombie",
-    //   "Roger Zelazny",
-    //   "Sarah J Maas",
-    //   "John Ronald Reuel Tolkien",
-    // ];
+    List<String> authors = [
+      "Andrzej Sapkowski",
+      "Brendon Sanderson",
+      "Joe Abercrombie",
+      "Roger Zelazny",
+      "Sarah J Maas",
+      "John Ronald Reuel Tolkien",
+    ];
 
-    // for (var el in authors) {
-    //   authorsRepository.add(el);
-    // }
+    for (var el in authors) {
+      authorsRepository.add(el);
+    }
 
     if ((prefs.getBool('start') ?? true)) {
       await prefs.setBool('start', false);
