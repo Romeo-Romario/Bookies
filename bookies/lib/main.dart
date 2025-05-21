@@ -7,6 +7,8 @@ import 'package:bookies/data/repository/genre_repository.dart';
 import 'package:bookies/data/source/drift/drift_app_database.dart';
 import 'package:bookies/features/book/add/book_add_page.dart';
 import 'package:bookies/features/book/list/book_list_page.dart';
+import 'package:bookies/shared/theme/app_theme.dart';
+import 'package:bookies/shared/theme/color_seed.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,12 +42,14 @@ void main() async {
     GetIt.I.get(),
   );
 
+  final theme = AppTheme(mode: ThemeMode.light, seed: ColorSeed.baseColor);
+
   runApp(MaterialApp(
     // initialRoute: '/home',
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      useMaterial3: true,
-    ),
+    themeMode: theme.mode,
+    theme: theme.asLight(),
+    darkTheme: theme.asDark(),
     routes: {
       '/': (context) => BookListPage(),
       '/adding': (contex) => BookAddPage.create(),
