@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bookies/data/entities/author_entity.dart';
 import 'package:bookies/data/entities/book_info_entity.dart';
@@ -39,6 +40,7 @@ class _BookDetailState extends State<BookDetail> {
   final GenreRepository genreRepository = GetIt.I.get();
   final BookRepository bookRepository = GetIt.I.get();
 
+  double animatedReadPages = 0;
   @override
   void initState() {
     super.initState();
@@ -84,6 +86,18 @@ class _BookDetailState extends State<BookDetail> {
     bookInfo = (await bookRepository.getOne(bookId))!;
     authors = await authorRepository.getAllByBook(bookId);
     genre = await genreRepository.search(bookInfo.genreId!);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      setState(() {
+        animatedReadPages = 0; // reset first
+      });
+
+      Future.delayed(Duration(milliseconds: 100), () {
+        setState(() {
+          animatedReadPages = bookInfo.readPages.toDouble();
+        });
+      });
+    });
   }
 
   Widget success() {
@@ -153,16 +167,37 @@ class _BookDetailState extends State<BookDetail> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       spacing: bookInfo.status ? 20 : 30,
                       children: [
-                        Text(
-                          bookInfo.status
-                              ? "Finished"
-                              : "${bookInfo.readPages}/${bookInfo.numberOfPages}", // Depents on book status
-                          style: TextStyle(
-                            color: Colors.green[900],
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                        bookInfo.status
+                            ? Text(
+                                "Finished",
+                                style: TextStyle(
+                                  color: Colors.green[900],
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              )
+                            : Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  AnimatedFlipCounter(
+                                    value: animatedReadPages,
+                                    duration: Duration(milliseconds: 1200),
+                                    textStyle: TextStyle(
+                                      color: Colors.green[900],
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    " / ${bookInfo.numberOfPages}",
+                                    style: TextStyle(
+                                      color: Colors.green[900],
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
                         if (!bookInfo.status)
                           OutlinedButton.icon(
                             onPressed: onUpdate,
