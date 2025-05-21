@@ -30,11 +30,53 @@ class BookmarkDetail extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
           icon: Icon(option ? Icons.bookmark_add : Icons.edit_note),
-          label: Text(option ? "Add Bookmark" : "EditBookmark"),
+          label: Text(option ? "Add Bookmark" : "Edit Bookmark"),
           onPressed: () => onSubmit(context)),
       appBar: AppBar(
         backgroundColor: Colors.blueGrey,
         title: Text("Bookmark options"),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+        ),
+        actions: [
+          if (!option)
+            Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text("Confirm Deletion"),
+                      content: Text(
+                        'Are you sure you want to delete "${titileController.text.isNotEmpty ? titileController.text : "this"}" bookmark?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            await bookmarkRepository.delete(bookmark!.id!);
+                            Navigator.of(context).pop();
+                            func();
+                          },
+                          child: Text(
+                            "Delete",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                icon: Icon(Icons.delete_forever_outlined, size: 30),
+              ),
+            )
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -46,7 +88,11 @@ class BookmarkDetail extends StatelessWidget {
               if (!option)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [Text("Created"), Text(" 2023-10-25")],
+                  children: [
+                    Text("Created"),
+                    Text(bookmark!.creationTime.toString().substring(
+                        0, bookmark!.creationTime.toString().length - 4))
+                  ],
                 ),
               TextFormField(
                 controller: titileController,

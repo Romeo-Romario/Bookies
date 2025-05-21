@@ -1,6 +1,7 @@
 import 'package:bookies/data/entities/bookmark_entity.dart';
 import 'package:bookies/data/repository/bookmark_repository.dart';
 import 'package:bookies/features/bookmark/detail/bookmark_detail.dart';
+import 'package:bookies/features/bookmark/list/widgets/bookmark_card.dart';
 import 'package:bookies/features/bookmark/list/widgets/sort_style_popup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -27,7 +28,6 @@ class _BookmarksListPageState extends State<BookmarksListPage> {
   int selectedSortValue = 1;
   bool searchMode = false;
   final searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -130,16 +130,11 @@ class _BookmarksListPageState extends State<BookmarksListPage> {
                         itemCount: bookmarks.length,
                         itemBuilder: (context, index) {
                           final item = bookmarks[index];
-                          return Card(
-                            child: ListTile(
-                              title: Text(item.title!),
-                              subtitle: Text(
-                                item.text,
-                                maxLines: 4,
-                                overflow: TextOverflow.fade,
-                              ),
-                            ),
-                          );
+                          return BookmarkCard(
+                              bookId: widget.bookId,
+                              func: addBookMark,
+                              option: false,
+                              bookmark: item);
                         },
                       ),
                     );
@@ -177,10 +172,10 @@ class _BookmarksListPageState extends State<BookmarksListPage> {
   }
 
   void addBookMark() {
-    Navigator.pop(context);
     setState(() {
       bookmarksFuture = bookmarkRepository.search(
           widget.bookId, searchController.text, selectedSortValue);
     });
+    Navigator.pop(context);
   }
 }

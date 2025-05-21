@@ -23,10 +23,13 @@ class BookmarkRepositoryImpl extends BookmarkRepository {
 
   @override
   Future update(int id, String title, String text) {
-    return source.update(source.bookmarkInfo).replace(BookmarkInfoCompanion(
-        bookmark_id: Value(id),
-        bookmark_text: Value(text),
-        bookmark_title: Value(title)));
+    return source.managers.bookmarkInfo
+        .filter(
+          (f) => f.bookmark_id.equals(id),
+        )
+        .update(
+          (o) => o(bookmark_text: Value(text), bookmark_title: Value(title)),
+        );
   }
 
   @override

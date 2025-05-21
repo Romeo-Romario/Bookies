@@ -11,7 +11,9 @@ import 'package:bookies/features/book/add/book_add_page.dart';
 import 'package:bookies/features/book/add/widgets/labeled_container.dart';
 import 'package:bookies/features/book/detail/widgets/finish_book_page.dart';
 import 'package:bookies/features/book/detail/widgets/update_progress_dialog.dart';
+import 'package:bookies/features/bookmark/detail/bookmark_detail.dart';
 import 'package:bookies/features/bookmark/list/bookmark_list_page.dart';
+import 'package:bookies/features/shared/navigation/navigator_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:get_it/get_it.dart';
@@ -213,7 +215,23 @@ class _BookDetailState extends State<BookDetail> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     OutlinedButton.icon(
-                      onPressed: () {},
+                      onPressed: () async {
+                        final result = await context.push(
+                          (context) => BookmarkDetail(
+                            bookId: widget.bookId,
+                            func: () => Navigator.pop(context, true),
+                            option: true,
+                          ),
+                        );
+                        if (result != null && result == true) {
+                          await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    BookmarksListPage(bookId: widget.bookId),
+                              ));
+                        }
+                      },
                       label: Text(
                         "Add bookmark",
                         style: TextStyle(fontSize: 16),
