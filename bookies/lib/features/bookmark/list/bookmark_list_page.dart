@@ -10,7 +10,7 @@ class BookmarksListPage extends StatefulWidget {
 }
 
 class _BookmarksListPageState extends State<BookmarksListPage> {
-  String selectedValue = 'newToOld';
+  int selectedValue = 1;
   bool searchMode = false;
   final searchController = TextEditingController();
   final data = [
@@ -219,7 +219,7 @@ class _BookmarksListPageState extends State<BookmarksListPage> {
     );
   }
 
-  void changeSortStyle(String? value) {
+  void changeSortStyle(int? value) {
     if (value == null) {
       return;
     }

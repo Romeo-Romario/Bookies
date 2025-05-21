@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SortStylePopupMenu extends StatefulWidget {
-  const SortStylePopupMenu({super.key, this.func});
-  final func;
+  const SortStylePopupMenu({super.key, required this.func});
+  final Function func;
 
   @override
   State<SortStylePopupMenu> createState() => _SortStylePopupMenuState();
@@ -18,7 +18,7 @@ class _SortStylePopupMenuState extends State<SortStylePopupMenu> {
         onSelected: (value) => widget.func(value),
         itemBuilder: (context) => [
           PopupMenuItem(
-            value: "From new to old",
+            value: 1,
             child: Card(
                 child: ListTile(
               leading: Icon(Icons.date_range),
@@ -26,7 +26,7 @@ class _SortStylePopupMenuState extends State<SortStylePopupMenu> {
             )),
           ),
           PopupMenuItem(
-            value: "From old to new",
+            value: 2,
             child: Card(
                 child: ListTile(
               leading: Icon(Icons.date_range_outlined),
@@ -34,7 +34,7 @@ class _SortStylePopupMenuState extends State<SortStylePopupMenu> {
             )),
           ),
           PopupMenuItem(
-            value: "From A to Z",
+            value: 3,
             child: Card(
                 child: ListTile(
               leading: Icon(Icons.sort_by_alpha_outlined),
@@ -42,7 +42,7 @@ class _SortStylePopupMenuState extends State<SortStylePopupMenu> {
             )),
           ),
           PopupMenuItem(
-            value: "From Z to A",
+            value: 4,
             child: Card(
                 child: ListTile(
               leading: Icon(Icons.sort_by_alpha_rounded),
