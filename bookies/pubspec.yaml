@@ -45,10 +45,10 @@ dependencies:
   flutter_rating: ^2.0.2
   image_cropper: ^9.0.0
   get_it: ^8.0.3
-  skeletonizer: ^1.4.3
   flutter_expandable_fab: ^2.5.0
   flutter_bloc: ^9.1.1
   fl_chart: ^1.0.0
+  skeletonizer: ^2.0.1
 
 dev_dependencies:
   flutter_test:
