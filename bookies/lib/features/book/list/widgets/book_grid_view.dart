@@ -15,6 +15,7 @@ class BookGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
+      shrinkWrap: true,
       primary: false,
       padding: const EdgeInsets.all(16),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
