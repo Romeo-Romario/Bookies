@@ -4,6 +4,7 @@ import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/bookmark_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
+import 'package:bookies/data/repository/statistics_repository.dart';
 import 'package:bookies/data/source/drift/drift_app_database.dart';
 import 'package:bookies/features/book/add/book_add_page.dart';
 import 'package:bookies/features/book/list/book_list_page.dart';
@@ -18,24 +19,30 @@ void main() async {
 
   final database = DriftAppDatabase();
 
-  GetIt.I.registerSingleton<SharedPreferences>(
-      await SharedPreferences.getInstance());
+  final container = GetIt.I;
 
-  GetIt.I.registerSingleton<BookRepository>(
-    BookRepositoryImpl(database),
-  );
-  GetIt.I.registerSingleton<GenreRepository>(
-    GenreRepositoryImpl(database),
-  );
-  GetIt.I.registerSingleton<AuthorRepository>(
-    AuthorRepositoryImpl(database),
-  );
-  GetIt.I.registerSingleton<AuthorsListRepository>(
-    AuthorsListRepositoryImpl(database),
-  );
-  GetIt.I.registerSingleton<BookmarkRepository>(
-    BookmarkRepositoryImpl(database),
-  );
+  container
+    ..registerSingleton<SharedPreferences>(
+      await SharedPreferences.getInstance(),
+    )
+    ..registerSingleton<BookRepository>(
+      BookRepositoryImpl(database),
+    )
+    ..registerSingleton<GenreRepository>(
+      GenreRepositoryImpl(database),
+    )
+    ..registerSingleton<AuthorRepository>(
+      AuthorRepositoryImpl(database),
+    )
+    ..registerSingleton<AuthorsListRepository>(
+      AuthorsListRepositoryImpl(database),
+    )
+    ..registerSingleton<BookmarkRepository>(
+      BookmarkRepositoryImpl(database),
+    )
+    ..registerSingleton<StatisticsRepository>(
+      StatisticsRepositoryImpl(database),
+    );
 
   await DatabaseInitializer.builtInEntitiesInitializer(
     GetIt.I.get(),

@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:bookies/data/entities/statistics/author_book_count.dart';
+import 'package:bookies/data/entities/statistics/book_grade_per_genre.dart';
 import 'package:bookies/data/repository/statistics_repository.dart';
 import 'package:bookies/shared/theme/color_tool.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
