@@ -2,7 +2,7 @@ import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/features/book/detail/book_detail.dart';
 import 'package:bookies/features/book/list/widgets/book_grid_view.dart';
-import 'package:bookies/features/statistic/statistic_page.dart';
+import 'package:bookies/features/statistics/bookies_statistics_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
