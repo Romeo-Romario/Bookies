@@ -18,9 +18,6 @@ class BookiesStatisticsCubit extends Cubit<BookiesStatisticsState> {
   Future init() async {
     // await Future.delayed(Duration(seconds: 1));
 
-    final bookCount = await statisticsRepository.getBookCount();
-    final bookFolderCount = await statisticsRepository.getBookFolderCount();
-    final bookmarkCount = await statisticsRepository.getBookmarkCount();
     final generes = (await statisticsRepository.groupAllBooksByGenre())
         .map((e) => GenrePieChartItem(
               name: e.genreName,
@@ -29,18 +26,37 @@ class BookiesStatisticsCubit extends Cubit<BookiesStatisticsState> {
             ))
         .toList();
 
-    final grades = (await statisticsRepository.getAverageGradePerGenre());
-
-    final authorBookCount = await statisticsRepository.getAuthorBookCount();
-
     emit(state.copyWith(
-      bookCountInfo: CountInfo(title: 'Books', count: bookCount),
-      folderCountInfo: CountInfo(title: 'Folders', count: bookFolderCount),
-      bookmarkCountInfo: CountInfo(title: 'Bookmarks', count: bookmarkCount),
+      bookCountInfo: CountInfo(
+        title: 'Books',
+        count: await statisticsRepository.getBookCount(),
+      ),
+      folderCountInfo: CountInfo(
+        title: 'Folders',
+        count: await statisticsRepository.getBookFolderCount(),
+      ),
+      bookmarkCountInfo: CountInfo(
+        title: 'Bookmarks',
+        count: await statisticsRepository.getBookmarkCount(),
+      ),
+      totalPageCountInfo: CountInfo(
+        title: 'Pages',
+        count: await statisticsRepository.getAllPagesCount(),
+      ),
+      readPageCountInfo: CountInfo(
+        title: 'Read',
+        count: await statisticsRepository.getReadPagesCount(),
+      ),
+      leftPageCountInfo: CountInfo(
+        title: 'Left',
+        count: await statisticsRepository.getLeftPagesCount(),
+      ),
       genrePieChart: GenrePieChartInfo(selectedIndex: -1, genres: generes),
-      gradeBarChartInfo: GradeBarChartInfo(grades: grades),
-      authorBookCountBarChartInfo: AuthorBookCountBarChartInfo(
-        authorBookCount: authorBookCount,
+      gradeBarChart: GradeBarChartInfo(
+        grades: await statisticsRepository.getAverageGradePerGenre(),
+      ),
+      authorBookCountBarChart: AuthorBookCountBarChartInfo(
+        authorBookCount: await statisticsRepository.getAuthorBookCount(),
       ),
       loadingStatus: LoadingStatus.finished,
     ));

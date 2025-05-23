@@ -5,6 +5,10 @@ class BookiesStatisticsState {
   final CountInfo folderCountInfo;
   final CountInfo bookmarkCountInfo;
 
+  final CountInfo totalPageCountInfo;
+  final CountInfo readPageCountInfo;
+  final CountInfo leftPageCountInfo;
+
   final GenrePieChartInfo genrePieChart;
   final GradeBarChartInfo gradeBarChart;
   final AuthorBookCountBarChartInfo authorBookCountBarChart;
@@ -15,6 +19,9 @@ class BookiesStatisticsState {
     required this.bookCountInfo,
     required this.folderCountInfo,
     required this.bookmarkCountInfo,
+    required this.totalPageCountInfo,
+    required this.readPageCountInfo,
+    required this.leftPageCountInfo,
     required this.genrePieChart,
     required this.gradeBarChart,
     required this.authorBookCountBarChart,
@@ -25,6 +32,9 @@ class BookiesStatisticsState {
       : bookCountInfo = const CountInfo.empty(),
         folderCountInfo = const CountInfo.empty(),
         bookmarkCountInfo = const CountInfo.empty(),
+        totalPageCountInfo = const CountInfo.empty(),
+        readPageCountInfo = const CountInfo.empty(),
+        leftPageCountInfo = const CountInfo.empty(),
         genrePieChart = const GenrePieChartInfo.empty(),
         gradeBarChart = const GradeBarChartInfo.empty(),
         authorBookCountBarChart = const AuthorBookCountBarChartInfo.empty(),
@@ -34,19 +44,25 @@ class BookiesStatisticsState {
     CountInfo? bookCountInfo,
     CountInfo? folderCountInfo,
     CountInfo? bookmarkCountInfo,
+    CountInfo? totalPageCountInfo,
+    CountInfo? readPageCountInfo,
+    CountInfo? leftPageCountInfo,
     GenrePieChartInfo? genrePieChart,
-    GradeBarChartInfo? gradeBarChartInfo,
-    AuthorBookCountBarChartInfo? authorBookCountBarChartInfo,
+    GradeBarChartInfo? gradeBarChart,
+    AuthorBookCountBarChartInfo? authorBookCountBarChart,
     LoadingStatus? loadingStatus,
   }) {
     return BookiesStatisticsState(
       bookCountInfo: bookCountInfo ?? this.bookCountInfo,
       folderCountInfo: folderCountInfo ?? this.folderCountInfo,
       bookmarkCountInfo: bookmarkCountInfo ?? this.bookmarkCountInfo,
+      totalPageCountInfo: totalPageCountInfo ?? this.totalPageCountInfo,
+      readPageCountInfo: readPageCountInfo ?? this.readPageCountInfo,
+      leftPageCountInfo: leftPageCountInfo ?? this.leftPageCountInfo,
       genrePieChart: genrePieChart ?? this.genrePieChart,
-      gradeBarChart: gradeBarChartInfo ?? gradeBarChart,
+      gradeBarChart: gradeBarChart ?? this.gradeBarChart,
       authorBookCountBarChart:
-          authorBookCountBarChartInfo ?? authorBookCountBarChart,
+          authorBookCountBarChart ?? this.authorBookCountBarChart,
       loadingStatus: loadingStatus ?? this.loadingStatus,
     );
   }

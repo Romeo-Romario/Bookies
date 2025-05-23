@@ -12,6 +12,10 @@ sealed class StatisticsRepository {
   Future<int> getBookFolderCount();
   Future<int> getBookmarkCount();
 
+  Future<int> getAllPagesCount();
+  Future<int> getReadPagesCount();
+  Future<int> getLeftPagesCount();
+
   Future<int> getBookCount();
 }
 
@@ -79,6 +83,37 @@ class StatisticsRepositoryImpl extends StatisticsRepository {
   Future<int> getBookCount() {
     return database.managers.bookInfoTable.count();
   }
+
+  @override
+  Future<int> getAllPagesCount() async {
+    final result = await database
+            .getAllPagesCount()
+            .map(
+              (p0) => p0.readNullable<int>('all_pages'),
+            )
+            .getSingleOrNull() ??
+        0;
+
+    return result;
+  }
+
+  @override
+  Future<int> getReadPagesCount() async {
+    final result = await database
+            .getReadPagesCount()
+            .map(
+              (p0) => p0.readNullable<int>('read_pages'),
+            )
+            .getSingleOrNull() ??
+        0;
+
+    return result;
+  }
+
+  @override
+  Future<int> getLeftPagesCount() async {
+    return await getAllPagesCount() - await getReadPagesCount();
+  }
 }
 
 extension StatisticsRepositoryQuery on DriftAppDatabase {
@@ -119,6 +154,26 @@ extension StatisticsRepositoryQuery on DriftAppDatabase {
     GROUP BY authors_list_table.authors_id
     ''',
       readsFrom: {authorsListTable, authorsInfoTable},
+    );
+  }
+
+  Selectable<QueryRow> getAllPagesCount() {
+    return customSelect(
+      '''
+    SELECT SUM(book_info_table.number_of_pages) as all_pages
+    FROM book_info_table
+    ''',
+      readsFrom: {bookInfoTable},
+    );
+  }
+
+  Selectable<QueryRow> getReadPagesCount() {
+    return customSelect(
+      '''
+    SELECT SUM(book_info_table.read_pages) as read_pages
+    FROM book_info_table
+    ''',
+      readsFrom: {bookInfoTable},
     );
   }
 }

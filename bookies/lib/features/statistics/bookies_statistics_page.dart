@@ -4,6 +4,9 @@ import 'package:bookies/features/statistics/widgets/bar_chart/book_grade_per_gen
 import 'package:bookies/features/statistics/widgets/count_info/book_count_card.dart';
 import 'package:bookies/features/statistics/widgets/count_info/bookmark_count_card.dart';
 import 'package:bookies/features/statistics/widgets/count_info/folder_count_card.dart';
+import 'package:bookies/features/statistics/widgets/count_info/left_page_count_card.dart';
+import 'package:bookies/features/statistics/widgets/count_info/read_page_count_card.dart';
+import 'package:bookies/features/statistics/widgets/count_info/total_page_count_card.dart';
 import 'package:bookies/features/statistics/widgets/genre_pie_chart/genre_pie_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,7 +44,18 @@ class StatistisView extends StatelessWidget {
         enabled: loadingStatus.isLoading,
         child: ListView(
           children: [
-            BookCountCard(),
+            Row(
+              children: [
+                Expanded(flex: 12, child: BookCountCard()),
+                Expanded(flex: 10, child: TotalPageCountCard()),
+              ],
+            ),
+            Row(
+              children: [
+                Expanded(flex: 10, child: ReadPageCountCard()),
+                Expanded(flex: 12, child: LeftPageCountCard()),
+              ],
+            ),
             Row(
               children: [
                 Expanded(child: FolderCountCard()),
