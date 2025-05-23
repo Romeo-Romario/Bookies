@@ -8,7 +8,9 @@ import 'package:bookies/features/book/add/book_add_page.dart';
 import 'package:bookies/features/book/detail/book_detail.dart';
 import 'package:bookies/features/book/list/widgets/book_grid_view.dart';
 import 'package:bookies/features/folder/add/folder_add_dialog.dart';
+import 'package:bookies/features/folder/detail/folder_detail_dialog.dart';
 import 'package:bookies/features/folder/folder_grid_view/folder_grid_view.dart';
+import 'package:bookies/features/shared/font_params/font_params.dart';
 import 'package:bookies/features/statistics/bookies_statistics_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
@@ -17,7 +19,14 @@ import 'package:get_it/get_it.dart';
 class BookListPage extends StatefulWidget {
   int? parentFolderId;
   String? parentFolderName;
-  BookListPage({super.key, this.parentFolderId, this.parentFolderName});
+  String? parentFolderFontStyle;
+
+  BookListPage({
+    super.key,
+    this.parentFolderId,
+    this.parentFolderName,
+    this.parentFolderFontStyle,
+  });
 
   @override
   State<BookListPage> createState() => _BookListPageState();
@@ -32,20 +41,42 @@ class _BookListPageState extends State<BookListPage> {
 
   final GlobalKey<ExpandableFabState> _fabKey = GlobalKey<ExpandableFabState>();
 
+  String? folderName;
   @override
   void initState() {
     super.initState();
+    folderName = widget.parentFolderName ?? "Libary";
+    load();
+  }
+
+  void load() {
     booksFuture = bookRepository.getAll(widget.parentFolderId);
-    foldersFuture = foldersRepository.getAll(widget.parentFolderId);
+    foldersFuture = Future(
+      () async {
+        final result = await foldersRepository.getAll(widget.parentFolderId);
+        return result;
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: widget.parentFolderName == null
+        title: folderName == null
             ? Text("Libary")
-            : Text(widget.parentFolderName!),
+            : Text(
+                folderName!,
+                style: TextStyle(
+                  fontFamily: widget.parentFolderFontStyle,
+                  fontSize: fontFamilyDictionary[widget.parentFolderFontStyle]
+                          ?[1] ??
+                      20.0,
+                  fontWeight: fontFamilyDictionary[widget.parentFolderFontStyle]
+                          ?[0] ??
+                      FontWeight.w400,
+                ),
+              ),
         centerTitle: true,
         backgroundColor: Colors.blue,
         shape: RoundedRectangleBorder(
@@ -72,11 +103,22 @@ class _BookListPageState extends State<BookListPage> {
             Padding(
               padding: const EdgeInsets.only(right: 20.0),
               child: IconButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await FolderDetailDialog.showAsDialog(
+                      context: context,
+                      folderName: folderName!,
+                      fontStyle: widget.parentFolderFontStyle!,
+                      folderId: widget.parentFolderId!,
+                      onEdit: editFolder,
+                      onDelete: deleteFolder,
+                    );
+                    setState(() {
+                      load();
+                    });
+                  },
                   icon: Icon(
                     Icons.settings,
                     size: 30,
-                    color: Colors.red[200],
                   )),
             )
         ],
@@ -98,9 +140,13 @@ class _BookListPageState extends State<BookListPage> {
                             builder: (context) => BookListPage(
                               parentFolderId: entity.booksFolderId,
                               parentFolderName: entity.booksFolderName,
+                              parentFolderFontStyle: entity.fontStyle,
                             ),
                           ),
                         );
+                        setState(() {
+                          load();
+                        });
                       },
                     );
                   }
@@ -117,13 +163,14 @@ class _BookListPageState extends State<BookListPage> {
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                BookDetail(bookId: entity.bookId!),
+                            builder: (context) => BookDetail(
+                              bookId: entity.bookId!,
+                              deleteBookFunc: deleteBookOption,
+                            ),
                           ),
                         );
                         setState(() {
-                          booksFuture =
-                              bookRepository.getAll(widget.parentFolderId);
+                          load();
                         });
                       },
                     );
@@ -251,5 +298,30 @@ class _BookListPageState extends State<BookListPage> {
       foldersFuture = foldersRepository.getAll(widget.parentFolderId);
     });
     Navigator.pop(context);
+  }
+
+  void deleteBookOption(int bookId) async {
+    await bookRepository.delete(bookId);
+    Navigator.pop(context);
+    setState(() {
+      booksFuture = bookRepository.getAll(widget.parentFolderId);
+      foldersFuture = foldersRepository.getAll(widget.parentFolderId);
+    });
+  }
+
+  void deleteFolder(FolderEntity entity) async {
+    await foldersRepository.delete(entity.booksFolderId!, true);
+    setState(() {
+      load();
+    });
+    Navigator.pop(context);
+  }
+
+  void editFolder(FolderEntity entity) async {
+    await foldersRepository.update(
+        entity.booksFolderId!, entity.booksFolderName, entity.fontStyle);
+    setState(() {
+      foldersFuture = foldersRepository.getAll(widget.parentFolderId);
+    });
   }
 }

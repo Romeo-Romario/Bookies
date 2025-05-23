@@ -7,11 +7,13 @@ import 'package:path_provider/path_provider.dart';
 part 'drift_app_database.g.dart';
 
 class BooksFolderInfoTable extends Table {
-  IntColumn get parent_book_folder_id => integer().nullable()();
+  IntColumn get parent_book_folder_id => integer()
+      .references(BooksFolderInfoTable, #books_folder_id,
+          onDelete: KeyAction.cascade)
+      .nullable()(); // Reference books_folder_id
   IntColumn get books_folder_id => integer().autoIncrement()();
   TextColumn get books_folder_name => text()();
   TextColumn get font_style => text().nullable()();
-  TextColumn get font_color => text().nullable()();
 }
 
 class AuthorsInfoTable extends Table {

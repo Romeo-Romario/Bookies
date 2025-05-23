@@ -1,4 +1,5 @@
 import 'package:bookies/data/entities/folder_entity.dart';
+import 'package:bookies/features/shared/font_params/font_params.dart';
 import 'package:flutter/material.dart';
 
 class FolderAddDialog extends StatefulWidget {
@@ -30,32 +31,6 @@ class _FolderAddDialogState extends State<FolderAddDialog> {
   final _controller = TextEditingController();
   String pickedFont = "Roboto";
 
-  final List<String> fontFamilies = [
-    "Anciza Serif",
-    "Are You Serious",
-    "Ceveat",
-    "Knewave",
-    "Lavishlyyours",
-    "Ole",
-    "Roboto",
-    "Rouger Script",
-    "Rubik Distressed",
-    "Unifraktur Maguntia",
-  ];
-
-  final Map<String, List> fontFamilyMap = {
-    "Anciza Serif": [FontWeight.w600, 20.0],
-    "Are You Serious": [FontWeight.w700, 30.0],
-    "Ceveat": [FontWeight.w700, 30.0],
-    "Knewave": [FontWeight.w400, 20.0],
-    "Lavishlyyours": [FontWeight.w800, 35.0],
-    "Ole": [FontWeight.w700, 45.0],
-    "Roboto": [FontWeight.w600, 20.0],
-    "Rouger Script": [FontWeight.w700, 40.0],
-    "Rubik Distressed": [FontWeight.w500, 30.0],
-    "Unifraktur Maguntia": [FontWeight.w700, 30.0],
-  };
-
   // Parent Folder id
   @override
   Widget build(BuildContext context) {
@@ -75,8 +50,8 @@ class _FolderAddDialogState extends State<FolderAddDialog> {
                 controller: _controller,
                 style: TextStyle(
                   fontFamily: pickedFont,
-                  fontSize: fontFamilyMap[pickedFont]![1],
-                  fontWeight: fontFamilyMap[pickedFont]![0],
+                  fontSize: fontFamilyDictionary[pickedFont]![1],
+                  fontWeight: fontFamilyDictionary[pickedFont]![0],
                 ),
                 decoration: const InputDecoration(
                   labelText: "Folder name",

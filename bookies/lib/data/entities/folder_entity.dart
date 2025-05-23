@@ -3,12 +3,10 @@ class FolderEntity {
   int? booksFolderId;
   String booksFolderName;
   String fontStyle;
-  String? color;
 
   FolderEntity(
       {this.parentFolderId,
       this.booksFolderId,
       required this.booksFolderName,
-      required this.fontStyle,
-      this.color});
+      required this.fontStyle});
 }

@@ -7,6 +7,7 @@ import 'package:bookies/data/repository/genre_repository.dart';
 import 'package:bookies/features/book/add/logic/image_saver.dart';
 import 'package:bookies/features/book/add/widgets/author_picker/author_picker_dialog.dart';
 import 'package:bookies/features/book/add/widgets/author_picker/picked_author.dart';
+import 'package:bookies/features/book/add/widgets/delete_book_dialog/delete_book_dialog.dart';
 import 'package:bookies/features/book/add/widgets/genre_picker_dialog.dart';
 import 'package:bookies/features/book/add/widgets/image_picker.dart';
 import 'package:bookies/features/book/add/widgets/input_pages_dialog.dart';
@@ -20,11 +21,18 @@ import 'package:image_picker/image_picker.dart';
 class BookAddPage extends StatefulWidget {
   final BookInfoEntity? book;
   final int? folderId;
+  final void Function(int bookId)? deleteBookFunc;
   bool get isCreate => book == null;
   bool get isEdit => book != null;
 
-  const BookAddPage.edit({super.key, required this.book, this.folderId});
-  const BookAddPage.create({super.key, this.folderId}) : book = null;
+  const BookAddPage.edit(
+      {super.key,
+      required this.book,
+      required this.deleteBookFunc,
+      this.folderId});
+  const BookAddPage.create({super.key, this.folderId})
+      : book = null,
+        deleteBookFunc = null;
 
   @override
   State<BookAddPage> createState() => _BookAddPageState();
@@ -106,6 +114,34 @@ class _BookAddPageState extends State<BookAddPage> {
           },
           multiSelectionEnabled: false,
         ),
+        actions: [
+          if (widget.book != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: IconButton.filled(
+                onPressed: () async {
+                  DeleteBookDialog.showAsDialog(
+                      context: context,
+                      bookId: widget.book!.bookId!,
+                      func: widget.deleteBookFunc!,
+                      bookname: bookNameController.text);
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.red[100]),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                ),
+                icon: Icon(
+                  Icons.delete,
+                  color: Colors.red[800],
+                  size: 24.0,
+                ),
+              ),
+            )
+        ],
       ),
       floatingActionButton: widget.isCreate
           ? FloatingActionButton.extended(

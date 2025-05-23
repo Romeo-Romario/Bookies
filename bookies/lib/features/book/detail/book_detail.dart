@@ -21,8 +21,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class BookDetail extends StatefulWidget {
   final int bookId;
-
-  const BookDetail({super.key, required this.bookId});
+  final void Function(int bookId)? deleteBookFunc;
+  const BookDetail({super.key, required this.bookId, this.deleteBookFunc});
 
   @override
   State<BookDetail> createState() => _BookDetailState();
@@ -65,7 +65,10 @@ class _BookDetailState extends State<BookDetail> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => BookAddPage.edit(book: bookInfo),
+        builder: (context) => BookAddPage.edit(
+          book: bookInfo,
+          deleteBookFunc: deleteBook,
+        ),
       ),
     );
 
@@ -460,5 +463,10 @@ class _BookDetailState extends State<BookDetail> {
     if (updatedPages! > bookInfo.numberOfPages) {
       updatedPages = bookInfo.numberOfPages;
     }
+  }
+
+  void deleteBook(int bookid) {
+    widget.deleteBookFunc!(bookid);
+    Navigator.pop(context);
   }
 }

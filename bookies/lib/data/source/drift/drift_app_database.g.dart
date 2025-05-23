@@ -14,7 +14,10 @@ class $BooksFolderInfoTableTable extends BooksFolderInfoTable
   @override
   late final GeneratedColumn<int> parent_book_folder_id = GeneratedColumn<int>(
       'parent_book_folder_id', aliasedName, true,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES books_folder_info_table (books_folder_id) ON DELETE CASCADE'));
   static const VerificationMeta _books_folder_idMeta =
       const VerificationMeta('books_folder_id');
   @override
@@ -37,20 +40,9 @@ class $BooksFolderInfoTableTable extends BooksFolderInfoTable
   late final GeneratedColumn<String> font_style = GeneratedColumn<String>(
       'font_style', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _font_colorMeta =
-      const VerificationMeta('font_color');
   @override
-  late final GeneratedColumn<String> font_color = GeneratedColumn<String>(
-      'font_color', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  @override
-  List<GeneratedColumn> get $columns => [
-        parent_book_folder_id,
-        books_folder_id,
-        books_folder_name,
-        font_style,
-        font_color
-      ];
+  List<GeneratedColumn> get $columns =>
+      [parent_book_folder_id, books_folder_id, books_folder_name, font_style];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -88,12 +80,6 @@ class $BooksFolderInfoTableTable extends BooksFolderInfoTable
           font_style.isAcceptableOrUnknown(
               data['font_style']!, _font_styleMeta));
     }
-    if (data.containsKey('font_color')) {
-      context.handle(
-          _font_colorMeta,
-          font_color.isAcceptableOrUnknown(
-              data['font_color']!, _font_colorMeta));
-    }
     return context;
   }
 
@@ -112,8 +98,6 @@ class $BooksFolderInfoTableTable extends BooksFolderInfoTable
           DriftSqlType.string, data['${effectivePrefix}books_folder_name'])!,
       font_style: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}font_style']),
-      font_color: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}font_color']),
     );
   }
 
@@ -129,13 +113,11 @@ class BooksFolderInfoTableData extends DataClass
   final int books_folder_id;
   final String books_folder_name;
   final String? font_style;
-  final String? font_color;
   const BooksFolderInfoTableData(
       {this.parent_book_folder_id,
       required this.books_folder_id,
       required this.books_folder_name,
-      this.font_style,
-      this.font_color});
+      this.font_style});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -146,9 +128,6 @@ class BooksFolderInfoTableData extends DataClass
     map['books_folder_name'] = Variable<String>(books_folder_name);
     if (!nullToAbsent || font_style != null) {
       map['font_style'] = Variable<String>(font_style);
-    }
-    if (!nullToAbsent || font_color != null) {
-      map['font_color'] = Variable<String>(font_color);
     }
     return map;
   }
@@ -163,9 +142,6 @@ class BooksFolderInfoTableData extends DataClass
       font_style: font_style == null && nullToAbsent
           ? const Value.absent()
           : Value(font_style),
-      font_color: font_color == null && nullToAbsent
-          ? const Value.absent()
-          : Value(font_color),
     );
   }
 
@@ -178,7 +154,6 @@ class BooksFolderInfoTableData extends DataClass
       books_folder_id: serializer.fromJson<int>(json['books_folder_id']),
       books_folder_name: serializer.fromJson<String>(json['books_folder_name']),
       font_style: serializer.fromJson<String?>(json['font_style']),
-      font_color: serializer.fromJson<String?>(json['font_color']),
     );
   }
   @override
@@ -189,7 +164,6 @@ class BooksFolderInfoTableData extends DataClass
       'books_folder_id': serializer.toJson<int>(books_folder_id),
       'books_folder_name': serializer.toJson<String>(books_folder_name),
       'font_style': serializer.toJson<String?>(font_style),
-      'font_color': serializer.toJson<String?>(font_color),
     };
   }
 
@@ -197,8 +171,7 @@ class BooksFolderInfoTableData extends DataClass
           {Value<int?> parent_book_folder_id = const Value.absent(),
           int? books_folder_id,
           String? books_folder_name,
-          Value<String?> font_style = const Value.absent(),
-          Value<String?> font_color = const Value.absent()}) =>
+          Value<String?> font_style = const Value.absent()}) =>
       BooksFolderInfoTableData(
         parent_book_folder_id: parent_book_folder_id.present
             ? parent_book_folder_id.value
@@ -206,7 +179,6 @@ class BooksFolderInfoTableData extends DataClass
         books_folder_id: books_folder_id ?? this.books_folder_id,
         books_folder_name: books_folder_name ?? this.books_folder_name,
         font_style: font_style.present ? font_style.value : this.font_style,
-        font_color: font_color.present ? font_color.value : this.font_color,
       );
   BooksFolderInfoTableData copyWithCompanion(
       BooksFolderInfoTableCompanion data) {
@@ -222,8 +194,6 @@ class BooksFolderInfoTableData extends DataClass
           : this.books_folder_name,
       font_style:
           data.font_style.present ? data.font_style.value : this.font_style,
-      font_color:
-          data.font_color.present ? data.font_color.value : this.font_color,
     );
   }
 
@@ -233,15 +203,14 @@ class BooksFolderInfoTableData extends DataClass
           ..write('parent_book_folder_id: $parent_book_folder_id, ')
           ..write('books_folder_id: $books_folder_id, ')
           ..write('books_folder_name: $books_folder_name, ')
-          ..write('font_style: $font_style, ')
-          ..write('font_color: $font_color')
+          ..write('font_style: $font_style')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(parent_book_folder_id, books_folder_id,
-      books_folder_name, font_style, font_color);
+  int get hashCode => Object.hash(
+      parent_book_folder_id, books_folder_id, books_folder_name, font_style);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -249,8 +218,7 @@ class BooksFolderInfoTableData extends DataClass
           other.parent_book_folder_id == this.parent_book_folder_id &&
           other.books_folder_id == this.books_folder_id &&
           other.books_folder_name == this.books_folder_name &&
-          other.font_style == this.font_style &&
-          other.font_color == this.font_color);
+          other.font_style == this.font_style);
 }
 
 class BooksFolderInfoTableCompanion
@@ -259,27 +227,23 @@ class BooksFolderInfoTableCompanion
   final Value<int> books_folder_id;
   final Value<String> books_folder_name;
   final Value<String?> font_style;
-  final Value<String?> font_color;
   const BooksFolderInfoTableCompanion({
     this.parent_book_folder_id = const Value.absent(),
     this.books_folder_id = const Value.absent(),
     this.books_folder_name = const Value.absent(),
     this.font_style = const Value.absent(),
-    this.font_color = const Value.absent(),
   });
   BooksFolderInfoTableCompanion.insert({
     this.parent_book_folder_id = const Value.absent(),
     this.books_folder_id = const Value.absent(),
     required String books_folder_name,
     this.font_style = const Value.absent(),
-    this.font_color = const Value.absent(),
   }) : books_folder_name = Value(books_folder_name);
   static Insertable<BooksFolderInfoTableData> custom({
     Expression<int>? parent_book_folder_id,
     Expression<int>? books_folder_id,
     Expression<String>? books_folder_name,
     Expression<String>? font_style,
-    Expression<String>? font_color,
   }) {
     return RawValuesInsertable({
       if (parent_book_folder_id != null)
@@ -287,7 +251,6 @@ class BooksFolderInfoTableCompanion
       if (books_folder_id != null) 'books_folder_id': books_folder_id,
       if (books_folder_name != null) 'books_folder_name': books_folder_name,
       if (font_style != null) 'font_style': font_style,
-      if (font_color != null) 'font_color': font_color,
     });
   }
 
@@ -295,15 +258,13 @@ class BooksFolderInfoTableCompanion
       {Value<int?>? parent_book_folder_id,
       Value<int>? books_folder_id,
       Value<String>? books_folder_name,
-      Value<String?>? font_style,
-      Value<String?>? font_color}) {
+      Value<String?>? font_style}) {
     return BooksFolderInfoTableCompanion(
       parent_book_folder_id:
           parent_book_folder_id ?? this.parent_book_folder_id,
       books_folder_id: books_folder_id ?? this.books_folder_id,
       books_folder_name: books_folder_name ?? this.books_folder_name,
       font_style: font_style ?? this.font_style,
-      font_color: font_color ?? this.font_color,
     );
   }
 
@@ -322,9 +283,6 @@ class BooksFolderInfoTableCompanion
     if (font_style.present) {
       map['font_style'] = Variable<String>(font_style.value);
     }
-    if (font_color.present) {
-      map['font_color'] = Variable<String>(font_color.value);
-    }
     return map;
   }
 
@@ -334,8 +292,7 @@ class BooksFolderInfoTableCompanion
           ..write('parent_book_folder_id: $parent_book_folder_id, ')
           ..write('books_folder_id: $books_folder_id, ')
           ..write('books_folder_name: $books_folder_name, ')
-          ..write('font_style: $font_style, ')
-          ..write('font_color: $font_color')
+          ..write('font_style: $font_style')
           ..write(')'))
         .toString();
   }
@@ -2177,6 +2134,13 @@ abstract class _$DriftAppDatabase extends GeneratedDatabase {
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [
           WritePropagation(
+            on: TableUpdateQuery.onTableName('books_folder_info_table',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('books_folder_info_table', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
             on: TableUpdateQuery.onTableName('book_info_table',
                 limitUpdateKind: UpdateKind.delete),
             result: [
@@ -2207,7 +2171,6 @@ typedef $$BooksFolderInfoTableTableCreateCompanionBuilder
   Value<int> books_folder_id,
   required String books_folder_name,
   Value<String?> font_style,
-  Value<String?> font_color,
 });
 typedef $$BooksFolderInfoTableTableUpdateCompanionBuilder
     = BooksFolderInfoTableCompanion Function({
@@ -2215,13 +2178,31 @@ typedef $$BooksFolderInfoTableTableUpdateCompanionBuilder
   Value<int> books_folder_id,
   Value<String> books_folder_name,
   Value<String?> font_style,
-  Value<String?> font_color,
 });
 
 final class $$BooksFolderInfoTableTableReferences extends BaseReferences<
     _$DriftAppDatabase, $BooksFolderInfoTableTable, BooksFolderInfoTableData> {
   $$BooksFolderInfoTableTableReferences(
       super.$_db, super.$_table, super.$_typedResult);
+
+  static $BooksFolderInfoTableTable _parent_book_folder_idTable(
+          _$DriftAppDatabase db) =>
+      db.booksFolderInfoTable.createAlias($_aliasNameGenerator(
+          db.booksFolderInfoTable.parent_book_folder_id,
+          db.booksFolderInfoTable.books_folder_id));
+
+  $$BooksFolderInfoTableTableProcessedTableManager? get parent_book_folder_id {
+    final $_column = $_itemColumn<int>('parent_book_folder_id');
+    if ($_column == null) return null;
+    final manager =
+        $$BooksFolderInfoTableTableTableManager($_db, $_db.booksFolderInfoTable)
+            .filter((f) => f.books_folder_id.sqlEquals($_column));
+    final item =
+        $_typedResult.readTableOrNull(_parent_book_folder_idTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
 
   static MultiTypedResultKey<$BookInfoTableTable, List<BookInfoTableData>>
       _bookInfoTableRefsTable(_$DriftAppDatabase db) =>
@@ -2250,10 +2231,6 @@ class $$BooksFolderInfoTableTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get parent_book_folder_id => $composableBuilder(
-      column: $table.parent_book_folder_id,
-      builder: (column) => ColumnFilters(column));
-
   ColumnFilters<int> get books_folder_id => $composableBuilder(
       column: $table.books_folder_id,
       builder: (column) => ColumnFilters(column));
@@ -2265,8 +2242,25 @@ class $$BooksFolderInfoTableTableFilterComposer
   ColumnFilters<String> get font_style => $composableBuilder(
       column: $table.font_style, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get font_color => $composableBuilder(
-      column: $table.font_color, builder: (column) => ColumnFilters(column));
+  $$BooksFolderInfoTableTableFilterComposer get parent_book_folder_id {
+    final $$BooksFolderInfoTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.parent_book_folder_id,
+        referencedTable: $db.booksFolderInfoTable,
+        getReferencedColumn: (t) => t.books_folder_id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$BooksFolderInfoTableTableFilterComposer(
+              $db: $db,
+              $table: $db.booksFolderInfoTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
 
   Expression<bool> bookInfoTableRefs(
       Expression<bool> Function($$BookInfoTableTableFilterComposer f) f) {
@@ -2299,10 +2293,6 @@ class $$BooksFolderInfoTableTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get parent_book_folder_id => $composableBuilder(
-      column: $table.parent_book_folder_id,
-      builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<int> get books_folder_id => $composableBuilder(
       column: $table.books_folder_id,
       builder: (column) => ColumnOrderings(column));
@@ -2314,8 +2304,26 @@ class $$BooksFolderInfoTableTableOrderingComposer
   ColumnOrderings<String> get font_style => $composableBuilder(
       column: $table.font_style, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get font_color => $composableBuilder(
-      column: $table.font_color, builder: (column) => ColumnOrderings(column));
+  $$BooksFolderInfoTableTableOrderingComposer get parent_book_folder_id {
+    final $$BooksFolderInfoTableTableOrderingComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.parent_book_folder_id,
+            referencedTable: $db.booksFolderInfoTable,
+            getReferencedColumn: (t) => t.books_folder_id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$BooksFolderInfoTableTableOrderingComposer(
+                  $db: $db,
+                  $table: $db.booksFolderInfoTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
 }
 
 class $$BooksFolderInfoTableTableAnnotationComposer
@@ -2327,9 +2335,6 @@ class $$BooksFolderInfoTableTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get parent_book_folder_id => $composableBuilder(
-      column: $table.parent_book_folder_id, builder: (column) => column);
-
   GeneratedColumn<int> get books_folder_id => $composableBuilder(
       column: $table.books_folder_id, builder: (column) => column);
 
@@ -2339,8 +2344,26 @@ class $$BooksFolderInfoTableTableAnnotationComposer
   GeneratedColumn<String> get font_style => $composableBuilder(
       column: $table.font_style, builder: (column) => column);
 
-  GeneratedColumn<String> get font_color => $composableBuilder(
-      column: $table.font_color, builder: (column) => column);
+  $$BooksFolderInfoTableTableAnnotationComposer get parent_book_folder_id {
+    final $$BooksFolderInfoTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.parent_book_folder_id,
+            referencedTable: $db.booksFolderInfoTable,
+            getReferencedColumn: (t) => t.books_folder_id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$BooksFolderInfoTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.booksFolderInfoTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
 
   Expression<T> bookInfoTableRefs<T extends Object>(
       Expression<T> Function($$BookInfoTableTableAnnotationComposer a) f) {
@@ -2375,7 +2398,8 @@ class $$BooksFolderInfoTableTableTableManager extends RootTableManager<
     $$BooksFolderInfoTableTableUpdateCompanionBuilder,
     (BooksFolderInfoTableData, $$BooksFolderInfoTableTableReferences),
     BooksFolderInfoTableData,
-    PrefetchHooks Function({bool bookInfoTableRefs})> {
+    PrefetchHooks Function(
+        {bool parent_book_folder_id, bool bookInfoTableRefs})> {
   $$BooksFolderInfoTableTableTableManager(
       _$DriftAppDatabase db, $BooksFolderInfoTableTable table)
       : super(TableManagerState(
@@ -2394,28 +2418,24 @@ class $$BooksFolderInfoTableTableTableManager extends RootTableManager<
             Value<int> books_folder_id = const Value.absent(),
             Value<String> books_folder_name = const Value.absent(),
             Value<String?> font_style = const Value.absent(),
-            Value<String?> font_color = const Value.absent(),
           }) =>
               BooksFolderInfoTableCompanion(
             parent_book_folder_id: parent_book_folder_id,
             books_folder_id: books_folder_id,
             books_folder_name: books_folder_name,
             font_style: font_style,
-            font_color: font_color,
           ),
           createCompanionCallback: ({
             Value<int?> parent_book_folder_id = const Value.absent(),
             Value<int> books_folder_id = const Value.absent(),
             required String books_folder_name,
             Value<String?> font_style = const Value.absent(),
-            Value<String?> font_color = const Value.absent(),
           }) =>
               BooksFolderInfoTableCompanion.insert(
             parent_book_folder_id: parent_book_folder_id,
             books_folder_id: books_folder_id,
             books_folder_name: books_folder_name,
             font_style: font_style,
-            font_color: font_color,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (
@@ -2423,13 +2443,40 @@ class $$BooksFolderInfoTableTableTableManager extends RootTableManager<
                     $$BooksFolderInfoTableTableReferences(db, table, e)
                   ))
               .toList(),
-          prefetchHooksCallback: ({bookInfoTableRefs = false}) {
+          prefetchHooksCallback: (
+              {parent_book_folder_id = false, bookInfoTableRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [
                 if (bookInfoTableRefs) db.bookInfoTable
               ],
-              addJoins: null,
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (parent_book_folder_id) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.parent_book_folder_id,
+                    referencedTable: $$BooksFolderInfoTableTableReferences
+                        ._parent_book_folder_idTable(db),
+                    referencedColumn: $$BooksFolderInfoTableTableReferences
+                        ._parent_book_folder_idTable(db)
+                        .books_folder_id,
+                  ) as T;
+                }
+
+                return state;
+              },
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (bookInfoTableRefs)
@@ -2465,7 +2512,8 @@ typedef $$BooksFolderInfoTableTableProcessedTableManager
         $$BooksFolderInfoTableTableUpdateCompanionBuilder,
         (BooksFolderInfoTableData, $$BooksFolderInfoTableTableReferences),
         BooksFolderInfoTableData,
-        PrefetchHooks Function({bool bookInfoTableRefs})>;
+        PrefetchHooks Function(
+            {bool parent_book_folder_id, bool bookInfoTableRefs})>;
 typedef $$AuthorsInfoTableTableCreateCompanionBuilder
     = AuthorsInfoTableCompanion Function({
   Value<int> author_id,
