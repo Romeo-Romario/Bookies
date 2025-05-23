@@ -4,6 +4,7 @@ import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/entities/folder_entity.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/folders_repository.dart';
+import 'package:bookies/features/book/add/book_add_page.dart';
 import 'package:bookies/features/book/detail/book_detail.dart';
 import 'package:bookies/features/book/list/widgets/book_grid_view.dart';
 import 'package:bookies/features/folder/add/folder_add_dialog.dart';
@@ -73,7 +74,7 @@ class _BookListPageState extends State<BookListPage> {
               child: IconButton(
                   onPressed: () {},
                   icon: Icon(
-                    Icons.folder_delete_rounded,
+                    Icons.settings,
                     size: 30,
                     color: Colors.red[200],
                   )),
@@ -168,8 +169,13 @@ class _BookListPageState extends State<BookListPage> {
             width: 120,
             child: FloatingActionButton.large(
               onPressed: () async {
-                await Navigator.pushNamed(context, "/adding",
-                    arguments: widget.parentFolderId);
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BookAddPage.create(
+                            folderId: widget.parentFolderId,
+                          )),
+                );
                 setState(() {
                   booksFuture = bookRepository.getAll(widget.parentFolderId);
                 });
@@ -205,7 +211,9 @@ class _BookListPageState extends State<BookListPage> {
             child: FloatingActionButton.large(
               onPressed: () async {
                 await FolderAddDialog.showAsDialog(
-                    context: context, func: addFolder);
+                    context: context,
+                    parentFolderId: widget.parentFolderId,
+                    func: addFolder);
                 _fabKey.currentState?.toggle();
               },
               heroTag: null,

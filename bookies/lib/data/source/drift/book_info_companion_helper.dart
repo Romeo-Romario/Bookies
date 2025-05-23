@@ -14,6 +14,7 @@ class BookInfoCompanionHelper {
       grade: Value(entity.grade),
       feedback: Value(entity.feedback),
       genre_id: entity.genreId!,
+      books_folder_id: Value(entity.folderId),
     );
   }
 

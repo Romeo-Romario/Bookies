@@ -43,6 +43,19 @@ class _FolderAddDialogState extends State<FolderAddDialog> {
     "Unifraktur Maguntia",
   ];
 
+  final Map<String, List> fontFamilyMap = {
+    "Anciza Serif": [FontWeight.w600, 20.0],
+    "Are You Serious": [FontWeight.w700, 30.0],
+    "Ceveat": [FontWeight.w700, 30.0],
+    "Knewave": [FontWeight.w400, 20.0],
+    "Lavishlyyours": [FontWeight.w800, 35.0],
+    "Ole": [FontWeight.w700, 45.0],
+    "Roboto": [FontWeight.w600, 20.0],
+    "Rouger Script": [FontWeight.w700, 40.0],
+    "Rubik Distressed": [FontWeight.w500, 30.0],
+    "Unifraktur Maguntia": [FontWeight.w700, 30.0],
+  };
+
   // Parent Folder id
   @override
   Widget build(BuildContext context) {
@@ -60,7 +73,11 @@ class _FolderAddDialogState extends State<FolderAddDialog> {
             children: [
               TextField(
                 controller: _controller,
-                style: TextStyle(fontFamily: pickedFont),
+                style: TextStyle(
+                  fontFamily: pickedFont,
+                  fontSize: fontFamilyMap[pickedFont]![1],
+                  fontWeight: fontFamilyMap[pickedFont]![0],
+                ),
                 decoration: const InputDecoration(
                   labelText: "Folder name",
                   border: OutlineInputBorder(),
