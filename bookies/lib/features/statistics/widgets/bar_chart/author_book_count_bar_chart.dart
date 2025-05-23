@@ -21,7 +21,7 @@ class AuthorBookCountBarChart extends StatelessWidget {
       getEntityTooltipMessage: (index) {
         final item = authorBookCount[index];
 
-        return '${item.author}\n${item.count}';
+        return item.author;
       },
       leftAxisName: 'Books',
     );

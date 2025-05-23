@@ -22,7 +22,7 @@ class BookGradePerGenreBarChart extends StatelessWidget {
       getEntityTooltipMessage: (index) {
         final item = grades[index];
 
-        return '${item.genreName}\n${item.averageGrade}';
+        return item.genreName;
       },
       leftAxisName: 'Grades',
     );

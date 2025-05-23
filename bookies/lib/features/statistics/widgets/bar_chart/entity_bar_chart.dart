@@ -25,32 +25,38 @@ class EntityBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      child: BarChart(
-        BarChartData(
-          maxY: maxY,
-          barGroups: _groups(context),
-          titlesData: _titlesData(context),
-          barTouchData: _barTouchData(context),
-          gridData: FlGridData(
-            getDrawingHorizontalLine: (value) => FlLine(
-              dashArray: [8],
-              strokeWidth: 2,
-              color: context.colorScheme.secondaryContainer,
-            ),
-            getDrawingVerticalLine: (value) => FlLine(
-              dashArray: [8],
-              strokeWidth: 2,
-              color: context.colorScheme.secondaryContainer,
-            ),
-          ),
-          borderData: FlBorderData(
-            border: Border.all(
-              color: context.colorScheme.primary,
+    return AspectRatio(
+      aspectRatio: 2,
+      child: SizedBox(
+        child: BarChart(
+          BarChartData(
+            maxY: maxY,
+            barGroups: _groups(context),
+            titlesData: _titlesData(context),
+            barTouchData: _barTouchData(context),
+            gridData: _gridData(context),
+            borderData: FlBorderData(
+              border: Border.all(
+                color: context.colorScheme.primary,
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  FlGridData _gridData(BuildContext context) {
+    return FlGridData(
+      getDrawingHorizontalLine: (value) => FlLine(
+        dashArray: [8],
+        strokeWidth: 2,
+        color: context.colorScheme.secondaryContainer,
+      ),
+      getDrawingVerticalLine: (value) => FlLine(
+        dashArray: [8],
+        strokeWidth: 2,
+        color: context.colorScheme.secondaryContainer,
       ),
     );
   }
@@ -87,12 +93,13 @@ class EntityBarChart extends StatelessWidget {
       enabled: true,
       touchTooltipData: BarTouchTooltipData(
         fitInsideHorizontally: false,
-        fitInsideVertically: false, 
-        maxContentWidth: 42,
+        fitInsideVertically: false,
+        rotateAngle: -70, 
         tooltipPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         getTooltipColor: (group) => context.colorScheme.primary,
         getTooltipItem: (group, groupIndex, rod, rodIndex) {
           return BarTooltipItem(
+            textAlign: TextAlign.center,
             getEntityTooltipMessage(groupIndex),
             TextStyle(
               color: context.colorScheme.onPrimary,

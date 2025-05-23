@@ -81,7 +81,6 @@ class GenrePieChart extends StatelessWidget {
       genres.length,
       (index) {
         final isTouched = genrePieChart.indexSameAs(index);
-        const color0 = Colors.blue;
 
         final genre = genres[index];
 
@@ -95,55 +94,6 @@ class GenrePieChart extends StatelessWidget {
               ? const BorderSide(color: Colors.white, width: 6)
               : BorderSide(color: Colors.white.withValues(alpha: 0)),
         );
-
-        // switch (i) {
-        //   case 0:
-        //     return PieChartSectionData(
-        //       color: color0,
-        //       value: 25,
-        //       title: '',
-        //       radius: 80,
-        //       titlePositionPercentageOffset: 0.55,
-        //       borderSide: isTouched
-        //           ? const BorderSide(color: Colors.white, width: 6)
-        //           : BorderSide(color: Colors.white.withValues(alpha: 0)),
-        //     );
-        //   case 1:
-        //     return PieChartSectionData(
-        //       color: color1,
-        //       value: 25,
-        //       title: '',
-        //       radius: 65,
-        //       titlePositionPercentageOffset: 0.55,
-        //       borderSide: isTouched
-        //           ? const BorderSide(color: Colors.white, width: 6)
-        //           : BorderSide(color: Colors.white.withValues(alpha: 0)),
-        //     );
-        //   case 2:
-        //     return PieChartSectionData(
-        //       color: color2,
-        //       value: 25,
-        //       title: '',
-        //       radius: 60,
-        //       titlePositionPercentageOffset: 0.6,
-        //       borderSide: isTouched
-        //           ? const BorderSide(color: Colors.white, width: 6)
-        //           : BorderSide(color: Colors.white.withValues(alpha: 0)),
-        //     );
-        //   case 3:
-        //     return PieChartSectionData(
-        //       color: color3,
-        //       value: 25,
-        //       title: '',
-        //       radius: 70,
-        //       titlePositionPercentageOffset: 0.55,
-        //       borderSide: isTouched
-        //           ? const BorderSide(color: Colors.white, width: 6)
-        //           : BorderSide(color: Colors.white.withValues(alpha: 0)),
-        //     );
-        //   default:
-        //     throw Error();
-        // }
       },
     );
   }
