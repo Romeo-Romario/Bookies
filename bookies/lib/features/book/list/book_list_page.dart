@@ -8,6 +8,7 @@ import 'package:bookies/features/book/list/widgets/book_grid_view.dart';
 import 'package:bookies/features/folder/folder_grid_view/folder_grid_view.dart';
 import 'package:bookies/features/statistics/bookies_statistics_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:get_it/get_it.dart';
 
 class BookListPage extends StatefulWidget {
@@ -100,22 +101,93 @@ class _BookListPageState extends State<BookListPage> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.pushNamed(context, "/adding");
-          setState(() {
-            booksFuture = bookRepository.getAll();
-          });
-        },
-        heroTag: UniqueKey(),
-        foregroundColor: Colors.deepPurpleAccent,
-        child: Center(
-          child: Image.asset(
-            "assets/custom_icons/add_book.png",
-            width: 30,
-            color: Colors.purple[800],
-          ),
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: ExpandableFab(
+        type: ExpandableFabType.up,
+        overlayStyle: ExpandableFabOverlayStyle(
+          color: Colors.white.withOpacity(0.9),
         ),
+        openButtonBuilder: RotateFloatingActionButtonBuilder(
+          child: const Icon(Icons.add),
+          fabSize: ExpandableFabSize.regular,
+          shape: const CircleBorder(),
+        ),
+        closeButtonBuilder: FloatingActionButtonBuilder(
+          size: 56,
+          builder: (BuildContext context, void Function()? onPressed,
+              Animation<double> progress) {
+            return IconButton(
+              onPressed: onPressed,
+              icon: const Icon(
+                Icons.check_circle_outline,
+                size: 40,
+              ),
+            );
+          },
+        ),
+        children: [
+          SizedBox(
+            height: 70,
+            width: 120,
+            child: FloatingActionButton.large(
+              onPressed: () async {
+                await Navigator.pushNamed(context, "/adding");
+                setState(() {
+                  booksFuture = bookRepository.getAll();
+                });
+              },
+              heroTag: null, // You can change this
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Add book",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Image.asset(
+                    "assets/custom_icons/add_book.png",
+                    width: 24,
+                    height: 24,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+              height: 70,
+              width: 120,
+              child: FloatingActionButton.large(
+                onPressed: () {},
+                heroTag: null,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 5,
+                  children: [
+                    Text(
+                      "Add Folder",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Icon(
+                      Icons.folder,
+                      size: 24,
+                    ),
+                  ],
+                ),
+              ))
+        ],
       ),
     );
   }
