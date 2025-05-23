@@ -747,7 +747,7 @@ class $BookInfoTableTable extends BookInfoTable
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES books_folder_info_table (books_folder_id)'));
+          'REFERENCES books_folder_info_table (books_folder_id) ON DELETE CASCADE'));
   static const VerificationMeta _book_nameMeta =
       const VerificationMeta('book_name');
   @override
@@ -2138,6 +2138,13 @@ abstract class _$DriftAppDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('books_folder_info_table', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('books_folder_info_table',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('book_info_table', kind: UpdateKind.delete),
             ],
           ),
           WritePropagation(

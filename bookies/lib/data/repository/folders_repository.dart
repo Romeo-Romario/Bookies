@@ -69,11 +69,13 @@ class FoldersRepositoryImpl extends FoldersRepository {
       //   delete(deleteFoldersId[i], true);
       // }
 
-      final query = source.delete(source.booksFolderInfoTable)
-        ..where(
-          (tbl) => tbl.parent_book_folder_id.equals(folderId),
-        );
-      await query.go();
+      final result = await source.managers.booksFolderInfoTable
+          .filter(
+            (f) => f.books_folder_id.equals(folderId),
+          )
+          .delete();
+
+      print(result);
     } else {}
     // final query = source.select(source.booksFolderInfoTable)
     //   ..where((tbl) => tbl.books_folder_id.equals(folderId))

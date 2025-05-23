@@ -36,8 +36,10 @@ class GenresInfoTable extends Table {
 
 class BookInfoTable extends Table {
   IntColumn get book_id => integer().autoIncrement()();
-  IntColumn get books_folder_id =>
-      integer().references(BooksFolderInfoTable, #books_folder_id).nullable()();
+  IntColumn get books_folder_id => integer()
+      .references(BooksFolderInfoTable, #books_folder_id,
+          onDelete: KeyAction.cascade)
+      .nullable()();
   TextColumn get book_name => text()();
   TextColumn get image_path => text()();
   BoolColumn get image_source_type => boolean()();
