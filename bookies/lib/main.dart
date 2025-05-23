@@ -3,6 +3,7 @@ import 'package:bookies/data/repository/authors_list_repository.dart';
 import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/repository/bookmark_repository.dart';
+import 'package:bookies/data/repository/folders_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
 import 'package:bookies/data/repository/statistics_repository.dart';
 import 'package:bookies/data/source/drift/drift_app_database.dart';
@@ -42,6 +43,9 @@ void main() async {
     )
     ..registerSingleton<StatisticsRepository>(
       StatisticsRepositoryImpl(database),
+    )
+    ..registerSingleton<FoldersRepository>(
+      FoldersRepositoryImpl(database),
     );
 
   await DatabaseInitializer.builtInEntitiesInitializer(
@@ -59,7 +63,10 @@ void main() async {
     darkTheme: theme.asDark(),
     routes: {
       '/': (context) => BookListPage(),
-      '/adding': (contex) => BookAddPage.create(),
+      '/adding': (context) {
+        final folderId = ModalRoute.of(context)!.settings.arguments as int?;
+        return BookAddPage.create(folderId: folderId);
+      },
     },
   ));
 }

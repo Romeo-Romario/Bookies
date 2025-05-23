@@ -3,8 +3,10 @@ import 'dart:ffi';
 import 'package:bookies/data/entities/book_info_entity.dart';
 import 'package:bookies/data/entities/folder_entity.dart';
 import 'package:bookies/data/repository/book_repository.dart';
+import 'package:bookies/data/repository/folders_repository.dart';
 import 'package:bookies/features/book/detail/book_detail.dart';
 import 'package:bookies/features/book/list/widgets/book_grid_view.dart';
+import 'package:bookies/features/folder/add/folder_add_dialog.dart';
 import 'package:bookies/features/folder/folder_grid_view/folder_grid_view.dart';
 import 'package:bookies/features/statistics/bookies_statistics_page.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +14,9 @@ import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:get_it/get_it.dart';
 
 class BookListPage extends StatefulWidget {
-  const BookListPage({super.key});
+  int? parentFolderId;
+  String? parentFolderName;
+  BookListPage({super.key, this.parentFolderId, this.parentFolderName});
 
   @override
   State<BookListPage> createState() => _BookListPageState();
@@ -20,26 +24,27 @@ class BookListPage extends StatefulWidget {
 
 class _BookListPageState extends State<BookListPage> {
   final BookRepository bookRepository = GetIt.I.get();
+  final FoldersRepository foldersRepository = GetIt.I.get();
 
   late Future<List<BookInfoEntity>> booksFuture;
+  late Future<List<FolderEntity>> foldersFuture;
 
-  final folderElements = [
-    FolderEntity(booksFolderId: 0, booksFolderName: "Fantasy"),
-    FolderEntity(booksFolderId: 0, booksFolderName: "Science Fiction"),
-    FolderEntity(booksFolderId: 0, booksFolderName: "Romance"),
-  ];
+  final GlobalKey<ExpandableFabState> _fabKey = GlobalKey<ExpandableFabState>();
 
   @override
   void initState() {
     super.initState();
-    booksFuture = bookRepository.getAll();
+    booksFuture = bookRepository.getAll(widget.parentFolderId);
+    foldersFuture = foldersRepository.getAll(widget.parentFolderId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Libary"),
+        title: widget.parentFolderName == null
+            ? Text("Libary")
+            : Text(widget.parentFolderName!),
         centerTitle: true,
         backgroundColor: Colors.blue,
         shape: RoundedRectangleBorder(
@@ -48,28 +53,58 @@ class _BookListPageState extends State<BookListPage> {
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20.0),
-            child: IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => StatisticPage(),
-                    ),
-                  );
-                },
-                icon: Icon(Icons.stacked_line_chart_rounded)),
-          )
+          if (widget.parentFolderId == null)
+            Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StatisticPage(),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.stacked_line_chart_rounded)),
+            ),
+          if (widget.parentFolderId != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.folder_delete_rounded,
+                    size: 30,
+                    color: Colors.red[200],
+                  )),
+            )
         ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
-              FolderGridView(
-                folders: folderElements,
-                onTap: (entity) {},
+              FutureBuilder(
+                future: foldersFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return FolderGridView(
+                      folders: snapshot.data!,
+                      onTap: (entity) async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookListPage(
+                              parentFolderId: entity.booksFolderId,
+                              parentFolderName: entity.booksFolderName,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                  return Center();
+                },
               ),
               FutureBuilder(
                 future: booksFuture,
@@ -86,7 +121,8 @@ class _BookListPageState extends State<BookListPage> {
                           ),
                         );
                         setState(() {
-                          booksFuture = bookRepository.getAll();
+                          booksFuture =
+                              bookRepository.getAll(widget.parentFolderId);
                         });
                       },
                     );
@@ -103,6 +139,7 @@ class _BookListPageState extends State<BookListPage> {
       ),
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
+        key: _fabKey,
         type: ExpandableFabType.up,
         overlayStyle: ExpandableFabOverlayStyle(
           color: Colors.white.withOpacity(0.9),
@@ -131,10 +168,12 @@ class _BookListPageState extends State<BookListPage> {
             width: 120,
             child: FloatingActionButton.large(
               onPressed: () async {
-                await Navigator.pushNamed(context, "/adding");
+                await Navigator.pushNamed(context, "/adding",
+                    arguments: widget.parentFolderId);
                 setState(() {
-                  booksFuture = bookRepository.getAll();
+                  booksFuture = bookRepository.getAll(widget.parentFolderId);
                 });
+                _fabKey.currentState?.toggle();
               },
               heroTag: null, // You can change this
               shape: RoundedRectangleBorder(
@@ -161,45 +200,48 @@ class _BookListPageState extends State<BookListPage> {
             ),
           ),
           SizedBox(
-              height: 70,
-              width: 120,
-              child: FloatingActionButton.large(
-                onPressed: () {},
-                heroTag: null,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 5,
-                  children: [
-                    Text(
-                      "Add Folder",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+            height: 70,
+            width: 120,
+            child: FloatingActionButton.large(
+              onPressed: () async {
+                await FolderAddDialog.showAsDialog(
+                    context: context, func: addFolder);
+                _fabKey.currentState?.toggle();
+              },
+              heroTag: null,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 5,
+                children: [
+                  Text(
+                    "Add Folder",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
-                    Icon(
-                      Icons.folder,
-                      size: 24,
-                    ),
-                  ],
-                ),
-              ))
+                  ),
+                  Icon(
+                    Icons.folder,
+                    size: 24,
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
   }
-}
 
-class Folder {
-  int? parentFolderId;
-  String name;
-  int numberOfElements;
-
-  Folder(
-      {this.parentFolderId,
-      required this.name,
-      required this.numberOfElements});
+  void addFolder(FolderEntity entity) {
+    foldersRepository.add(entity: entity);
+    setState(() {
+      booksFuture = bookRepository.getAll(widget.parentFolderId);
+      foldersFuture = foldersRepository.getAll(widget.parentFolderId);
+    });
+    Navigator.pop(context);
+  }
 }

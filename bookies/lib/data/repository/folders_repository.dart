@@ -3,7 +3,7 @@ import 'package:bookies/data/source/drift/drift_app_database.dart';
 import 'package:drift/drift.dart';
 
 abstract class FoldersRepository {
-  Future add(int? parentFolderId, String name, String? font, String color);
+  Future add({required FolderEntity entity});
   Future update(int folderId, String name, String? font);
   Future delete(int folderId);
   Future<List<FolderEntity>> getAll(int? parentFolderId);
@@ -15,12 +15,12 @@ class FoldersRepositoryImpl extends FoldersRepository {
   FoldersRepositoryImpl(this.source);
 
   @override
-  Future add(int? parentFolderId, String name, String? font, String color) {
+  Future add({required FolderEntity entity}) {
     return source.into(source.booksFolderInfoTable).insert(
         BooksFolderInfoTableCompanion.insert(
-            books_folder_name: name,
-            font_style: Value(font),
-            parent_book_folder_id: Value(parentFolderId)));
+            books_folder_name: entity.booksFolderName,
+            font_style: Value(entity.fontStyle),
+            parent_book_folder_id: Value(entity.parentFolderId)));
   }
 
   @override
@@ -56,7 +56,7 @@ class FoldersRepositoryImpl extends FoldersRepository {
               booksFolderId: p0.books_folder_id,
               booksFolderName: p0.books_folder_name,
               parentFolderId: p0.parent_book_folder_id,
-              fontStyle: p0.font_style,
+              fontStyle: p0.font_style!,
               color: p0.font_color),
         )
         .get();

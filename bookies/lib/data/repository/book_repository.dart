@@ -6,7 +6,7 @@ import 'package:drift/drift.dart';
 
 abstract class BookRepository {
   Future<int> add(BookInfoEntity entity);
-  Future<List<BookInfoEntity>> getAll();
+  Future<List<BookInfoEntity>> getAll(int? folderId);
   Future<BookInfoEntity?> getOne(int bookId);
   Future<void> update(BookInfoEntity entity);
   Future<void> updatePages(int bookId, int readPages);
@@ -25,11 +25,18 @@ class BookRepositoryImpl extends BookRepository {
   }
 
   @override
-  Future<List<BookInfoEntity>> getAll() {
-    return source
-        .select(source.bookInfoTable)
-        .map(BookInfoCompanionHelper.from)
-        .get();
+  Future<List<BookInfoEntity>> getAll(int? folderId) {
+    if (folderId == null) {
+      final query = source.select(source.bookInfoTable)
+        ..where((tbl) => tbl.books_folder_id.isNull());
+      return query.map(BookInfoCompanionHelper.from).get();
+    } else {
+      final query = source.select(source.bookInfoTable)
+        ..where(
+          (tbl) => tbl.books_folder_id.equals(folderId),
+        );
+      return query.map(BookInfoCompanionHelper.from).get();
+    }
   }
 
   @override

@@ -19,12 +19,12 @@ import 'package:image_picker/image_picker.dart';
 
 class BookAddPage extends StatefulWidget {
   final BookInfoEntity? book;
-
+  final int? folderId;
   bool get isCreate => book == null;
   bool get isEdit => book != null;
 
-  const BookAddPage.edit({super.key, required this.book});
-  const BookAddPage.create({super.key}) : book = null;
+  const BookAddPage.edit({super.key, required this.book, this.folderId});
+  const BookAddPage.create({super.key, this.folderId}) : book = null;
 
   @override
   State<BookAddPage> createState() => _BookAddPageState();
@@ -397,7 +397,7 @@ class _BookAddPageState extends State<BookAddPage> {
 
     int bookId = await bookRepository.add(BookInfoEntity(
       bookId: null,
-      folderId: null,
+      folderId: widget.folderId,
       bookName: bookNameController.text,
       imagePath: finalImagePath,
       imageSourceType: imageSourceType,
