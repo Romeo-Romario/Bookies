@@ -98,7 +98,6 @@ class EntityBarChart extends StatelessWidget {
         tooltipPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         getTooltipColor: (group) => context.colorScheme.primary,
         getTooltipItem: (group, groupIndex, rod, rodIndex) {
-          return null;
           return BarTooltipItem(
             textAlign: TextAlign.center,
             getEntityTooltipMessage(groupIndex),
@@ -124,14 +123,12 @@ class EntityBarChart extends StatelessWidget {
       bottomTitles: AxisTitles(
         axisNameWidget: const SizedBox(),
         sideTitles: SideTitles(
-          showTitles: true,
+          showTitles: false,
           getTitlesWidget: (value, meta) {
-            return Transform.rotate(
-              angle: 1.58,
-              child: Text(getEntityTooltipMessage(value.toInt())),
-            );
+            return Text(getEntityTooltipMessage(value.toInt()));
           },
         ),
+        axisNameSize: 33,
       ),
       leftTitles: AxisTitles(
         axisNameWidget: Text(
