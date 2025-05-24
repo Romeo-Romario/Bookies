@@ -1,14 +1,13 @@
 import 'package:bookies/data/entities/folder_entity.dart';
-import 'package:bookies/data/repository/book_repository.dart';
 import 'package:bookies/data/source/drift/drift_app_database.dart';
 import 'package:drift/drift.dart';
-import 'package:get_it/get_it.dart';
 
 abstract class FoldersRepository {
   Future add({required FolderEntity entity});
   Future update(int folderId, String name, String? font);
   Future delete(int folderId, bool option);
   Future<List<FolderEntity>> getAll(int? parentFolderId);
+  Future<FolderEntity?> getOne(int? id);
 }
 
 class FoldersRepositoryImpl extends FoldersRepository {
@@ -105,5 +104,22 @@ class FoldersRepositoryImpl extends FoldersRepository {
               fontStyle: p0.font_style!),
         )
         .get();
+  }
+
+  @override
+  Future<FolderEntity?> getOne(int? id) {
+    return source.managers.booksFolderInfoTable
+        .filter(
+          (f) => f.books_folder_id.equals(id),
+        )
+        .map(
+          (p0) => FolderEntity(
+            booksFolderId: p0.books_folder_id,
+            booksFolderName: p0.books_folder_name,
+            parentFolderId: p0.parent_book_folder_id,
+            fontStyle: p0.font_style!,
+          ),
+        )
+        .getSingleOrNull();
   }
 }
