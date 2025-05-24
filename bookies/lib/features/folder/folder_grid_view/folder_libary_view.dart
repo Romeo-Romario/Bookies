@@ -25,8 +25,8 @@ class FolderLibaryView extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => onTap(element),
+      borderRadius: const BorderRadius.all(Radius.circular(16)),
       child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 6.0, vertical: 10.0),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusGeometry.circular(16.0)),
         elevation: 5,

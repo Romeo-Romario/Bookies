@@ -1,11 +1,13 @@
 import 'package:bookies/data/entities/folder_entity.dart';
+import 'package:bookies/data/repository/folders_repository.dart';
 import 'package:bookies/features/shared/font_params/font_params.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class FolderAddDialog extends StatefulWidget {
   int? parentFolderId;
-  void Function(FolderEntity entity) func;
-  FolderAddDialog({super.key, this.parentFolderId, required this.func});
+
+  FolderAddDialog({super.key, this.parentFolderId});
 
   @override
   State<FolderAddDialog> createState() => _FolderAddDialogState();
@@ -13,14 +15,12 @@ class FolderAddDialog extends StatefulWidget {
   static Future showAsDialog({
     required BuildContext context,
     int? parentFolderId,
-    required void Function(FolderEntity) func,
   }) {
     return showDialog(
       context: context,
       builder: (context) {
         return FolderAddDialog(
           parentFolderId: parentFolderId,
-          func: func,
         );
       },
     );
@@ -30,6 +30,8 @@ class FolderAddDialog extends StatefulWidget {
 class _FolderAddDialogState extends State<FolderAddDialog> {
   final _controller = TextEditingController();
   String pickedFont = "Roboto";
+
+  final folderREpository = GetIt.I.get<FoldersRepository>();
 
   // Parent Folder id
   @override
@@ -90,7 +92,7 @@ class _FolderAddDialogState extends State<FolderAddDialog> {
                 width: 200,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_controller.text.isEmpty) {
                       showDialog(
                         context: context,
@@ -107,11 +109,16 @@ class _FolderAddDialogState extends State<FolderAddDialog> {
                       );
                       return;
                     }
+
                     final newFolder = FolderEntity(
-                        parentFolderId: widget.parentFolderId,
-                        fontStyle: pickedFont,
-                        booksFolderName: _controller.text);
-                    widget.func(newFolder);
+                      parentFolderId: widget.parentFolderId,
+                      fontStyle: pickedFont,
+                      booksFolderName: _controller.text,
+                    );
+
+                    await folderREpository.add(entity: newFolder);
+
+                    if (context.mounted) Navigator.pop(context);
                   },
                   child: const Text("Add Folder"),
                 ),

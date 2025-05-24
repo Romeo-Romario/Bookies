@@ -1,29 +1,31 @@
 import 'package:bookies/data/entities/folder_entity.dart';
+import 'package:bookies/data/repository/folders_repository.dart';
+import 'package:bookies/features/book/explorer/bloc/explorer_bloc.dart';
 import 'package:bookies/features/shared/font_params/font_params.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FolderDetailDialog extends StatefulWidget {
   final String folderName;
   final String fontStyle;
   final int folderId;
-  final void Function(FolderEntity entity) onEdit;
-  final void Function(FolderEntity entity) onDelete;
 
-  const FolderDetailDialog(
-      {super.key,
-      required this.folderName,
-      required this.fontStyle,
-      required this.folderId,
-      required this.onEdit,
-      required this.onDelete});
+  final FoldersRepository foldersRepository;
+
+  const FolderDetailDialog({
+    super.key,
+    required this.folderName,
+    required this.fontStyle,
+    required this.folderId,
+    required this.foldersRepository,
+  });
 
   static Future showAsDialog({
     required BuildContext context,
     required String folderName,
     required String fontStyle,
     required int folderId,
-    required void Function(FolderEntity) onEdit,
-    required void Function(FolderEntity) onDelete,
+    required FoldersRepository foldersRepository,
   }) {
     return showDialog(
       context: context,
@@ -32,8 +34,7 @@ class FolderDetailDialog extends StatefulWidget {
           folderName: folderName,
           fontStyle: fontStyle,
           folderId: folderId,
-          onEdit: onEdit,
-          onDelete: onDelete,
+          foldersRepository: foldersRepository,
         );
       },
     );
@@ -113,13 +114,24 @@ class _FolderDetailDialogState extends State<FolderDetailDialog> {
                     width: 160,
                     height: 50,
                     child: ElevatedButton.icon(
-                      onPressed: () {
+                      onPressed: () async {
                         final entity = FolderEntity(
                             booksFolderName: _controller.text,
                             fontStyle: pickedFont!,
                             booksFolderId: widget.folderId);
-                        widget.onDelete(entity);
-                        Navigator.pop(context);
+
+                        await widget.foldersRepository.delete(
+                          entity.booksFolderId!,
+                          true,
+                        );
+
+                        if (context.mounted) {
+                          Navigator.pop(context);
+
+                          context
+                              .read<ExplorerBloc>()
+                              .add(ExplorerNavigateBackRequested());
+                        }
                       },
                       icon: Icon(
                         Icons.folder_delete_outlined,
@@ -136,13 +148,24 @@ class _FolderDetailDialogState extends State<FolderDetailDialog> {
                     width: 140,
                     height: 50,
                     child: ElevatedButton.icon(
-                      onPressed: () {
+                      onPressed: () async {
                         final entity = FolderEntity(
                             booksFolderName: _controller.text,
                             fontStyle: pickedFont!,
                             booksFolderId: widget.folderId);
-                        widget.onEdit(entity);
-                        Navigator.pop(context);
+
+                        await widget.foldersRepository.update(
+                          entity.booksFolderId!,
+                          entity.booksFolderName,
+                          entity.fontStyle,
+                        );
+
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          context
+                              .read<ExplorerBloc>()
+                              .add(ExplorerRefreshRequested());
+                        }
                       },
                       icon: Icon(
                         Icons.edit,

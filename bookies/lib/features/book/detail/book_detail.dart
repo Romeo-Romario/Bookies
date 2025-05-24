@@ -17,12 +17,10 @@ import 'package:bookies/features/shared/navigation/navigator_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating/flutter_rating.dart';
 import 'package:get_it/get_it.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class BookDetail extends StatefulWidget {
   final int bookId;
-  final void Function(int bookId)? deleteBookFunc;
-  const BookDetail({super.key, required this.bookId, this.deleteBookFunc});
+  const BookDetail({super.key, required this.bookId});
 
   @override
   State<BookDetail> createState() => _BookDetailState();
@@ -465,8 +463,13 @@ class _BookDetailState extends State<BookDetail> {
     }
   }
 
-  void deleteBook(int bookid) {
-    widget.deleteBookFunc!(bookid);
+  Future deleteBook(int bookId) async {
+    await bookRepository.delete(bookId);
+
+    if (!context.mounted) {
+      return;
+    }
+
     Navigator.pop(context);
   }
 }
