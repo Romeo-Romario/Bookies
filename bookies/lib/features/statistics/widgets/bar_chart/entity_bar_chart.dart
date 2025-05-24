@@ -66,7 +66,7 @@ class EntityBarChart extends StatelessWidget {
       entityCount,
       (index) {
         return BarChartGroupData(
-          x: 0,
+          x: index,
           barRods: [
             BarChartRodData(
               toY: getEntityRod(index),
@@ -88,16 +88,17 @@ class EntityBarChart extends StatelessWidget {
     );
   }
 
-  BarTouchData _barTouchData(BuildContext context) {
+  BarTouchData? _barTouchData(BuildContext context) {
     return BarTouchData(
       enabled: true,
       touchTooltipData: BarTouchTooltipData(
         fitInsideHorizontally: false,
         fitInsideVertically: false,
-        rotateAngle: -70, 
+        rotateAngle: -70,
         tooltipPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         getTooltipColor: (group) => context.colorScheme.primary,
         getTooltipItem: (group, groupIndex, rod, rodIndex) {
+          return null;
           return BarTooltipItem(
             textAlign: TextAlign.center,
             getEntityTooltipMessage(groupIndex),
@@ -122,7 +123,15 @@ class EntityBarChart extends StatelessWidget {
     return FlTitlesData(
       bottomTitles: AxisTitles(
         axisNameWidget: const SizedBox(),
-        axisNameSize: 33,
+        sideTitles: SideTitles(
+          showTitles: true,
+          getTitlesWidget: (value, meta) {
+            return Transform.rotate(
+              angle: 1.58,
+              child: Text(getEntityTooltipMessage(value.toInt())),
+            );
+          },
+        ),
       ),
       leftTitles: AxisTitles(
         axisNameWidget: Text(
