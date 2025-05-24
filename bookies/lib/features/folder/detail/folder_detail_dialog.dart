@@ -1,6 +1,6 @@
 import 'package:bookies/data/entities/folder_entity.dart';
 import 'package:bookies/data/repository/folders_repository.dart';
-import 'package:bookies/features/book/explorer/bloc/explorer_bloc.dart';
+import 'package:bookies/features/explorer/bloc/explorer_bloc.dart';
 import 'package:bookies/features/shared/font_params/font_params.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

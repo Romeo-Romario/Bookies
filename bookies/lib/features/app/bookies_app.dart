@@ -1,6 +1,6 @@
 import 'package:bookies/features/book/add/book_add_page.dart';
-import 'package:bookies/features/book/explorer/bloc/explorer_bloc.dart';
-import 'package:bookies/features/book/explorer/explorer_screen.dart';
+import 'package:bookies/features/explorer/bloc/explorer_bloc.dart';
+import 'package:bookies/features/explorer/explorer_screen.dart';
 import 'package:bookies/shared/theme/app_theme.dart';
 import 'package:bookies/shared/theme/color_seed.dart';
 import 'package:flutter/material.dart';

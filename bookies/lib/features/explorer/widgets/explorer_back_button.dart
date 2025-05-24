@@ -1,4 +1,4 @@
-import 'package:bookies/features/book/explorer/bloc/explorer_bloc.dart';
+import 'package:bookies/features/explorer/bloc/explorer_bloc.dart';
 import 'package:bookies/features/shared/theme/theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

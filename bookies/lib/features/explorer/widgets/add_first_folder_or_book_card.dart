@@ -1,5 +1,5 @@
-import 'package:bookies/features/book/explorer/bloc/explorer_bloc.dart';
-import 'package:bookies/features/book/explorer/widgets/add_first_entity_card.dart';
+import 'package:bookies/features/explorer/bloc/explorer_bloc.dart';
+import 'package:bookies/features/explorer/widgets/add_first_entity_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

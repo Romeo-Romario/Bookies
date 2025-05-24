@@ -1,8 +1,8 @@
-import 'package:bookies/features/book/explorer/bloc/explorer_bloc.dart';
-import 'package:bookies/features/book/explorer/widgets/explorer_app_bar.dart';
-import 'package:bookies/features/book/explorer/widgets/explorer_book_grid_view.dart';
-import 'package:bookies/features/book/explorer/widgets/explorer_fab.dart';
-import 'package:bookies/features/book/explorer/widgets/explorer_folder_grid_view.dart';
+import 'package:bookies/features/explorer/bloc/explorer_bloc.dart';
+import 'package:bookies/features/explorer/widgets/explorer_app_bar.dart';
+import 'package:bookies/features/explorer/widgets/explorer_book_grid_view.dart';
+import 'package:bookies/features/explorer/widgets/explorer_fab.dart';
+import 'package:bookies/features/explorer/widgets/explorer_folder_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
