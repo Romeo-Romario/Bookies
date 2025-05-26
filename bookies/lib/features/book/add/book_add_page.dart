@@ -120,11 +120,12 @@ class _BookAddPageState extends State<BookAddPage> {
               padding: const EdgeInsets.only(right: 20.0),
               child: IconButton.filled(
                 onPressed: () async {
-                  DeleteBookDialog.showAsDialog(
+                  await DeleteBookDialog.showAsDialog(
                       context: context,
                       bookId: widget.book!.bookId!,
                       func: widget.deleteBookFunc!,
                       bookname: bookNameController.text);
+                  Navigator.pop(context);
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.red[100]),
