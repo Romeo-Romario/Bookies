@@ -16,7 +16,6 @@ abstract class BookRepository {
 
 class BookRepositoryImpl extends BookRepository {
   final DriftAppDatabase source;
-
   BookRepositoryImpl(this.source);
 
   @override

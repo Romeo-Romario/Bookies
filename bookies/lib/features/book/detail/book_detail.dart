@@ -325,7 +325,16 @@ class _BookDetailState extends State<BookDetail> {
                 ),
               if (bookInfo.status)
                 OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BookmarksListPage(
+                          bookId: widget.bookId,
+                        ),
+                      ),
+                    );
+                  },
                   label: Text(
                     "Bookmarks",
                     style: TextStyle(

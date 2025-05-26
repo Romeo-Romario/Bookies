@@ -111,7 +111,7 @@ class _FolderDetailDialogState extends State<FolderDetailDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SizedBox(
-                    width: 160,
+                    width: 120,
                     height: 50,
                     child: ElevatedButton.icon(
                       onPressed: () async {
@@ -145,7 +145,7 @@ class _FolderDetailDialogState extends State<FolderDetailDialog> {
                     ),
                   ),
                   SizedBox(
-                    width: 140,
+                    width: 100,
                     height: 50,
                     child: ElevatedButton.icon(
                       onPressed: () async {

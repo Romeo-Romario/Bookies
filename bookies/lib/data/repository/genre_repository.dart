@@ -11,7 +11,6 @@ abstract class GenreRepository {
 
 class GenreRepositoryImpl extends GenreRepository {
   final DriftAppDatabase source;
-
   GenreRepositoryImpl(this.source);
 
   @override

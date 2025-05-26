@@ -1,4 +1,6 @@
+import 'package:bookies/data/repository/authors_repository.dart';
 import 'package:bookies/data/repository/genre_repository.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseInitializer {
@@ -10,23 +12,24 @@ class DatabaseInitializer {
     // prefs.clear();
 
     //TODO:Delete this lines when everything will be set
-    // final AuthorRepository authorsRepository = GetIt.I.get();
-
-    // List<String> authors = [
-    //   "Andrzej Sapkowski",
-    //   "Brendon Sanderson",
-    //   "Joe Abercrombie",
-    //   "Roger Zelazny",
-    //   "Sarah J Maas",
-    //   "John Ronald Reuel Tolkien",
-    // ];
-
-    // for (var el in authors) {
-    //   authorsRepository.add(el);
-    // }
 
     if ((prefs.getBool('start') ?? true)) {
       await prefs.setBool('start', false);
+
+      final AuthorRepository authorsRepository = GetIt.I.get();
+
+      List<String> authors = [
+        "Andrzej Sapkowski",
+        "Brendon Sanderson",
+        "Joe Abercrombie",
+        "Roger Zelazny",
+        "Sarah J Maas",
+        "John Ronald Reuel Tolkien",
+      ];
+
+      for (var el in authors) {
+        authorsRepository.add(el);
+      }
 
       List<String> builtInGenres = [
         'Fantasy',
